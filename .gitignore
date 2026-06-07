@@ -37,3 +37,12 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Backup files
+public/assets/logo-backup.png
+public/assets/logobackup2.png
+public/favicon-backup.png
+
+# Environment Files (Protecting API Keys)
+src/environments/environment.ts
+src/environments/environment.development.ts
