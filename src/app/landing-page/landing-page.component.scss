@@ -1,0 +1,392 @@
+/* Deep Space Theme with Glassmorphism */
+
+// Variables
+$bg-dark: #090a0f;
+$bg-light: #1b2735;
+$text-light: #fff;
+$text-muted: #8c9baf;
+$primary: #4facfe;
+$primary-light: #00f2fe;
+
+.space-background {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $bg-dark;
+  background: radial-gradient(ellipse at bottom, $bg-light 0%, $bg-dark 100%);
+  overflow: hidden;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: $text-light;
+}
+
+/* Starfield Animations */
+.starfield-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 2px;
+  perspective: 800px;
+  transform-style: preserve-3d;
+  z-index: 0;
+}
+
+@mixin starfield($animation-delay) {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: $text-light;
+  border-radius: 50%;
+  opacity: 0;
+  animation: warp 15s linear infinite $animation-delay;
+}
+
+.starfield-1 {
+  @include starfield(-5s);
+  box-shadow:
+    10vw 20vh #fff, -15vw -30vh #fff, 20vw -10vh #fff, -25vw 25vh #fff,
+    5vw 40vh #fff, -40vw -5vh #fff, 30vw 35vh #fff, -35vw -25vh #fff,
+    45vw -40vh #fff, -45vw 45vh #fff, 12vw -22vh #fff, -18vw 18vh #fff,
+    28vw -38vh #fff, -32vw 32vh #fff, 42vw -12vh #fff, -48vw 28vh #fff,
+    8vw 15vh #fff, -22vw -45vh #fff, 38vw 5vh #fff, -12vw -15vh #fff,
+    15vw 25vh #fff, -28vw -18vh #fff, 35vw -5vh #fff, -5vw 38vh #fff;
+}
+
+.starfield-2 {
+  @include starfield(-10s);
+  box-shadow:
+    15vw -20vh #fff, -10vw 30vh #fff, 25vw 10vh #fff, -20vw -25vh #fff,
+    40vw -40vh #fff, -5vw 5vh #fff, 35vw -35vh #fff, -30vw 25vh #fff,
+    48vw 40vh #fff, -42vw -45vh #fff, 18vw 22vh #fff, -12vw -18vh #fff,
+    32vw 38vh #fff, -28vw -32vh #fff, 45vw 12vh #fff, -38vw -28vh #fff,
+    22vw -15vh #fff, -8vw 45vh #fff, 12vw -5vh #fff, -35vw 15vh #fff;
+}
+
+.starfield-3 {
+  @include starfield(-15s);
+  box-shadow:
+    5vw 10vh #fff, -5vw -10vh #fff, 10vw 5vh #fff, -10vw -5vh #fff,
+    20vw 20vh #fff, -20vw -20vh #fff, 15vw 15vh #fff, -15vw -15vh #fff,
+    25vw 25vh #fff, -25vw -25vh #fff, 30vw 30vh #fff, -30vw -30vh #fff,
+    35vw 35vh #fff, -35vw -35vh #fff, 40vw 40vh #fff, -40vw -40vh #fff,
+    45vw 45vh #fff, -45vw -45vh #fff;
+}
+
+@keyframes warp {
+  0% { transform: translateZ(-2000px) scale(0.5); opacity: 0; }
+  10%, 80% { opacity: 1; }
+  100% { transform: translateZ(500px) scale(3); opacity: 0; }
+}
+
+/* 3D Scene Container */
+.scene {
+  perspective: 1200px;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* The Planet */
+.planet {
+  width: 480px;
+  height: 480px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  &.is-flipped {
+    transform: rotateY(180deg);
+
+    .planet-face {
+      &.front { pointer-events: none; }
+      &.back { pointer-events: auto; }
+    }
+  }
+}
+
+/* 3D Planet Sphere Visuals */
+.planet-sphere {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    inset -40px -40px 60px rgba(0, 0, 0, 0.9),
+    inset 20px 20px 50px rgba(255, 255, 255, 0.15),
+    0 0 60px rgba(79, 172, 254, 0.3);
+}
+
+.planet-surface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    60deg,
+    #131b2c 0%, #131b2c 10%,
+    #1a243a 10%, #1a243a 20%,
+    #0f172a 20%, #0f172a 35%
+  );
+  animation: spin-surface 40s linear infinite;
+  z-index: -1;
+}
+
+@keyframes spin-surface {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Planet Faces (Login / Register) */
+.planet-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &.front {
+    pointer-events: auto;
+  }
+
+  &.back {
+    transform: rotateY(180deg);
+    pointer-events: none;
+  }
+}
+
+/* Form Wrapper floating above planet */
+.form-wrapper {
+  width: 340px;
+  padding: 2.5rem;
+  transform: translateZ(60px);
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: rgba(25, 30, 48, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, $text-light 0%, #b3cdd1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    span {
+      background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+.subtitle {
+  color: $text-muted;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.form-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: #e2e8f0;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #a0aec0;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.5px;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: $text-light;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: rgba(79, 172, 254, 0.5);
+      background: rgba(15, 23, 42, 0.8);
+      box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.15);
+    }
+
+    &::placeholder {
+      color: #4a5568;
+    }
+  }
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
+  color: $text-light;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 48px;
+}
+
+.primary-glow {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+@mixin alert-box($bg-color, $border-color, $text-color) {
+  background: rgba($bg-color, 0.15);
+  border-left: 4px solid $border-color;
+  color: $text-color;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.error-alert {
+  @include alert-box(#ef4444, #ef4444, #fca5a5);
+}
+
+.success-alert {
+  @include alert-box(#22c55e, #22c55e, #86efac);
+}
+
+.toggle-mode {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #a0aec0;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: $primary;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $primary-light;
+    text-decoration: underline;
+  }
+}
+
+/* Simple Spinner */
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: $text-light;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Intro Animation */
+.intro-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000;
+  z-index: 10;
+  animation: fadeOutBackground 1.5s ease-in-out 1s forwards;
+}
+
+.animated-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(400px, 80vw);
+  z-index: 11;
+  animation: shrinkToCorner 1.5s ease-in-out 1s forwards;
+}
+
+@keyframes fadeOutBackground {
+  0% { opacity: 1; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes shrinkToCorner {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(400px, 80vw);
+  }
+  100% {
+    top: 30px;
+    left: 30px;
+    transform: translate(0, 0);
+    width: 120px;
+  }
+}
