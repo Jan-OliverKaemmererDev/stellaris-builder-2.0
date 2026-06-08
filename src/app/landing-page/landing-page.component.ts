@@ -55,7 +55,7 @@ export class LandingPageComponent {
       if (this.isLoginMode()) {
         await signInWithEmailAndPassword(this.auth, this.email(), this.password());
         console.log('Login erfolgreich');
-        // Weiterleitung erfolgt später, wenn das Dashboard gebaut ist
+        this.router.navigate(['/bridge']);
       } else {
         const userCredential = await createUserWithEmailAndPassword(this.auth, this.email(), this.password());
         
@@ -109,7 +109,7 @@ export class LandingPageComponent {
         createdAt: new Date().toISOString()
       }, { merge: true });
 
-      // Weiterleitung erfolgt später, wenn das Dashboard gebaut ist
+      this.router.navigate(['/bridge']);
     } catch (error: any) {
       console.error(error);
       this.errorMessage.set('Gast-Login fehlgeschlagen. Bitte versuche es später.');

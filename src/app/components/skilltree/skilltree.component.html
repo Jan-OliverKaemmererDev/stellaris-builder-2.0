@@ -1,0 +1,58 @@
+<div class="skilltree-container">
+  <h1 class="page-title">{{ title }}</h1>
+  
+  <div class="skilltree-scroll-area">
+    <div class="skilltree-track">
+      
+      @for (node of nodes; track node.id; let i = $index) {
+        
+        <!-- Connecting Line from previous node -->
+        @if (i > 0) {
+          <div class="skill-connector" [class.unlocked]="isUnlocked(node)"></div>
+        }
+
+        <!-- Skill Node Card -->
+        <div class="skill-node" [class.locked]="!isUnlocked(node)">
+          
+          <div class="node-image-wrap">
+            <img [src]="node.imagePath" [alt]="node.title" class="node-image" />
+            
+            @if (!isUnlocked(node)) {
+              <div class="lock-overlay">
+                <span class="lock-icon">🔒</span>
+                <div class="lock-req">
+                  Benötigt {{ node.requiredNode?.id }} Level {{ node.requiredNode?.level }}
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="node-details">
+            <h3 class="node-title">{{ node.title }}</h3>
+            <div class="node-level">Level: {{ getSkillLevel(node.id) }}</div>
+            
+            <div class="node-cost">
+              <span class="cost-label">Kosten:</span>
+              <div class="cost-list">
+                @for (c of getCostEntries(node); track c.name) {
+                  <div class="cost-item" [style.color]="c.colorVar">
+                    {{ c.amount | number }} {{ c.name }}
+                  </div>
+                }
+              </div>
+            </div>
+            
+            <button 
+              class="upgrade-btn" 
+              [disabled]="!isUnlocked(node) || !canAfford(node)"
+              (click)="upgrade(node)"
+            >
+              Ausbauen
+            </button>
+          </div>
+        </div>
+      }
+      
+    </div>
+  </div>
+</div>

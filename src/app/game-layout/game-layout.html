@@ -1,0 +1,60 @@
+<div class="game-shell">
+  <!-- Side Menu -->
+  <app-side-menu />
+
+  <!-- Header Bar -->
+  <header class="game-header" id="game-header">
+    <div class="header-left">
+      <img src="assets/logo.png" alt="Stellaris Builder" class="header-logo" />
+    </div>
+
+    <div class="header-right">
+      <!-- User Menu -->
+      <div class="user-menu">
+        <button
+          class="user-avatar"
+          (click)="toggleDropdown()"
+          id="user-avatar-btn"
+          [attr.aria-expanded]="dropdownOpen()"
+          aria-haspopup="true"
+        >
+          {{ userInitials }}
+        </button>
+
+        @if (dropdownOpen()) {
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="dropdown-header">
+              <span class="dropdown-name">{{ commanderName }}</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a routerLink="/privacy-policy" class="dropdown-item" id="dropdown-privacy">
+              <span class="dropdown-icon">🔒</span>
+              Privacy Policy
+            </a>
+            <a routerLink="/legal-notice" class="dropdown-item" id="dropdown-legal">
+              <span class="dropdown-icon">📋</span>
+              Legal Notice
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item logout" (click)="logout()" id="dropdown-logout">
+              <span class="dropdown-icon">🚪</span>
+              Logout
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="game-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="game-footer" id="game-footer">
+    <a routerLink="/privacy-policy">Privacy Policy</a>
+    <span class="footer-separator">•</span>
+    <a routerLink="/legal-notice">Legal Notice</a>
+  </footer>
+</div>

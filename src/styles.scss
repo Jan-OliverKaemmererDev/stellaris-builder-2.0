@@ -1,11 +1,134 @@
-/* You can add global styles to this file, and also import other style files */
+/* ================================================================
+   Stellaris Builder – Global Design Tokens & Base Styles
+   ================================================================ */
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/static/Inter_18pt-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/fonts/Orbitron/static/Orbitron-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  /* Background Palette */
+  --bg-void: #060a0f;
+  --bg-dark: #0a1118;
+  --bg-deep: #0e1620;
+  --bg-surface: #1a2533;
+  --bg-elevated: #243245;
+  --bg-light: #2c3e55;
+
+  /* Primary Accent (Cyan/Blue) */
+  --primary: #48e5e5;
+  --primary-light: #a4ffff;
+  --primary-glow: rgba(72, 229, 229, 0.35);
+  --primary-subtle: rgba(72, 229, 229, 0.12);
+
+  /* Semantic Colours */
+  --color-minerals: #4facfe;
+  --color-gas: #a855f7;
+  --color-crystals: #06d6a0;
+  --color-food: #34d399;
+  --color-energy: #facc15;
+  --color-danger: #ef4444;
+  --color-success: #22c55e;
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #8c9baf;
+  --text-dim: #4a5568;
+
+  /* Glass */
+  --glass-bg: rgba(25, 30, 48, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Transition */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Typography */
+  --font-body: 'Inter', 'Roboto', system-ui, sans-serif;
+  --font-display: 'Orbitron', 'Inter', system-ui, sans-serif;
+
+  /* Sidebar */
+  --sidebar-collapsed: 64px;
+  --sidebar-expanded: 260px;
+}
+
+/* ================================================================
+   Base Reset
+   ================================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #090a0f; /* Dunkler Hintergrund, passend zum Theme */
+  background-color: var(--bg-dark);
   overflow-x: hidden;
-  overflow-y: auto; /* Erlaubt das vertikale Scrollen */
+  overflow-y: auto;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--primary-light);
+  }
+}
+
+/* ================================================================
+   Scrollbar (Webkit)
+   ================================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 3px;
+
+  &:hover {
+    background: var(--primary);
+  }
 }

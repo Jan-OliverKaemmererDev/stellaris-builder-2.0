@@ -1,0 +1,442 @@
+/* ================================================================
+   Bridge Dashboard
+   ================================================================ */
+
+.bridge-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Commander Section ── */
+
+.commander-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0 0 var(--space-sm) 0;
+
+  .title-accent {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.commander-greeting {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0;
+
+  strong {
+    color: var(--text-secondary);
+  }
+}
+
+/* ── Dashboard Grid ── */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Base Card ── */
+
+.dash-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--glass-shadow);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:hover {
+    border-color: var(--glass-border-hover);
+    box-shadow: var(--glass-shadow), 0 0 40px rgba(79, 172, 254, 0.06);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.card-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-success);
+  padding: 2px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.1);
+  animation: pulseBadge 2s ease-in-out infinite;
+}
+
+@keyframes pulseBadge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.card-total {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ================================================================
+   Resources Card
+   ================================================================ */
+
+.resources-card {
+  grid-column: span 2;
+}
+
+@media (max-width: 900px) {
+  .resources-card {
+    grid-column: span 1;
+  }
+}
+
+.resource-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 80px;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+}
+
+@media (max-width: 600px) {
+  .resource-row {
+    grid-template-columns: 100px 1fr 60px;
+  }
+}
+
+.resource-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.resource-icon {
+  font-size: 1.2rem;
+}
+
+.resource-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.resource-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resource-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.resource-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      transparent 100%
+    );
+    animation: shimmer 2s ease-in-out infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.resource-values {
+  display: flex;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+.resource-current {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.resource-max {
+  color: var(--text-dim);
+}
+
+.resource-rate {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: right;
+  letter-spacing: 0.5px;
+
+  &.positive {
+    color: var(--color-success);
+  }
+}
+
+/* ================================================================
+   Energy Card
+   ================================================================ */
+
+.energy-body {
+  flex-direction: row !important;
+  align-items: center;
+  gap: var(--space-xl) !important;
+}
+
+.energy-gauge-wrap {
+  flex-shrink: 0;
+}
+
+.energy-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.06);
+    stroke-width: 8;
+  }
+
+  .ring-fill {
+    fill: none;
+    stroke: var(--color-energy);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 326.7;
+    transition: stroke-dashoffset 1s ease;
+    filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.4));
+  }
+}
+
+.energy-ring-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+
+  .energy-net {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+
+    &.positive { color: var(--color-success); }
+    &.negative { color: var(--color-danger); }
+  }
+
+  .energy-unit {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+.energy-stats {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.energy-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+
+    &.production { color: var(--color-success); }
+    &.consumption { color: var(--color-energy); }
+  }
+}
+
+/* ================================================================
+   Population Card
+   ================================================================ */
+
+.pop-segments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.pop-segment {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.pop-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.workers { background: var(--primary); box-shadow: 0 0 8px var(--primary-glow); }
+  &.scientists { background: var(--color-gas); box-shadow: 0 0 8px rgba(168, 85, 247, 0.35); }
+  &.free { background: var(--text-dim); }
+}
+
+.pop-info {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.pop-label {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.pop-value {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.pop-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  margin-top: var(--space-sm);
+}
+
+.pop-bar-seg {
+  height: 100%;
+  transition: width 1s ease;
+
+  &.workers { background: var(--primary); }
+  &.scientists { background: var(--color-gas); }
+  &.free { background: var(--text-dim); }
+}
+
+/* ================================================================
+   Fleet Card
+   ================================================================ */
+
+.fleet-body {
+  gap: 0 !important;
+}
+
+.fleet-unit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+
+  &:hover {
+    background: var(--primary-subtle);
+  }
+
+  & + .fleet-unit {
+    border-top: 1px solid var(--glass-border);
+  }
+}
+
+.fleet-icon {
+  font-size: 1.5rem;
+  min-width: 32px;
+  text-align: center;
+}
+
+.fleet-info {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.fleet-name {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+}
+
+.fleet-count {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 30px;
+  text-align: right;
+}

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -8,4 +9,11 @@ import { RouterLink } from '@angular/router';
   templateUrl: './privacy-policy.html',
   styleUrl: './privacy-policy.scss',
 })
-export class PrivacyPolicy {}
+export class PrivacyPolicy {
+  private location = inject(Location);
+
+  goBack(event: Event) {
+    event.preventDefault();
+    this.location.back();
+  }
+}

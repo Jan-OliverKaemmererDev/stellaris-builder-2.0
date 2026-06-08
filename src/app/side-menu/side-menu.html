@@ -1,0 +1,28 @@
+<nav
+  class="side-menu"
+  [class.expanded]="isExpanded()"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+  id="side-menu"
+>
+  <!-- Logo / Home -->
+  <a class="menu-brand" routerLink="/bridge">
+    <span class="brand-icon">◆</span>
+    <span class="brand-text">Brücke</span>
+  </a>
+
+  <div class="menu-divider"></div>
+
+  <!-- Menu Items -->
+  @for (item of menuItems; track item.route) {
+    <a
+      class="menu-item"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [id]="'menu-' + item.route.split('/').pop()"
+    >
+      <span class="menu-icon">{{ item.icon }}</span>
+      <span class="menu-label">{{ item.label }}</span>
+    </a>
+  }
+</nav>
