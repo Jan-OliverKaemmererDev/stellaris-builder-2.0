@@ -278,6 +278,38 @@ $primary-light: #00f2fe;
   min-height: 48px;
 }
 
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  .submit-btn {
+    margin-top: 0;
+    flex: 1;
+  }
+}
+
+.guest-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
 .primary-glow {
   &:hover {
     transform: translateY(-2px);
@@ -335,6 +367,34 @@ $primary-light: #00f2fe;
   }
 }
 
+.privacy-policy-check {
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  color: #a0aec0;
+  display: flex;
+  align-items: center;
+
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 0.5rem;
+  }
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: $primary;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .inline-link {
+    font-size: 0.85rem;
+    padding: 0;
+  }
+}
+
 /* Simple Spinner */
 .loader {
   width: 20px;
@@ -388,5 +448,28 @@ $primary-light: #00f2fe;
     left: 30px;
     transform: translate(0, 0);
     width: 120px;
+  }
+}
+
+/* Footer Links */
+.landing-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 1rem 0;
+  z-index: 20;
+
+  a {
+    color: $text-muted;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin: 0 1rem;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $primary;
+      text-decoration: underline;
+    }
   }
 }
