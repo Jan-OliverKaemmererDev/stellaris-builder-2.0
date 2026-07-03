@@ -35,7 +35,9 @@
                 ></div>
               </div>
               <div class="resource-values">
-                <span class="resource-current">{{ res.current | number }}</span>
+                <span class="resource-current">
+                  <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
+                </span>
                 <span class="resource-max">/ {{ res.max | number }}</span>
               </div>
             </div>
@@ -47,79 +49,40 @@
       </div>
     </div>
 
-    <!-- ═══ Energy Card ═══ -->
-    <div class="dash-card energy-card" id="card-energy">
+    <!-- ═══ Supply Card ═══ -->
+    <div class="dash-card supply-card" id="card-supply">
       <div class="card-header">
-        <h2 class="card-title">⚡ Energie</h2>
-      </div>
-      <div class="card-body energy-body">
-        <div class="energy-gauge-wrap">
-          <div class="energy-ring">
-            <svg viewBox="0 0 120 120">
-              <circle class="ring-bg" cx="60" cy="60" r="52" />
-              <circle
-                class="ring-fill"
-                cx="60" cy="60" r="52"
-                [style.stroke-dashoffset]="326.7 - (326.7 * energyPercent / 100)"
-              />
-            </svg>
-            <div class="energy-ring-value">
-              <span class="energy-net" [class.positive]="energyNet >= 0" [class.negative]="energyNet < 0">
-                {{ energyNet >= 0 ? '+' : '' }}{{ energyNet }}
-              </span>
-              <span class="energy-unit">MW</span>
-            </div>
-          </div>
-        </div>
-        <div class="energy-stats">
-          <div class="energy-stat">
-            <span class="stat-label">Produktion</span>
-            <span class="stat-value production">{{ energyProduction() }} MW</span>
-          </div>
-          <div class="energy-stat">
-            <span class="stat-label">Verbrauch</span>
-            <span class="stat-value consumption">{{ energyConsumption() }} MW</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ Population Card ═══ -->
-    <div class="dash-card population-card" id="card-population">
-      <div class="card-header">
-        <h2 class="card-title">👥 Bevölkerung</h2>
-        <span class="card-total">{{ population().total | number }}</span>
+        <h2 class="card-title">Versorgung & Personal</h2>
+        <span class="card-badge">Live</span>
       </div>
       <div class="card-body">
-        <div class="pop-segments">
-          <div class="pop-segment">
-            <div class="pop-dot workers"></div>
-            <div class="pop-info">
-              <span class="pop-label">Arbeiter</span>
-              <span class="pop-value">{{ population().workers }}</span>
+        @for (res of supplyResources(); track res.name) {
+          <div class="resource-row">
+            <div class="resource-info">
+              <span class="resource-icon">{{ res.icon }}</span>
+              <span class="resource-name">{{ res.name }}</span>
+            </div>
+            <div class="resource-bar-wrap">
+              <div class="resource-bar">
+                <div
+                  class="resource-bar-fill"
+                  [style.width.%]="getResourcePercent(res)"
+                  [style.background]="'var(' + res.colorVar + ')'"
+                  [style.box-shadow]="'0 0 12px var(' + res.colorVar + ')'"
+                ></div>
+              </div>
+              <div class="resource-values">
+                <span class="resource-current">
+                  <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
+                </span>
+                <span class="resource-max">/ {{ res.max | number }}</span>
+              </div>
+            </div>
+            <div class="resource-rate" [class.positive]="res.rate > 0">
+              +{{ res.rate }}/h
             </div>
           </div>
-          <div class="pop-segment">
-            <div class="pop-dot scientists"></div>
-            <div class="pop-info">
-              <span class="pop-label">Wissenschaftler</span>
-              <span class="pop-value">{{ population().scientists }}</span>
-            </div>
-          </div>
-          <div class="pop-segment">
-            <div class="pop-dot free"></div>
-            <div class="pop-info">
-              <span class="pop-label">Freie Plätze</span>
-              <span class="pop-value">{{ population().free }}</span>
-            </div>
-          </div>
-        </div>
-        <!-- Visual Bar -->
-        <div class="pop-bar">
-          <div class="pop-bar-seg workers" [style.width.%]="(population().workers / population().total) * 100"></div>
-          <div class="pop-bar-seg scientists" [style.width.%]="(population().scientists / population().total) * 100"></div>
-          <div class="pop-bar-seg free" [style.width.%]="(population().free / population().total) * 100"></div>
-        </div>
+        }
       </div>
     </div>
 

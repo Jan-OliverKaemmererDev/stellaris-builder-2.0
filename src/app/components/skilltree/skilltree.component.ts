@@ -39,10 +39,14 @@ export class SkilltreeComponent {
     const multiplier = Math.pow(node.costMultiplier, level);
     
     const cost: Partial<GameResources> = {};
-    if (node.baseCost.minerals) cost.minerals = Math.floor(node.baseCost.minerals * multiplier);
-    if (node.baseCost.gas) cost.gas = Math.floor(node.baseCost.gas * multiplier);
-    if (node.baseCost.crystals) cost.crystals = Math.floor(node.baseCost.crystals * multiplier);
-    if (node.baseCost.food) cost.food = Math.floor(node.baseCost.food * multiplier);
+    if (node.baseCost.eisen) cost.eisen = Math.floor(node.baseCost.eisen * multiplier);
+    if (node.baseCost.silber) cost.silber = Math.floor(node.baseCost.silber * multiplier);
+    if (node.baseCost.gold) cost.gold = Math.floor(node.baseCost.gold * multiplier);
+    if (node.baseCost.xenonit) cost.xenonit = Math.floor(node.baseCost.xenonit * multiplier);
+    if (node.baseCost.energie) cost.energie = Math.floor(node.baseCost.energie * multiplier);
+    if (node.baseCost.credits) cost.credits = Math.floor(node.baseCost.credits * multiplier);
+    if (node.baseCost.nahrung) cost.nahrung = Math.floor(node.baseCost.nahrung * multiplier);
+    if (node.baseCost.personal) cost.personal = Math.floor(node.baseCost.personal * multiplier);
     
     return cost;
   }
@@ -64,10 +68,14 @@ export class SkilltreeComponent {
   getCostEntries(node: SkillNode): { name: string; amount: number; colorVar: string }[] {
     const cost = this.getCurrentCost(node);
     const entries = [];
-    if (cost.minerals) entries.push({ name: 'Metall', amount: cost.minerals, colorVar: 'var(--color-minerals)' });
-    if (cost.gas) entries.push({ name: 'Gas', amount: cost.gas, colorVar: 'var(--color-gas)' });
-    if (cost.crystals) entries.push({ name: 'Kristalle', amount: cost.crystals, colorVar: 'var(--color-crystals)' });
-    if (cost.food) entries.push({ name: 'Nahrung', amount: cost.food, colorVar: 'var(--color-food)' });
+    if (cost.eisen) entries.push({ name: 'Eisen', amount: cost.eisen, colorVar: 'var(--color-eisen)' });
+    if (cost.silber) entries.push({ name: 'Silber', amount: cost.silber, colorVar: 'var(--color-silber)' });
+    if (cost.gold) entries.push({ name: 'Gold', amount: cost.gold, colorVar: 'var(--color-gold)' });
+    if (cost.xenonit) entries.push({ name: 'Xenonit', amount: cost.xenonit, colorVar: 'var(--color-xenonit)' });
+    if (cost.energie) entries.push({ name: 'Energie', amount: cost.energie, colorVar: 'var(--color-energie)' });
+    if (cost.credits) entries.push({ name: 'Credits', amount: cost.credits, colorVar: 'var(--color-credits)' });
+    if (cost.nahrung) entries.push({ name: 'Nahrung', amount: cost.nahrung, colorVar: 'var(--color-nahrung)' });
+    if (cost.personal) entries.push({ name: 'Personal', amount: cost.personal, colorVar: 'var(--color-personal)' });
     return entries;
   }
 }

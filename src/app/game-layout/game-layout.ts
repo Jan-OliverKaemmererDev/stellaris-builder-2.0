@@ -2,11 +2,12 @@ import { Component, inject, signal, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { Auth, signOut } from '@angular/fire/auth';
 import { SideMenu } from '../side-menu/side-menu';
+import { OfflineProgressDialog } from '../components/offline-progress-dialog/offline-progress-dialog';
 
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })

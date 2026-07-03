@@ -1,0 +1,74 @@
+<div class="overlay" *ngIf="earnings">
+  <div class="dialog">
+    <h2>Willkommen zurück, Commander!</h2>
+    <p>Während deiner Abwesenheit hat dein Imperium fleißig weiterproduziert.</p>
+    
+    <div class="resources">
+      <div class="resource" *ngIf="earnings.eisen > 0">
+        <div class="icon-container eisen">⛓️</div>
+        <div class="details">
+          <span class="label">Eisen</span>
+          <span class="amount">+{{ earnings.eisen | number }}</span>
+        </div>
+      </div>
+      
+      <div class="resource" *ngIf="earnings.silber > 0">
+        <div class="icon-container silber">🔗</div>
+        <div class="details">
+          <span class="label">Silber</span>
+          <span class="amount">+{{ earnings.silber | number }}</span>
+        </div>
+      </div>
+      
+      <div class="resource" *ngIf="earnings.gold > 0">
+        <div class="icon-container gold">✨</div>
+        <div class="details">
+          <span class="label">Gold</span>
+          <span class="amount">+{{ earnings.gold | number }}</span>
+        </div>
+      </div>
+      
+      <div class="resource" *ngIf="earnings.xenonit > 0">
+        <div class="icon-container xenonit">💠</div>
+        <div class="details">
+          <span class="label">Xenonit</span>
+          <span class="amount">+{{ earnings.xenonit | number }}</span>
+        </div>
+      </div>
+
+      <div class="resource" *ngIf="earnings.energie > 0">
+        <div class="icon-container energie">⚡</div>
+        <div class="details">
+          <span class="label">Energie</span>
+          <span class="amount">+{{ earnings.energie | number }}</span>
+        </div>
+      </div>
+
+      <div class="resource" *ngIf="earnings.credits > 0">
+        <div class="icon-container credits">🪙</div>
+        <div class="details">
+          <span class="label">Credits</span>
+          <span class="amount">+{{ earnings.credits | number }}</span>
+        </div>
+      </div>
+      
+      <div class="resource" *ngIf="earnings.nahrung > 0">
+        <div class="icon-container nahrung">🌾</div>
+        <div class="details">
+          <span class="label">Nahrung</span>
+          <span class="amount">+{{ earnings.nahrung | number }}</span>
+        </div>
+      </div>
+
+      <div class="resource" *ngIf="earnings.personal > 0">
+        <div class="icon-container personal">👥</div>
+        <div class="details">
+          <span class="label">Personal</span>
+          <span class="amount">+{{ earnings.personal | number }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <button (click)="close()">Ausgezeichnet</button>
+  </div>
+</div>

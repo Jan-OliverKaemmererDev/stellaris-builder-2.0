@@ -13,14 +13,14 @@ export class EnergyComponent {
       id: 'solarkraftwerk',
       title: 'Solarkraftwerk',
       imagePath: 'assets/img/infrastructure/solarkraftwerk.png',
-      baseCost: { minerals: 15 },
+      baseCost: { eisen: 15 },
       costMultiplier: 1.4
     },
     {
       id: 'fusionsreaktor',
       title: 'Fusionsreaktor',
       imagePath: 'assets/img/tech/fusionsreaktoren.png',
-      baseCost: { minerals: 900, gas: 200 },
+      baseCost: { eisen: 900, silber: 200 },
       costMultiplier: 1.7,
       requiredNode: { id: 'solarkraftwerk', level: 10 }
     },
@@ -28,7 +28,7 @@ export class EnergyComponent {
       id: 'antimaterie',
       title: 'Antimaterie-Reaktor',
       imagePath: 'assets/img/tech/fusionsreaktoren.png', // Placeholder
-      baseCost: { minerals: 5000, crystals: 500 },
+      baseCost: { eisen: 5000, xenonit: 500 },
       costMultiplier: 2.0,
       requiredNode: { id: 'fusionsreaktor', level: 10 }
     }

@@ -5,6 +5,7 @@ import { PrivacyPolicy } from './privacy-policy/privacy-policy';
 import { GameLayout } from './game-layout/game-layout';
 import { Bridge } from './bridge/bridge';
 import { PlaceholderPage } from './placeholder-page/placeholder-page';
+import { FleetComponent } from './pages/fleet/fleet.component';
 import { authGuard } from './guards/auth.guard';
 
 import { MiningComponent } from './pages/mining/mining.component';
@@ -28,7 +29,7 @@ export const routes: Routes = [
       { path: 'research', component: ResearchComponent },
       { path: 'infrastructure', component: InfrastructureComponent },
       { path: 'trade', component: TradeComponent },
-      { path: 'fleet', component: PlaceholderPage, data: { title: 'Flotte', icon: '🚀' } },
+      { path: 'fleet', component: FleetComponent, data: { title: 'Flotte', icon: '🚀' } },
     ],
   },
 ];

@@ -1,5 +1,6 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
 import { Auth } from '@angular/fire/auth';
 import { GameStateService } from '../services/game-state.service';
 
@@ -21,7 +22,7 @@ interface ShipType {
 @Component({
   selector: 'app-bridge',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, AnimatedNumberComponent],
   templateUrl: './bridge.html',
   styleUrl: './bridge.scss',
 })
@@ -39,38 +40,42 @@ export class Bridge {
 
   resources = computed<Resource[]>(() => {
     const res = this.gameState.resources();
+    const rates = this.gameState.productionRates();
+    const max = this.gameState.maxStorage();
     return [
-      { name: 'Mineralien', icon: '💎', current: res.minerals, max: 10000, rate: 124, colorVar: '--color-minerals' },
-      { name: 'Gas', icon: '🌫️', current: res.gas, max: 5000, rate: 47, colorVar: '--color-gas' },
-      { name: 'Kristalle', icon: '🔮', current: res.crystals, max: 3000, rate: 28, colorVar: '--color-crystals' },
-      { name: 'Nahrung', icon: '🌾', current: res.food, max: 12000, rate: 210, colorVar: '--color-food' },
+      { name: 'Eisen', icon: '⛓️', current: res.eisen, max: max.eisen, rate: rates.eisen, colorVar: '--color-eisen' },
+      { name: 'Silber', icon: '🔗', current: res.silber, max: max.silber, rate: rates.silber, colorVar: '--color-silber' },
+      { name: 'Gold', icon: '✨', current: res.gold, max: max.gold, rate: rates.gold, colorVar: '--color-gold' },
+      { name: 'Xenonit', icon: '💠', current: res.xenonit, max: max.xenonit, rate: rates.xenonit, colorVar: '--color-xenonit' },
+      { name: 'Energie', icon: '⚡', current: res.energie, max: max.energie, rate: rates.energie, colorVar: '--color-energie' },
+      { name: 'Credits', icon: '🪙', current: res.credits, max: max.credits, rate: rates.credits, colorVar: '--color-credits' },
     ];
   });
 
-  energyProduction = signal(580);
-  energyConsumption = signal(412);
-
-  get energyNet(): number {
-    return this.energyProduction() - this.energyConsumption();
-  }
-
-  get energyPercent(): number {
-    return Math.min(100, (this.energyConsumption() / this.energyProduction()) * 100);
-  }
-
-  population = signal({
-    total: 1247,
-    workers: 680,
-    scientists: 312,
-    free: 255,
+  supplyResources = computed<Resource[]>(() => {
+    const res = this.gameState.resources();
+    const rates = this.gameState.productionRates();
+    const max = this.gameState.maxStorage();
+    return [
+      { name: 'Nahrung', icon: '🌾', current: res.nahrung, max: max.nahrung, rate: rates.nahrung, colorVar: '--color-nahrung' },
+      { name: 'Personal', icon: '👥', current: res.personal, max: max.personal, rate: rates.personal, colorVar: '--color-personal' },
+    ];
   });
 
-  fleet = signal<ShipType[]>([
-    { name: 'Korvetten', icon: '🛸', count: 24 },
-    { name: 'Zerstörer', icon: '⚔️', count: 8 },
-    { name: 'Kreuzer', icon: '🚀', count: 4 },
-    { name: 'Schlachtschiffe', icon: '🛡️', count: 1 },
-  ]);
+  fleet = computed<ShipType[]>(() => {
+    const s = this.gameState.skills();
+    const ships = [];
+    if (s['kolonisierungsschiffe']) ships.push({ name: 'Kolonie-Schiffe', icon: '🌍', count: s['kolonisierungsschiffe'] });
+    if (s['logistikschiff']) ships.push({ name: 'Logistikschiffe', icon: '📦', count: s['logistikschiff'] });
+    if (s['transportschiffe']) ships.push({ name: 'Transportschiffe', icon: '🚚', count: s['transportschiffe'] });
+    if (s['mining_ship']) ships.push({ name: 'Mining Ships', icon: '⛏️', count: s['mining_ship'] });
+    
+    // Fallback if empty
+    if (ships.length === 0) {
+      ships.push({ name: 'Keine Schiffe', icon: '🛸', count: 0 });
+    }
+    return ships;
+  });
 
   get totalShips(): number {
     return this.fleet().reduce((sum, ship) => sum + ship.count, 0);

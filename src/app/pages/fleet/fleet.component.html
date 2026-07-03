@@ -1,0 +1,83 @@
+<div class="fleet-container">
+  <h1 class="page-title">Flotte & Werft</h1>
+
+  <!-- Missionsbereich -->
+  <section class="mission-section">
+    <div class="mission-card" [class.active]="activeMission()">
+      <div class="mission-bg" style="background-image: url('assets/img/asteroid-belt.png');"></div>
+      
+      <div class="mission-content">
+        <h2>Asteroiden-Mission</h2>
+        <p>Schicke deine Mining Ships in den Asteroidengürtel, um zusätzliche Rohstoffe abzubauen.</p>
+        
+        @if (activeMission(); as m) {
+          <div class="active-mission-info">
+            <h3>Mission läuft ({{ m.shipCount }} Schiffe)</h3>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" [style.width.%]="missionProgress"></div>
+            </div>
+            <div class="mission-time">{{ missionTimeLeft }}</div>
+            
+            @if (missionProgress >= 100) {
+              <button class="action-btn collect-btn" (click)="collectReward()">Belohnung einsammeln</button>
+            }
+          </div>
+        } @else {
+          <div class="idle-mission-info">
+            <p>Verfügbare Mining Ships: {{ availableMiningShips }} / {{ miningShipCount }}</p>
+            <button 
+              class="action-btn start-btn" 
+              [disabled]="availableMiningShips <= 0" 
+              (click)="startMission()"
+            >
+              Mission Starten (60s)
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Schiffswerft -->
+  <section class="shipyard-section">
+    <h2>Schiffswerft</h2>
+    
+    <div class="ships-grid">
+      @for (ship of ships; track ship.id) {
+        <div class="ship-card">
+          <div class="ship-img-wrap">
+            <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img" />
+          </div>
+          
+          <div class="ship-details">
+            <div class="ship-header">
+              <h3 class="ship-title">{{ ship.title }}</h3>
+              <span class="ship-count">Besitz: {{ getShipCount(ship.id) }}</span>
+            </div>
+            
+            <p class="ship-desc">{{ ship.description }}</p>
+            
+            <div class="ship-cost">
+              <span class="cost-label">Baukosten:</span>
+              <div class="cost-list">
+                @for (c of getCostEntries(ship.cost); track c.name) {
+                  <div class="cost-item" [style.color]="c.colorVar">
+                    {{ c.amount | number }} {{ c.name }}
+                  </div>
+                }
+              </div>
+            </div>
+            
+            <button 
+              class="build-btn" 
+              [disabled]="!canAfford(ship.cost)"
+              (click)="buildShip(ship)"
+            >
+              Bauen
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>
