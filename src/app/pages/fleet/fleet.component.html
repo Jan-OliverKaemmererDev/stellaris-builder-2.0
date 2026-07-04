@@ -14,11 +14,20 @@
           <div class="active-mission-info">
             <h3>Mission läuft ({{ m.shipCount }} Schiffe)</h3>
             <div class="progress-bar-wrap">
-              <div class="progress-bar-fill" [style.width.%]="missionProgress"></div>
+              <div class="progress-bar-fill" [style.width.%]="missionProgress()"></div>
             </div>
-            <div class="mission-time">{{ missionTimeLeft }}</div>
+            <div class="mission-time">{{ missionTimeLeft() }}</div>
             
-            @if (missionProgress >= 100) {
+            @if (missionReward(); as r) {
+              <div class="mission-reward">
+                <span class="reward-label">Beute:</span>
+                <span class="reward-item" style="color: var(--color-eisen)">{{ r.eisen | number }} Eisen</span>,
+                <span class="reward-item" style="color: var(--color-silber)">{{ r.silber | number }} Silber</span>,
+                <span class="reward-item" style="color: var(--color-gold)">{{ r.gold | number }} Gold</span>
+              </div>
+            }
+            
+            @if (missionProgress() >= 100) {
               <button class="action-btn collect-btn" (click)="collectReward()">Belohnung einsammeln</button>
             }
           </div>

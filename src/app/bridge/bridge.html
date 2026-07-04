@@ -86,6 +86,39 @@
       </div>
     </div>
 
+    <!-- ═══ Energy Card (Battery) ═══ -->
+    <div class="dash-card energy-card" id="card-energy">
+      <div class="card-header">
+        <h2 class="card-title">⚡ Energie-Netz</h2>
+        <span class="card-badge" [ngClass]="energyColorClass">{{ energyPercentage() | number:'1.0-0' }}% Frei</span>
+      </div>
+      <div class="card-body energy-body">
+        
+        <div class="battery-container">
+          <div class="battery-body" [ngClass]="energyColorClass">
+            <div class="battery-fill" [style.width.%]="energyPercentage()"></div>
+          </div>
+          <div class="battery-cap"></div>
+        </div>
+
+        <div class="energy-details">
+          <div class="energy-stat">
+            <span class="stat-label">Produziert (Kapazität)</span>
+            <span class="stat-value text-success">{{ energyProduced() | number }}</span>
+          </div>
+          <div class="energy-stat">
+            <span class="stat-label">Verbraucht (Unterhalt)</span>
+            <span class="stat-value text-danger">{{ (energyProduced() - availableEnergy()) | number }}</span>
+          </div>
+          <div class="energy-stat highlight">
+            <span class="stat-label">Freie Energie</span>
+            <span class="stat-value">{{ availableEnergy() | number }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ═══ Fleet Card ═══ -->
     <div class="dash-card fleet-card" id="card-fleet">
       <div class="card-header">

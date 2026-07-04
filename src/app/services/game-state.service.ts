@@ -57,6 +57,71 @@ export class GameStateService {
   activeMission = signal<MissionState | null>(null);
   offlineEarnings = signal<GameResources | null>(null);
 
+  // --- Energy Management ---
+  // Base energy upkeeps per level for buildings, or per ship for ships
+  private readonly ENERGY_UPKEEP: Record<string, number> = {
+    'eisenmine': 10,
+    'silbermine': 20,
+    'goldmine': 50,
+    'lager': 10,
+    'refinery': 50,
+    'orbital_shipyard': 200,
+    'large_station': 500,
+    'biolabor': 100,
+    'ki_automatisierung': 300,
+    'antriebstechnik': 500,
+    'trading_post': 50,
+    'interstellar_market': 200,
+    'galactic_exchange': 1000,
+    // Ships
+    'kolonisierungsschiffe': 100,
+    'logistikschiff': 50,
+    'transportschiffe': 50,
+    'mining_ship': 20
+  };
+
+  energyProduced = computed<number>(() => {
+    const s = this.skills();
+    // Kraftwerke produzieren Energie exponentiell wie Baukosten, z.B. *1.5 pro Level
+    const calc = (base: number, level: number) => level === 0 ? 0 : Math.floor(base * Math.pow(1.5, level - 1));
+    return calc(200, s['solarkraftwerk'] || 0) + 
+           calc(800, s['fusionsreaktor'] || 0) + 
+           calc(3000, s['antimaterie'] || 0);
+  });
+
+  energyConsumed = computed<number>(() => {
+    const s = this.skills();
+    let total = 0;
+    
+    // Sum of all upkeeps for buildings (cumulative over levels)
+    // Formula: sum of base * 1.5^(i-1) for i=1 to level
+    const calcCumulative = (base: number, level: number) => {
+      let sum = 0;
+      for (let i = 1; i <= level; i++) {
+        sum += Math.floor(base * Math.pow(1.5, i - 1));
+      }
+      return sum;
+    };
+
+    // Calculate for all skills
+    for (const [skillId, level] of Object.entries(s)) {
+      if (this.ENERGY_UPKEEP[skillId]) {
+        // Ships are flat cost per ship, buildings are cumulative
+        const isShip = ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship'].includes(skillId);
+        if (isShip) {
+          total += this.ENERGY_UPKEEP[skillId] * level;
+        } else {
+          total += calcCumulative(this.ENERGY_UPKEEP[skillId], level);
+        }
+      }
+    }
+    return total;
+  });
+
+  availableEnergy = computed<number>(() => {
+    return this.energyProduced() - this.energyConsumed();
+  });
+
   productionRates = computed<GameResources>(() => {
     const s = this.skills();
     const calc = (base: number, level: number) => level === 0 ? 0 : Math.floor(base * Math.pow(1.5, level - 1));
@@ -68,7 +133,7 @@ export class GameStateService {
       silber: calc(80, s['silbermine'] || 0),
       gold: calc(30, s['goldmine'] || 0),
       xenonit: calc(10, s['refinery'] || 0),
-      energie: calc(200, s['solarkraftwerk'] || 0) + calc(800, s['fusionsreaktor'] || 0) + calc(3000, s['antimaterie'] || 0),
+      energie: 0, // Energie is now a capacity, not a produced resource
       credits: calc(100, s['trading_post'] || 0) + calc(400, s['interstellar_market'] || 0) + calc(1500, s['galactic_exchange'] || 0),
       nahrung: calc(200, s['biolabor'] || 0) + (transports * 200),
       personal: calc(5, s['large_station'] || 0) + calc(2, s['orbital_shipyard'] || 0) + (kolonie * 10)
@@ -89,7 +154,7 @@ export class GameStateService {
       silber: Math.floor(5000 * multiplier),
       gold: Math.floor(3000 * multiplier),
       xenonit: Math.floor(1000 * multiplier),
-      energie: Math.floor(20000 * multiplier),
+      energie: 0, // Capacity doesn't have storage
       credits: Math.floor(50000 * multiplier),
       nahrung: Math.floor(12000 * multiplier),
       personal: Math.floor(5000 * multiplier) + (kolonie * 1000)
@@ -147,7 +212,7 @@ export class GameStateService {
               silber: calc(80, s['silbermine'] || 0),
               gold: calc(30, s['goldmine'] || 0),
               xenonit: calc(10, s['refinery'] || 0),
-              energie: calc(200, s['solarkraftwerk'] || 0) + calc(800, s['fusionsreaktor'] || 0) + calc(3000, s['antimaterie'] || 0),
+              energie: 0, // No offline energy generation
               credits: calc(100, s['trading_post'] || 0) + calc(400, s['interstellar_market'] || 0) + calc(1500, s['galactic_exchange'] || 0),
               nahrung: calc(200, s['biolabor'] || 0) + (transports * 200),
               personal: calc(5, s['large_station'] || 0) + calc(2, s['orbital_shipyard'] || 0) + (kolonie * 10)
@@ -158,14 +223,14 @@ export class GameStateService {
               silber: Math.floor(rates.silber * offlineHours),
               gold: Math.floor(rates.gold * offlineHours),
               xenonit: Math.floor(rates.xenonit * offlineHours),
-              energie: Math.floor(rates.energie * offlineHours),
+              energie: 0,
               credits: Math.floor(rates.credits * offlineHours),
               nahrung: Math.floor(rates.nahrung * offlineHours),
               personal: Math.floor(rates.personal * offlineHours)
             };
             
             // Only show dialog if actually generated something
-            if (generated.eisen > 0 || generated.silber > 0 || generated.gold > 0 || generated.xenonit > 0 || generated.energie > 0 || generated.credits > 0 || generated.nahrung > 0 || generated.personal > 0) {
+            if (generated.eisen > 0 || generated.silber > 0 || generated.gold > 0 || generated.xenonit > 0 || generated.credits > 0 || generated.nahrung > 0 || generated.personal > 0) {
               this.offlineEarnings.set(generated);
               
               state = {
@@ -175,7 +240,7 @@ export class GameStateService {
                   silber: Math.min((state.resources?.silber || 0) + generated.silber, Math.floor(5000 * Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0))),
                   gold: Math.min((state.resources?.gold || 0) + generated.gold, Math.floor(3000 * Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0))),
                   xenonit: Math.min((state.resources?.xenonit || 0) + generated.xenonit, Math.floor(1000 * Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0))),
-                  energie: Math.min((state.resources?.energie || 0) + generated.energie, Math.floor(20000 * Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0))),
+                  energie: state.resources?.energie || 0, // Unchanged
                   credits: Math.min((state.resources?.credits || 0) + generated.credits, Math.floor(50000 * Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0))),
                   nahrung: Math.min((state.resources?.nahrung || 0) + generated.nahrung, Math.floor(12000 * Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0))),
                   personal: Math.min((state.resources?.personal || 0) + generated.personal, Math.floor(5000 * Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0)) + ((s['kolonisierungsschiffe'] || 0) * 1000)),
@@ -243,7 +308,7 @@ export class GameStateService {
     if (cost.silber && current.silber < cost.silber) return false;
     if (cost.gold && current.gold < cost.gold) return false;
     if (cost.xenonit && current.xenonit < cost.xenonit) return false;
-    if (cost.energie && current.energie < cost.energie) return false;
+    if (cost.energie && this.availableEnergy() < cost.energie) return false; // Evaluate against available energy
     if (cost.credits && current.credits < cost.credits) return false;
     if (cost.nahrung && current.nahrung < cost.nahrung) return false;
     if (cost.personal && current.personal < cost.personal) return false;
@@ -264,7 +329,7 @@ export class GameStateService {
       silber: currentRes.silber - (cost.silber || 0),
       gold: currentRes.gold - (cost.gold || 0),
       xenonit: currentRes.xenonit - (cost.xenonit || 0),
-      energie: currentRes.energie - (cost.energie || 0),
+      energie: currentRes.energie, // Energy is not "spent", it's upkeep!
       credits: currentRes.credits - (cost.credits || 0),
       nahrung: currentRes.nahrung - (cost.nahrung || 0),
       personal: currentRes.personal - (cost.personal || 0),

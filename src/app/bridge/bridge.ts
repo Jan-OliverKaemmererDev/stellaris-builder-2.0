@@ -1,5 +1,5 @@
 import { Component, inject, computed, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
 import { Auth } from '@angular/fire/auth';
 import { GameStateService } from '../services/game-state.service';
@@ -22,7 +22,7 @@ interface ShipType {
 @Component({
   selector: 'app-bridge',
   standalone: true,
-  imports: [DecimalPipe, AnimatedNumberComponent],
+  imports: [DecimalPipe, NgClass, AnimatedNumberComponent],
   templateUrl: './bridge.html',
   styleUrl: './bridge.scss',
 })
@@ -47,7 +47,6 @@ export class Bridge {
       { name: 'Silber', icon: '🔗', current: res.silber, max: max.silber, rate: rates.silber, colorVar: '--color-silber' },
       { name: 'Gold', icon: '✨', current: res.gold, max: max.gold, rate: rates.gold, colorVar: '--color-gold' },
       { name: 'Xenonit', icon: '💠', current: res.xenonit, max: max.xenonit, rate: rates.xenonit, colorVar: '--color-xenonit' },
-      { name: 'Energie', icon: '⚡', current: res.energie, max: max.energie, rate: rates.energie, colorVar: '--color-energie' },
       { name: 'Credits', icon: '🪙', current: res.credits, max: max.credits, rate: rates.credits, colorVar: '--color-credits' },
     ];
   });
@@ -61,6 +60,24 @@ export class Bridge {
       { name: 'Personal', icon: '👥', current: res.personal, max: max.personal, rate: rates.personal, colorVar: '--color-personal' },
     ];
   });
+
+  // ── Energy Battery ──
+  energyProduced = this.gameState.energyProduced;
+  availableEnergy = this.gameState.availableEnergy;
+
+  energyPercentage = computed<number>(() => {
+    const max = this.energyProduced();
+    if (max <= 0) return 0;
+    const available = this.availableEnergy();
+    return Math.max(0, Math.min(100, (available / max) * 100));
+  });
+
+  get energyColorClass(): string {
+    const p = this.energyPercentage();
+    if (p > 75) return 'energy-good';
+    if (p > 25) return 'energy-warn';
+    return 'energy-critical';
+  }
 
   fleet = computed<ShipType[]>(() => {
     const s = this.gameState.skills();

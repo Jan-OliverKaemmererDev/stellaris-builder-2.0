@@ -278,3 +278,25 @@
     height: 150px;
   }
 }
+
+.mission-reward {
+  margin: var(--space-md) 0;
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(0,0,0,0.3);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary);
+  font-size: 0.9rem;
+  
+  .reward-label {
+    color: var(--text-muted);
+    margin-right: 8px;
+    font-weight: 500;
+  }
+  
+  .reward-item {
+    font-weight: 600;
+    font-family: var(--font-display);
+    text-shadow: 0 0 5px rgba(255,255,255,0.1);
+  }
+}
+

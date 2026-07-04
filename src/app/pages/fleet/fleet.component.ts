@@ -1,4 +1,4 @@
-import { Component, inject, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, computed, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { GameStateService, GameResources } from '../../services/game-state.service';
 
@@ -26,36 +26,46 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Kolonisierungsschiff',
       description: 'Besiedelt ferne Planeten. Erhöht dauerhaft die Personal-Produktion (+10/h) und Kapazität (+1000).',
       imagePath: 'assets/img/fleet/kolonisierungsschiffe.png',
-      cost: { eisen: 5000, nahrung: 1000, credits: 500 }
+      cost: { eisen: 5000, nahrung: 1000, credits: 500, energie: 100 }
     },
     {
       id: 'logistikschiff',
       title: 'Logistikschiff',
       description: 'Erhöht die globale Lagerkapazität aller Rohstoffe um 10%.',
       imagePath: 'assets/img/fleet/logistikschiff.png',
-      cost: { eisen: 2000, credits: 500 }
+      cost: { eisen: 2000, credits: 500, energie: 50 }
     },
     {
       id: 'transportschiffe',
       title: 'Transportschiff',
       description: 'Versorgt deine Planeten mit Materialien. Produziert passiv Nahrung (+200/h) und Eisen (+150/h).',
       imagePath: 'assets/img/fleet/transportschiffe.png',
-      cost: { eisen: 3000, silber: 1000 }
+      cost: { eisen: 3000, silber: 1000, energie: 50 }
     },
     {
       id: 'mining_ship',
       title: 'Mining Ship',
       description: 'Kann in den Asteroidengürtel geschickt werden, um Rohstoffe abzubauen.',
       imagePath: 'assets/img/fleet/mining-ship.png',
-      cost: { eisen: 1000, silber: 200 }
+      cost: { eisen: 1000, silber: 200, energie: 20 }
     }
   ];
 
   private intervalId: any;
-  missionProgress = 0; // 0 to 100
-  missionTimeLeft = '';
+  missionProgress = signal(0); // 0 to 100
+  missionTimeLeft = signal('');
 
   activeMission = this.gameState.activeMission;
+  
+  missionReward = computed(() => {
+    const m = this.activeMission();
+    if (!m) return null;
+    return {
+      eisen: m.shipCount * 500,
+      silber: m.shipCount * 200,
+      gold: m.shipCount * 50
+    };
+  });
   
   ngOnInit() {
     this.intervalId = setInterval(() => this.updateMissionProgress(), 100);
@@ -123,8 +133,8 @@ export class FleetComponent implements OnInit, OnDestroy {
   updateMissionProgress() {
     const m = this.activeMission();
     if (!m) {
-      this.missionProgress = 0;
-      this.missionTimeLeft = '';
+      this.missionProgress.set(0);
+      this.missionTimeLeft.set('');
       return;
     }
 
@@ -132,18 +142,18 @@ export class FleetComponent implements OnInit, OnDestroy {
     const elapsed = now - m.startTime;
     
     if (elapsed >= m.durationMs) {
-      this.missionProgress = 100;
-      this.missionTimeLeft = 'Mission abgeschlossen!';
+      this.missionProgress.set(100);
+      this.missionTimeLeft.set('Mission abgeschlossen!');
     } else {
-      this.missionProgress = (elapsed / m.durationMs) * 100;
+      this.missionProgress.set((elapsed / m.durationMs) * 100);
       const leftSec = Math.ceil((m.durationMs - elapsed) / 1000);
-      this.missionTimeLeft = `Noch ${leftSec} Sekunden`;
+      this.missionTimeLeft.set(`Noch ${leftSec} Sekunden`);
     }
   }
 
   async collectReward() {
     const m = this.activeMission();
-    if (!m || this.missionProgress < 100) return;
+    if (!m || this.missionProgress() < 100) return;
 
     // Reward per ship: 500 Eisen, 200 Silber, 50 Gold
     const reward = {

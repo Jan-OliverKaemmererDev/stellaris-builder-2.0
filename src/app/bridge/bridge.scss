@@ -301,3 +301,102 @@
   min-width: 30px;
   text-align: right;
 }
+
+/* ================================================================
+   Energy Card (Battery)
+   ================================================================ */
+
+.energy-card {
+  grid-column: span 1;
+}
+
+.energy-body {
+  gap: var(--space-xl);
+}
+
+.battery-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--space-md) 0;
+}
+
+.battery-body {
+  flex: 1;
+  height: 40px;
+  border: 2px solid var(--text-secondary);
+  border-radius: 6px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+  transition: border-color var(--transition-normal);
+
+  &.energy-good { border-color: var(--color-success); }
+  &.energy-warn { border-color: var(--color-energie); }
+  &.energy-critical { border-color: var(--color-danger); }
+}
+
+.battery-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease-out, background-color 0.5s ease;
+}
+
+.battery-body.energy-good .battery-fill { background: var(--color-success); box-shadow: 0 0 15px var(--color-success); }
+.battery-body.energy-warn .battery-fill { background: var(--color-energie); box-shadow: 0 0 15px var(--color-energie); }
+.battery-body.energy-critical .battery-fill { background: var(--color-danger); box-shadow: 0 0 15px var(--color-danger); animation: pulseCritical 1s infinite; }
+
+.battery-cap {
+  width: 8px;
+  height: 16px;
+  background: var(--text-secondary);
+  border-radius: 0 4px 4px 0;
+  opacity: 0.8;
+}
+
+@keyframes pulseCritical {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.energy-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  background: rgba(0, 0, 0, 0.2);
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.energy-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  
+  .stat-label {
+    color: var(--text-muted);
+  }
+  
+  .stat-value {
+    font-weight: 600;
+    font-family: var(--font-display);
+    
+    &.text-success { color: var(--color-success); }
+    &.text-danger { color: var(--color-danger); }
+  }
+
+  &.highlight {
+    margin-top: var(--space-xs);
+    padding-top: var(--space-xs);
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    
+    .stat-label { color: var(--text-secondary); font-weight: 500; }
+    .stat-value { color: var(--primary); font-size: 1.1rem; text-shadow: 0 0 8px var(--primary-glow); }
+  }
+}
+

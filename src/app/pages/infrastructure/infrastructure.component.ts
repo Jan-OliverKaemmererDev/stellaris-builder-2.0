@@ -13,14 +13,14 @@ export class InfrastructureComponent {
       id: 'lager',
       title: 'Zentrallager',
       imagePath: 'assets/img/infrastructure/lager.png', // Placeholder
-      baseCost: { eisen: 50, silber: 50 },
+      baseCost: { eisen: 50, silber: 50, energie: 10 },
       costMultiplier: 1.4
     },
     {
       id: 'refinery',
       title: 'Raffinerie',
       imagePath: 'assets/img/infrastructure/refinery.png',
-      baseCost: { eisen: 150 },
+      baseCost: { eisen: 150, energie: 50 },
       costMultiplier: 1.4,
       requiredNode: { id: 'lager', level: 5 }
     },
@@ -28,7 +28,7 @@ export class InfrastructureComponent {
       id: 'orbital_shipyard',
       title: 'Orbitale Werft',
       imagePath: 'assets/img/infrastructure/orbital-shipyard.png',
-      baseCost: { eisen: 1200, silber: 400 },
+      baseCost: { eisen: 1200, silber: 400, energie: 200 },
       costMultiplier: 1.5,
       requiredNode: { id: 'refinery', level: 10 }
     },
@@ -36,7 +36,7 @@ export class InfrastructureComponent {
       id: 'large_station',
       title: 'Große Raumstation',
       imagePath: 'assets/img/infrastructure/large-station.png',
-      baseCost: { eisen: 8000, gold: 1000 },
+      baseCost: { eisen: 8000, gold: 1000, energie: 500 },
       costMultiplier: 1.8,
       requiredNode: { id: 'orbital_shipyard', level: 10 }
     }
