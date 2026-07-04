@@ -1,0 +1,103 @@
+<div class="mining-container">
+  <h1 class="page-title">Rohstoffabbau</h1>
+
+  <div class="mines-list">
+    @for (mine of mines; track mine.id) {
+      <div class="mine-row">
+        
+        <!-- Mine Node -->
+        <div class="skill-node" [class.locked]="!isMineUnlocked(mine)">
+          <div class="node-image-wrap">
+            <img [src]="mine.imagePath" [alt]="mine.title" class="node-image" />
+            
+            @if (!isMineUnlocked(mine)) {
+              <div class="lock-overlay">
+                <span class="lock-icon">🔒</span>
+                <div class="lock-req">
+                  Benötigt {{ mine.requiredNode?.id }} Lvl {{ mine.requiredNode?.level }}
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="node-details">
+            <h3 class="node-title">{{ mine.title }}</h3>
+            <div class="node-level">Level: {{ getSkillLevel(mine.id) }}</div>
+            
+            <div class="node-cost">
+              <span class="cost-label">Kosten:</span>
+              <div class="cost-list">
+                @for (c of getCostEntries(getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id))); track c.name) {
+                  <div class="cost-item" [style.color]="c.colorVar">
+                    {{ c.amount | number }} {{ c.name }}
+                  </div>
+                }
+              </div>
+            </div>
+            
+            <button 
+              class="upgrade-btn" 
+              [disabled]="!isMineUnlocked(mine) || !canAfford(getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)))"
+              (click)="upgradeSkill(mine.id, getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)))"
+            >
+              Ausbauen
+            </button>
+          </div>
+        </div>
+
+        <!-- Upgrades Section -->
+        <div class="mine-upgrades-section">
+          @for (upgrade of mine.upgrades; track upgrade.id) {
+            
+            <!-- Connector Line -->
+            <div class="skill-connector" [class.unlocked]="isUpgradeUnlocked(mine.id, upgrade)"></div>
+
+            <div class="skill-node" [class.locked]="!isUpgradeUnlocked(mine.id, upgrade)">
+              <div class="node-image-wrap" style="height: 100px;">
+                <div class="placeholder-icon" style="font-size: 2.5rem; color: rgba(255,255,255,0.3); font-weight: bold;">{{ upgrade.title.charAt(0) }}</div>
+                
+                @if (!isUpgradeUnlocked(mine.id, upgrade)) {
+                  <div class="lock-overlay">
+                    <span class="lock-icon">🔒</span>
+                    <div class="lock-req">
+                      {{ mine.title }} Lvl {{ upgrade.requiredMineLevel }}
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="node-details" style="padding: 1rem;">
+                <h4 class="node-title" style="font-size: 1rem;">{{ upgrade.title }}</h4>
+                <div class="node-level">Level: {{ getSkillLevel(upgrade.id) }}</div>
+                
+                @if (isUpgradeUnlocked(mine.id, upgrade)) {
+                  <div class="upgrade-bonus" style="color: var(--color-success); font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">+{{ getSkillLevel(upgrade.id) * 5 }}% Produktion</div>
+                  
+                  <div class="node-cost">
+                    <div class="cost-list">
+                      @for (c of getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id))); track c.name) {
+                        <div class="cost-item" [style.color]="c.colorVar">
+                          {{ c.amount | number }} {{ c.name }}
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  
+                  <button 
+                    class="upgrade-btn" 
+                    [disabled]="!canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+                    (click)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+                  >
+                    Kaufen
+                  </button>
+                }
+              </div>
+            </div>
+
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

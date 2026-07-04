@@ -1,20 +1,44 @@
-import { Component } from '@angular/core';
-import { SkilltreeComponent, SkillNode } from '../../components/skilltree/skilltree.component';
+import { Component, inject } from '@angular/core';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { GameStateService, GameResources } from '../../services/game-state.service';
+
+export interface MineUpgrade {
+  id: string;
+  title: string;
+  imagePath: string;
+  requiredMineLevel: number;
+  baseCost: Partial<GameResources>;
+  costMultiplier: number;
+}
+
+export interface Mine {
+  id: string;
+  title: string;
+  imagePath: string;
+  baseCost: Partial<GameResources>;
+  costMultiplier: number;
+  upgrades: MineUpgrade[];
+  requiredNode?: { id: string; level: number };
+}
 
 @Component({
   selector: 'app-mining',
   standalone: true,
-  imports: [SkilltreeComponent],
-  template: `<app-skilltree title="Rohstoffabbau" [nodes]="nodes"></app-skilltree>`
+  imports: [CommonModule, DecimalPipe],
+  templateUrl: './mining.component.html',
+  styleUrl: './mining.component.scss'
 })
 export class MiningComponent {
-  nodes: SkillNode[] = [
+  gameState = inject(GameStateService);
+
+  mines: Mine[] = [
     {
       id: 'eisenmine',
       title: 'Eisenmine',
       imagePath: 'assets/img/infrastructure/metallmine.png',
       baseCost: { eisen: 10, energie: 10 },
-      costMultiplier: 1.5
+      costMultiplier: 1.5,
+      upgrades: this.generateUpgrades('eisenmine')
     },
     {
       id: 'silbermine',
@@ -22,7 +46,8 @@ export class MiningComponent {
       imagePath: 'assets/img/infrastructure/metallmine.png', // Placeholder
       baseCost: { eisen: 500, credits: 50, energie: 20 },
       costMultiplier: 1.6,
-      requiredNode: { id: 'eisenmine', level: 10 }
+      requiredNode: { id: 'eisenmine', level: 10 },
+      upgrades: this.generateUpgrades('silbermine')
     },
     {
       id: 'goldmine',
@@ -30,7 +55,100 @@ export class MiningComponent {
       imagePath: 'assets/img/infrastructure/metallmine.png', // Placeholder
       baseCost: { eisen: 2000, silber: 100, energie: 50 },
       costMultiplier: 1.8,
-      requiredNode: { id: 'silbermine', level: 10 }
+      requiredNode: { id: 'silbermine', level: 10 },
+      upgrades: this.generateUpgrades('goldmine')
     }
   ];
+
+  generateUpgrades(mineId: string): MineUpgrade[] {
+    return [
+      {
+        id: `${mineId}_roboter`,
+        title: 'Roboter Arbeiter',
+        imagePath: 'assets/img/infrastructure/robot.png', // Placeholder
+        requiredMineLevel: 5,
+        baseCost: { credits: 100, energie: 50 },
+        costMultiplier: 1.4
+      },
+      {
+        id: `${mineId}_transport`,
+        title: 'Transportlaster',
+        imagePath: 'assets/img/infrastructure/transport.png', // Placeholder
+        requiredMineLevel: 15,
+        baseCost: { credits: 500, eisen: 200, energie: 100 },
+        costMultiplier: 1.5
+      },
+      {
+        id: `${mineId}_ki`,
+        title: 'KI Automation',
+        imagePath: 'assets/img/infrastructure/ai.png', // Placeholder
+        requiredMineLevel: 30,
+        baseCost: { credits: 2000, silber: 500, energie: 300 },
+        costMultiplier: 1.6
+      },
+      {
+        id: `${mineId}_zug`,
+        title: 'Hochgeschwindigkeitszüge',
+        imagePath: 'assets/img/infrastructure/train.png', // Placeholder
+        requiredMineLevel: 50,
+        baseCost: { credits: 10000, gold: 1000, energie: 1000 },
+        costMultiplier: 1.8
+      }
+    ];
+  }
+
+  getSkillLevel(id: string): number {
+    return this.gameState.getSkillLevel(id);
+  }
+
+  isMineUnlocked(mine: Mine): boolean {
+    if (!mine.requiredNode) return true;
+    return this.getSkillLevel(mine.requiredNode.id) >= mine.requiredNode.level;
+  }
+
+  isUpgradeUnlocked(mineId: string, upgrade: MineUpgrade): boolean {
+    return this.getSkillLevel(mineId) >= upgrade.requiredMineLevel;
+  }
+
+  getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
+    const cost: Partial<GameResources> = {};
+    const mult = Math.pow(multiplier, currentLevel);
+    
+    if (baseCost.eisen) cost.eisen = Math.floor(baseCost.eisen * mult);
+    if (baseCost.silber) cost.silber = Math.floor(baseCost.silber * mult);
+    if (baseCost.gold) cost.gold = Math.floor(baseCost.gold * mult);
+    if (baseCost.xenonit) cost.xenonit = Math.floor(baseCost.xenonit * mult);
+    if (baseCost.energie) cost.energie = Math.floor(baseCost.energie * mult);
+    if (baseCost.credits) cost.credits = Math.floor(baseCost.credits * mult);
+    if (baseCost.nahrung) cost.nahrung = Math.floor(baseCost.nahrung * mult);
+    if (baseCost.personal) cost.personal = Math.floor(baseCost.personal * mult);
+    
+    return cost;
+  }
+
+  getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
+    const entries = [];
+    if (cost.eisen) entries.push({ name: 'Eisen', amount: cost.eisen, colorVar: 'var(--color-eisen)' });
+    if (cost.silber) entries.push({ name: 'Silber', amount: cost.silber, colorVar: 'var(--color-silber)' });
+    if (cost.gold) entries.push({ name: 'Gold', amount: cost.gold, colorVar: 'var(--color-gold)' });
+    if (cost.xenonit) entries.push({ name: 'Xenonit', amount: cost.xenonit, colorVar: 'var(--color-xenonit)' });
+    if (cost.energie) entries.push({ name: 'Energie', amount: cost.energie, colorVar: 'var(--color-energie)' });
+    if (cost.credits) entries.push({ name: 'Credits', amount: cost.credits, colorVar: 'var(--color-credits)' });
+    if (cost.nahrung) entries.push({ name: 'Nahrung', amount: cost.nahrung, colorVar: 'var(--color-nahrung)' });
+    if (cost.personal) entries.push({ name: 'Personal', amount: cost.personal, colorVar: 'var(--color-personal)' });
+    return entries;
+  }
+
+  canAfford(cost: Partial<GameResources>): boolean {
+    return this.gameState.canAfford(cost);
+  }
+
+  async upgradeSkill(id: string, cost: Partial<GameResources>) {
+    if (!this.canAfford(cost)) return;
+    try {
+      await this.gameState.upgradeSkill(id, cost);
+    } catch (e) {
+      console.error('Upgrade failed', e);
+    }
+  }
 }

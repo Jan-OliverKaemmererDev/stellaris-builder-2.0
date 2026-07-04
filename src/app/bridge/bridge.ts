@@ -101,4 +101,56 @@ export class Bridge {
   getResourcePercent(resource: Resource): number {
     return (resource.current / resource.max) * 100;
   }
+
+  // ── Trading System ──
+
+  hasTradingPost = computed(() => this.gameState.skills()['trading_post'] > 0 || this.gameState.skills()['interstellar_market'] > 0);
+  hasInterstellarMarket = computed(() => this.gameState.skills()['interstellar_market'] > 0);
+
+  tradeMultiplier = signal(100);
+  setMultiplier(m: number) {
+    this.tradeMultiplier.set(m);
+  }
+
+  sellableResources = [
+    { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: '✨', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: '💠', colorVar: '--color-xenonit' }
+  ] as const;
+
+  buyableResources = [
+    { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: '✨', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: '💠', colorVar: '--color-xenonit' },
+    { id: 'nahrung', name: 'Nahrung', icon: '🌾', colorVar: '--color-nahrung' },
+    { id: 'personal', name: 'Personal', icon: '👥', colorVar: '--color-personal' }
+  ] as const;
+
+  getSellRate(resId: string) { return this.gameState.getSellRate(resId); }
+  getBuyRate(resId: string) { return this.gameState.getBuyRate(resId); }
+
+  canSell(resId: string, amount: number): boolean {
+    const current = (this.gameState.resources() as any)[resId] || 0;
+    return current >= amount;
+  }
+
+  canBuy(resId: string, amount: number): boolean {
+    const current = this.gameState.resources().credits || 0;
+    const cost = this.getBuyRate(resId) * amount;
+    return current >= cost;
+  }
+
+  async sell(resId: string) {
+    const amount = this.tradeMultiplier();
+    if (!this.canSell(resId, amount)) return;
+    await this.gameState.sellResource(resId as any, amount);
+  }
+
+  async buy(resId: string) {
+    const amount = this.tradeMultiplier();
+    if (!this.canBuy(resId, amount)) return;
+    await this.gameState.buyResource(resId as any, amount);
+  }
 }

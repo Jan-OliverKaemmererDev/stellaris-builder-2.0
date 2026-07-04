@@ -138,5 +138,72 @@
       </div>
     </div>
 
+    <!-- ═══ Trading Card ═══ -->
+    @if (hasTradingPost()) {
+      <div class="dash-card trade-card" id="card-trade">
+        <div class="card-header">
+          <h2 class="card-title">
+            @if (hasInterstellarMarket()) {
+              🌌 Interstellarer Markt
+            } @else {
+              🏪 Handelsposten
+            }
+          </h2>
+          <div class="trade-multipliers">
+            <button class="multi-btn" [class.active]="tradeMultiplier() === 100" (click)="setMultiplier(100)">x100</button>
+            <button class="multi-btn" [class.active]="tradeMultiplier() === 1000" (click)="setMultiplier(1000)">x1K</button>
+            <button class="multi-btn" [class.active]="tradeMultiplier() === 10000" (click)="setMultiplier(10000)">x10K</button>
+          </div>
+        </div>
+        <div class="card-body trade-body">
+          
+          <!-- Sell Section -->
+          <div class="trade-section">
+            <h3 class="section-title">Verkaufen</h3>
+            <div class="trade-grid">
+              @for (res of sellableResources; track res.id) {
+                <div class="trade-item">
+                  <div class="item-info">
+                    <span class="icon">{{ res.icon }}</span>
+                    <span class="name">{{ res.name }}</span>
+                  </div>
+                  <div class="item-action">
+                    <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | number }} 🪙</span>
+                    <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)">
+                      Verkaufen
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Buy Section -->
+          @if (hasInterstellarMarket()) {
+            <div class="trade-section mt-3">
+              <h3 class="section-title">Einkaufen</h3>
+              <div class="trade-grid">
+                @for (res of buyableResources; track res.id) {
+                  <div class="trade-item">
+                    <div class="item-info">
+                      <span class="icon">{{ res.icon }}</span>
+                      <span class="name">{{ res.name }}</span>
+                    </div>
+                    <div class="item-action">
+                      <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | number }} 🪙</span>
+                      <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)">
+                        Kaufen
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+        </div>
+      </div>
+    }
+
   </div>
 </div>

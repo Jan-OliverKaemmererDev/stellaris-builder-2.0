@@ -125,13 +125,21 @@ export class GameStateService {
   productionRates = computed<GameResources>(() => {
     const s = this.skills();
     const calc = (base: number, level: number) => level === 0 ? 0 : Math.floor(base * Math.pow(1.5, level - 1));
+    const getMineBonus = (mineId: string) => {
+      const roboter = s[`${mineId}_roboter`] || 0;
+      const transport = s[`${mineId}_transport`] || 0;
+      const ki = s[`${mineId}_ki`] || 0;
+      const zug = s[`${mineId}_zug`] || 0;
+      return 1 + ((roboter + transport + ki + zug) * 0.05);
+    };
+    
     const transports = s['transportschiffe'] || 0;
     const kolonie = s['kolonisierungsschiffe'] || 0;
     
     return {
-      eisen: calc(150, s['eisenmine'] || 0) + (transports * 150),
-      silber: calc(80, s['silbermine'] || 0),
-      gold: calc(30, s['goldmine'] || 0),
+      eisen: Math.floor(calc(150, s['eisenmine'] || 0) * getMineBonus('eisenmine')) + (transports * 150),
+      silber: Math.floor(calc(80, s['silbermine'] || 0) * getMineBonus('silbermine')),
+      gold: Math.floor(calc(30, s['goldmine'] || 0) * getMineBonus('goldmine')),
       xenonit: calc(10, s['refinery'] || 0),
       energie: 0, // Energie is now a capacity, not a produced resource
       credits: calc(100, s['trading_post'] || 0) + calc(400, s['interstellar_market'] || 0) + calc(1500, s['galactic_exchange'] || 0),
@@ -163,7 +171,8 @@ export class GameStateService {
   
   private userSub: Subscription | null = null;
   private stateSub: (() => void) | null = null;
-  private saveInterval: any;
+  private gameLoopInterval: any;
+  private lastTick: number = 0;
   private isInitialized = false;
 
   constructor() {
@@ -171,7 +180,7 @@ export class GameStateService {
     this.userSub = user(this.auth).subscribe(currentUser => {
       if (currentUser) {
         this.loadGameState(currentUser.uid);
-        this.startSaveInterval();
+        this.startGameLoop();
       } else {
         this.clearState();
       }
@@ -205,12 +214,19 @@ export class GameStateService {
           if (offlineHours > 0.01) { // Only care if more than 36 seconds offline
             const s = state.skills || {};
             const calc = (base: number, level: number) => level === 0 ? 0 : Math.floor(base * Math.pow(1.5, level - 1));
+            const getMineBonus = (mineId: string) => {
+              const roboter = s[`${mineId}_roboter`] || 0;
+              const transport = s[`${mineId}_transport`] || 0;
+              const ki = s[`${mineId}_ki`] || 0;
+              const zug = s[`${mineId}_zug`] || 0;
+              return 1 + ((roboter + transport + ki + zug) * 0.05);
+            };
             const transports = s['transportschiffe'] || 0;
             const kolonie = s['kolonisierungsschiffe'] || 0;
             const rates = {
-              eisen: calc(150, s['eisenmine'] || 0) + (transports * 150),
-              silber: calc(80, s['silbermine'] || 0),
-              gold: calc(30, s['goldmine'] || 0),
+              eisen: Math.floor(calc(150, s['eisenmine'] || 0) * getMineBonus('eisenmine')) + (transports * 150),
+              silber: Math.floor(calc(80, s['silbermine'] || 0) * getMineBonus('silbermine')),
+              gold: Math.floor(calc(30, s['goldmine'] || 0) * getMineBonus('goldmine')),
               xenonit: calc(10, s['refinery'] || 0),
               energie: 0, // No offline energy generation
               credits: calc(100, s['trading_post'] || 0) + calc(400, s['interstellar_market'] || 0) + calc(1500, s['galactic_exchange'] || 0),
@@ -270,9 +286,9 @@ export class GameStateService {
       this.stateSub();
       this.stateSub = null;
     }
-    if (this.saveInterval) {
-      clearInterval(this.saveInterval);
-      this.saveInterval = null;
+    if (this.gameLoopInterval) {
+      clearInterval(this.gameLoopInterval);
+      this.gameLoopInterval = null;
     }
     this.isInitialized = false;
     this.resources.set(DEFAULT_STATE.resources);
@@ -281,20 +297,55 @@ export class GameStateService {
     this.offlineEarnings.set(null);
   }
 
-  private startSaveInterval() {
-    // Keep lastUpdate fresh every 30 seconds
-    if (this.saveInterval) {
-      clearInterval(this.saveInterval);
+  private startGameLoop() {
+    if (this.gameLoopInterval) {
+      clearInterval(this.gameLoopInterval);
     }
-    this.saveInterval = setInterval(async () => {
-      const currentUser = this.auth.currentUser;
-      if (currentUser && this.isInitialized) {
-        const stateRef = doc(this.firestore, `users/${currentUser.uid}/game/state`);
-        await updateDoc(stateRef, {
-          lastUpdate: Date.now()
-        });
+    
+    this.lastTick = Date.now();
+    let secondsSinceLastSave = 0;
+    
+    this.gameLoopInterval = setInterval(async () => {
+      if (!this.isInitialized) return;
+      
+      const now = Date.now();
+      const deltaMs = now - this.lastTick;
+      this.lastTick = now;
+      
+      const rates = this.productionRates();
+      const current = this.resources();
+      const max = this.maxStorage();
+      
+      // Calculate produced amounts for this tick (deltaMs / 3,600,000 converts ms to hours)
+      const deltaHours = deltaMs / 3600000;
+      
+      const newRes = {
+        eisen: Math.min(current.eisen + (rates.eisen * deltaHours), max.eisen),
+        silber: Math.min(current.silber + (rates.silber * deltaHours), max.silber),
+        gold: Math.min(current.gold + (rates.gold * deltaHours), max.gold),
+        xenonit: Math.min(current.xenonit + (rates.xenonit * deltaHours), max.xenonit),
+        energie: current.energie, // Capacity doesn't accumulate
+        credits: Math.min(current.credits + (rates.credits * deltaHours), max.credits),
+        nahrung: Math.min(current.nahrung + (rates.nahrung * deltaHours), max.nahrung),
+        personal: Math.min(current.personal + (rates.personal * deltaHours), max.personal)
+      };
+      
+      this.resources.set(newRes);
+      
+      // Save every 30 seconds
+      secondsSinceLastSave += (deltaMs / 1000);
+      if (secondsSinceLastSave >= 30) {
+        secondsSinceLastSave = 0;
+        const currentUser = this.auth.currentUser;
+        if (currentUser) {
+          const stateRef = doc(this.firestore, `users/${currentUser.uid}/game/state`);
+          await updateDoc(stateRef, {
+            resources: newRes,
+            lastUpdate: Date.now()
+          });
+        }
       }
-    }, 30000);
+    }, 1000);
   }
 
   clearOfflineEarnings() {
@@ -406,5 +457,87 @@ export class GameStateService {
       resources: newRes,
       activeMission: null
     });
+  }
+
+  // --- Trading API ---
+  getSellRate(resourceId: string): number {
+    const baseRates: Record<string, number> = {
+      eisen: 1,
+      silber: 5,
+      gold: 20,
+      xenonit: 100
+    };
+    const base = baseRates[resourceId] || 0;
+    const skills = this.skills();
+    const tradePost = skills['trading_post'] || 0;
+    const interMarket = skills['interstellar_market'] || 0;
+    const galExchange = skills['galactic_exchange'] || 0;
+    
+    const multiplier = 1 + (tradePost * 0.05) + (interMarket * 0.1) + (galExchange * 0.2);
+    return Math.floor(base * multiplier);
+  }
+
+  getBuyRate(resourceId: string): number {
+    const baseRates: Record<string, number> = {
+      eisen: 2,
+      silber: 10,
+      gold: 40,
+      xenonit: 200,
+      nahrung: 5,
+      personal: 50
+    };
+    const base = baseRates[resourceId] || 0;
+    const skills = this.skills();
+    const interMarket = skills['interstellar_market'] || 0;
+    const galExchange = skills['galactic_exchange'] || 0;
+    
+    const discount = Math.min(0.5, (interMarket * 0.02) + (galExchange * 0.05));
+    const multiplier = 1 - discount;
+    return Math.max(1, Math.floor(base * multiplier));
+  }
+
+  async sellResource(resourceId: keyof GameResources, amount: number) {
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) return;
+
+    const currentRes = this.resources();
+    if ((currentRes[resourceId] || 0) < amount) return;
+
+    const creditsEarned = this.getSellRate(resourceId) * amount;
+    const max = this.maxStorage();
+    
+    const newRes = {
+      ...currentRes,
+      [resourceId]: currentRes[resourceId] - amount,
+      credits: Math.min(currentRes.credits + creditsEarned, max.credits)
+    };
+
+    const stateRef = doc(this.firestore, `users/${currentUser.uid}/game/state`);
+    this.resources.set(newRes);
+    await updateDoc(stateRef, { resources: newRes });
+  }
+
+  async buyResource(resourceId: keyof GameResources, amount: number) {
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) return;
+
+    const cost = this.getBuyRate(resourceId) * amount;
+    const currentRes = this.resources();
+    
+    if (currentRes.credits < cost) return;
+
+    const max = this.maxStorage();
+    const currentAmount = currentRes[resourceId] || 0;
+    const maxAmount = (max as any)[resourceId] || currentAmount + amount;
+    
+    const newRes = {
+      ...currentRes,
+      credits: currentRes.credits - cost,
+      [resourceId]: Math.min(currentAmount + amount, maxAmount)
+    };
+
+    const stateRef = doc(this.firestore, `users/${currentUser.uid}/game/state`);
+    this.resources.set(newRes);
+    await updateDoc(stateRef, { resources: newRes });
   }
 }
