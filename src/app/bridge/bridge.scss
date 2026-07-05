@@ -2,6 +2,8 @@
    Bridge Dashboard
    ================================================================ */
 
+/* ═══ Host & Background ═══ */
+
 :host {
   display: block;
 }
@@ -28,7 +30,7 @@
   margin: 0 auto;
 }
 
-/* ── Commander Section ── */
+/* ═══ Commander Section ═══ */
 
 .commander-section {
   margin-bottom: var(--space-2xl);
@@ -58,7 +60,7 @@
   }
 }
 
-/* ── Dashboard Grid ── */
+/* ═══ Dashboard Grid ═══ */
 
 .dashboard-grid {
   display: grid;
@@ -72,7 +74,7 @@
   }
 }
 
-/* ── Base Card ── */
+/* ═══ Base Card ═══ */
 
 .dash-card {
   background: var(--glass-bg);
@@ -137,9 +139,7 @@
   gap: var(--space-md);
 }
 
-/* ================================================================
-   Resources Card
-   ================================================================ */
+/* ═══ Resources Card ═══ */
 
 .resources-card {
   grid-column: span 2;
@@ -250,10 +250,7 @@
   }
 }
 
-
-/* ================================================================
-   Fleet Card
-   ================================================================ */
+/* ═══ Fleet Card ═══ */
 
 .fleet-body {
   gap: 0 !important;
@@ -302,9 +299,7 @@
   text-align: right;
 }
 
-/* ================================================================
-   Energy Card (Battery)
-   ================================================================ */
+/* ═══ Energy Card (Battery) ═══ */
 
 .energy-card {
   grid-column: span 1;
@@ -357,12 +352,53 @@
   box-shadow: inset 2px 0 5px rgba(0,0,0,0.3);
 }
 
-/* ================================================================
-   Trade Card
-   ================================================================ */
+@keyframes pulseCritical {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.energy-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  background: rgba(0, 0, 0, 0.2);
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.energy-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+
+  .stat-label {
+    color: var(--text-muted);
+  }
+
+  .stat-value {
+    font-weight: 600;
+    font-family: var(--font-display);
+
+    &.text-success { color: var(--color-success); }
+    &.text-danger { color: var(--color-danger); }
+  }
+
+  &.highlight {
+    margin-top: var(--space-xs);
+    padding-top: var(--space-xs);
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+
+    .stat-label { color: var(--text-secondary); font-weight: 500; }
+    .stat-value { color: var(--primary); font-size: 1.1rem; text-shadow: 0 0 8px var(--primary-glow); }
+  }
+}
+
+/* ═══ Trade Card ═══ */
 
 .trade-card {
-  grid-column: 1 / -1; /* Span full width or let grid handle it */
+  grid-column: 1 / -1;
   @media (min-width: 1024px) {
     grid-column: span 2;
   }
@@ -402,7 +438,7 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   padding: var(--space-md);
-  
+
   &.mt-3 {
     margin-top: var(--space-lg);
   }
@@ -437,7 +473,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  
+
   .icon { font-size: 1.2rem; }
   .name { font-weight: 500; color: var(--text-primary); }
 }
@@ -455,6 +491,8 @@
   font-weight: 700;
 }
 
+/* ═══ Trade Action Buttons ═══ */
+
 .action-btn {
   padding: 4px 12px;
   border-radius: var(--radius-sm);
@@ -469,7 +507,7 @@
     border-color: var(--color-success);
     color: var(--color-success);
     background: rgba(34, 197, 94, 0.1);
-    
+
     &:hover:not(:disabled) {
       background: var(--color-success);
       color: var(--bg-dark);
@@ -481,7 +519,7 @@
     border-color: var(--color-danger);
     color: var(--color-danger);
     background: rgba(239, 68, 68, 0.1);
-    
+
     &:hover:not(:disabled) {
       background: var(--color-danger);
       color: var(--bg-dark);
@@ -501,47 +539,3 @@
     cursor: not-allowed;
   }
 }
-
-@keyframes pulseCritical {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
-}
-
-.energy-details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  background: rgba(0, 0, 0, 0.2);
-  padding: var(--space-md);
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.energy-stat {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  
-  .stat-label {
-    color: var(--text-muted);
-  }
-  
-  .stat-value {
-    font-weight: 600;
-    font-family: var(--font-display);
-    
-    &.text-success { color: var(--color-success); }
-    &.text-danger { color: var(--color-danger); }
-  }
-
-  &.highlight {
-    margin-top: var(--space-xs);
-    padding-top: var(--space-xs);
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
-    
-    .stat-label { color: var(--text-secondary); font-weight: 500; }
-    .stat-value { color: var(--primary); font-size: 1.1rem; text-shadow: 0 0 8px var(--primary-glow); }
-  }
-}
-

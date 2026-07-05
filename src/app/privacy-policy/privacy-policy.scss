@@ -1,76 +1,97 @@
-// Variables
-$bg-dark: #090a0f;
-$bg-light: #1b2735;
-$text-light: #fff;
-$text-muted: #8c9baf;
+/* ================================================================
+   Privacy Policy Page
+   ================================================================ */
+
+/* ═══ Variables ═══ */
+
+$bg-dark: #0a1118;
 $primary: #4facfe;
+$primary-light: #00f2fe;
+
+/* ═══ Page Layout ═══ */
 
 .legal-page {
   min-height: 100vh;
-  padding: 4rem 2rem;
-  background: radial-gradient(ellipse at bottom, $bg-light 0%, $bg-dark 100%);
-  color: $text-light;
-  font-family: 'Inter', 'Roboto', sans-serif;
   display: flex;
+  align-items: flex-start;
   justify-content: center;
+  padding: 2rem 1rem;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, $bg-dark 100%);
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #e2e8f0;
 }
 
+/* ═══ Glass Container ═══ */
+
 .glass-container {
-  max-width: 800px;
-  width: 100%;
   background: rgba(25, 30, 48, 0.5);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 3rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  padding: 2.5rem 3rem;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  line-height: 1.7;
+}
 
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    background: linear-gradient(135deg, $text-light 0%, #b3cdd1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* ═══ Typography ═══ */
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, $primary-light, $primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+p {
+  color: #8c9baf;
+  margin-bottom: 1rem;
+}
+
+ul {
+  color: #8c9baf;
+  padding-left: 1.5rem;
+
+  li {
+    margin-bottom: 0.3rem;
   }
+}
 
-  h2 {
-    font-size: 1.5rem;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: $primary;
-  }
-  
-  h3 {
-    color: $text-muted;
-    margin-top: 1.5rem;
-  }
+.highlight {
+  color: $primary;
+  font-weight: 600;
+}
 
-  p, ul {
-    line-height: 1.6;
-    margin-bottom: 1rem;
-    color: #e2e8f0;
-  }
+em {
+  color: #a0aec0;
+}
 
-  ul {
-    padding-left: 1.5rem;
-  }
+/* ═══ Back Button ═══ */
 
-  .highlight {
-    color: $primary;
-    font-weight: 600;
-  }
+.back-button {
+  display: inline-block;
+  color: $primary;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s ease;
 
-  .back-button {
-    display: inline-block;
-    color: $primary;
-    text-decoration: none;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    transition: color 0.3s;
-
-    &:hover {
-      color: lighten($primary, 10%);
-      text-decoration: underline;
-    }
+  &:hover {
+    color: $primary-light;
+    text-decoration: underline;
   }
 }

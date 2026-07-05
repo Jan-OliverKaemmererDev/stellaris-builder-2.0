@@ -1,20 +1,25 @@
 import { Component } from '@angular/core';
 import { SkilltreeComponent, SkillNode } from '../../components/skilltree/skilltree.component';
 
+/**
+ * Infrastructure page displaying the building skill tree.
+ * Includes Central Storage, Refinery, Orbital Shipyard, and Large Station upgrades.
+ */
 @Component({
   selector: 'app-infrastructure',
   standalone: true,
   imports: [SkilltreeComponent],
-  template: `<app-skilltree title="Infrastruktur" [nodes]="nodes"></app-skilltree>`
+  template: `<app-skilltree title="Infrastruktur" [nodes]="nodes"></app-skilltree>`,
 })
 export class InfrastructureComponent {
+  /** Infrastructure building nodes ordered by unlock progression. */
   nodes: SkillNode[] = [
     {
       id: 'lager',
       title: 'Zentrallager',
-      imagePath: 'assets/img/infrastructure/lager.png', // Placeholder
+      imagePath: 'assets/img/infrastructure/lager.png',
       baseCost: { eisen: 50, silber: 50, energie: 10 },
-      costMultiplier: 1.4
+      costMultiplier: 1.4,
     },
     {
       id: 'refinery',
@@ -22,7 +27,7 @@ export class InfrastructureComponent {
       imagePath: 'assets/img/infrastructure/refinery.png',
       baseCost: { eisen: 150, energie: 50 },
       costMultiplier: 1.4,
-      requiredNode: { id: 'lager', level: 5 }
+      requiredNode: { id: 'lager', level: 5 },
     },
     {
       id: 'orbital_shipyard',
@@ -30,7 +35,7 @@ export class InfrastructureComponent {
       imagePath: 'assets/img/infrastructure/orbital-shipyard.png',
       baseCost: { eisen: 1200, silber: 400, energie: 200 },
       costMultiplier: 1.5,
-      requiredNode: { id: 'refinery', level: 10 }
+      requiredNode: { id: 'refinery', level: 10 },
     },
     {
       id: 'large_station',
@@ -38,7 +43,7 @@ export class InfrastructureComponent {
       imagePath: 'assets/img/infrastructure/large-station.png',
       baseCost: { eisen: 8000, gold: 1000, energie: 500 },
       costMultiplier: 1.8,
-      requiredNode: { id: 'orbital_shipyard', level: 10 }
-    }
+      requiredNode: { id: 'orbital_shipyard', level: 10 },
+    },
   ];
 }

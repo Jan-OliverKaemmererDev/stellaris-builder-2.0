@@ -1,12 +1,20 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
+/** A navigation item in the side menu. */
 interface MenuItem {
+  /** Emoji icon displayed in the collapsed sidebar. */
   icon: string;
+  /** Text label shown when the sidebar is expanded. */
   label: string;
+  /** Router path to navigate to on click. */
   route: string;
 }
 
+/**
+ * Collapsible side navigation menu.
+ * Expands on hover to reveal labels, collapses to icon-only on mouse leave.
+ */
 @Component({
   selector: 'app-side-menu',
   standalone: true,
@@ -15,8 +23,10 @@ interface MenuItem {
   styleUrl: './side-menu.scss',
 })
 export class SideMenu {
+  /** Whether the sidebar is currently expanded. */
   isExpanded = signal(false);
 
+  /** All menu items displayed in the sidebar navigation. */
   menuItems: MenuItem[] = [
     { icon: '⛏️', label: 'Rohstoffabbau', route: '/bridge/mining' },
     { icon: '⚡', label: 'Energie', route: '/bridge/energy' },
@@ -26,11 +36,13 @@ export class SideMenu {
     { icon: '🚀', label: 'Flotte', route: '/bridge/fleet' },
   ];
 
-  onMouseEnter() {
+  /** Expands the sidebar on mouse enter. */
+  onMouseEnter(): void {
     this.isExpanded.set(true);
   }
 
-  onMouseLeave() {
+  /** Collapses the sidebar on mouse leave. */
+  onMouseLeave(): void {
     this.isExpanded.set(false);
   }
 }

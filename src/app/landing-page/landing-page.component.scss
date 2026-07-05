@@ -1,12 +1,17 @@
-/* Deep Space Theme with Glassmorphism */
+/* ================================================================
+   Landing Page – Deep Space Theme with Glassmorphism
+   ================================================================ */
 
-// Variables
+/* ═══ Variables ═══ */
+
 $bg-dark: #090a0f;
 $bg-light: #1b2735;
 $text-light: #fff;
 $text-muted: #8c9baf;
 $primary: #4facfe;
 $primary-light: #00f2fe;
+
+/* ═══ Background & Starfield ═══ */
 
 .space-background {
   position: relative;
@@ -21,7 +26,6 @@ $primary-light: #00f2fe;
   color: $text-light;
 }
 
-/* Starfield Animations */
 .starfield-wrap {
   position: absolute;
   top: 50%;
@@ -80,7 +84,8 @@ $primary-light: #00f2fe;
   100% { transform: translateZ(500px) scale(3); opacity: 0; }
 }
 
-/* 3D Scene Container */
+/* ═══ 3D Scene ═══ */
+
 .scene {
   perspective: 1200px;
   position: relative;
@@ -91,7 +96,8 @@ $primary-light: #00f2fe;
   align-items: center;
 }
 
-/* The Planet */
+/* ═══ Planet & Faces ═══ */
+
 .planet {
   width: 480px;
   height: 480px;
@@ -109,7 +115,6 @@ $primary-light: #00f2fe;
   }
 }
 
-/* 3D Planet Sphere Visuals */
 .planet-sphere {
   position: absolute;
   top: 0;
@@ -145,7 +150,6 @@ $primary-light: #00f2fe;
   to { transform: translateX(-50%); }
 }
 
-/* Planet Faces (Login / Register) */
 .planet-face {
   position: absolute;
   top: 0;
@@ -168,14 +172,14 @@ $primary-light: #00f2fe;
   }
 }
 
-/* Form Wrapper floating above planet */
+/* ═══ Form & Glass Panel ═══ */
+
 .form-wrapper {
   width: 420px;
   padding: 2.5rem;
   transform: translateZ(60px);
 }
 
-/* Glassmorphism Panel */
 .glass-panel {
   background: rgba(25, 30, 48, 0.5);
   backdrop-filter: blur(12px);
@@ -224,6 +228,8 @@ $primary-light: #00f2fe;
   text-align: center;
 }
 
+/* ═══ Input Fields ═══ */
+
 .input-group {
   margin-bottom: 1.25rem;
 
@@ -260,6 +266,8 @@ $primary-light: #00f2fe;
   }
 }
 
+/* ═══ Buttons ═══ */
+
 .submit-btn {
   width: 100%;
   padding: 0.85rem;
@@ -292,7 +300,7 @@ $primary-light: #00f2fe;
 .guest-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.2);
     box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
@@ -327,6 +335,8 @@ $primary-light: #00f2fe;
   }
 }
 
+/* ═══ Alerts ═══ */
+
 @mixin alert-box($bg-color, $border-color, $text-color) {
   background: rgba($bg-color, 0.15);
   border-left: 4px solid $border-color;
@@ -344,6 +354,8 @@ $primary-light: #00f2fe;
 .success-alert {
   @include alert-box(#22c55e, #22c55e, #86efac);
 }
+
+/* ═══ Mode Toggle ═══ */
 
 .toggle-mode {
   text-align: center;
@@ -366,6 +378,8 @@ $primary-light: #00f2fe;
     text-decoration: underline;
   }
 }
+
+/* ═══ Privacy Checkbox ═══ */
 
 .privacy-policy-check {
   margin-bottom: 1.25rem;
@@ -395,7 +409,8 @@ $primary-light: #00f2fe;
   }
 }
 
-/* Simple Spinner */
+/* ═══ Loader ═══ */
+
 .loader {
   width: 20px;
   height: 20px;
@@ -409,7 +424,8 @@ $primary-light: #00f2fe;
   to { transform: rotate(360deg); }
 }
 
-/* Intro Animation */
+/* ═══ Intro Animation ═══ */
+
 .intro-overlay {
   position: absolute;
   top: 0;
@@ -451,7 +467,8 @@ $primary-light: #00f2fe;
   }
 }
 
-/* Footer Links */
+/* ═══ Footer ═══ */
+
 .landing-footer {
   position: absolute;
   bottom: 0;

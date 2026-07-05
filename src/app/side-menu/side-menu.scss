@@ -1,135 +1,114 @@
+/* ================================================================
+   Side Menu – Collapsible Navigation Sidebar
+   ================================================================ */
+
+/* ═══ Side Menu Container ═══ */
+
 .side-menu {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
-  width: var(--sidebar-collapsed);
-  background: linear-gradient(180deg, rgba(13, 17, 23, 0.95) 0%, rgba(9, 10, 15, 0.98) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  width: 60px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-right: 1px solid var(--glass-border);
-  z-index: 100;
   display: flex;
   flex-direction: column;
   padding: var(--space-md) 0;
+  z-index: 100;
   transition: width var(--transition-normal);
   overflow: hidden;
 
   &.expanded {
-    width: var(--sidebar-expanded);
-
-    .menu-label,
-    .brand-text {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    width: 220px;
   }
 }
 
-/* Brand / Home Link */
+/* ═══ Brand / Home ═══ */
+
 .menu-brand {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md) var(--space-lg);
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   text-decoration: none;
-  color: var(--text-primary);
-  min-height: 48px;
+  color: var(--primary);
+  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
 
-  .brand-icon {
-    font-size: 1.5rem;
-    min-width: 28px;
-    text-align: center;
-    color: var(--primary);
-    filter: drop-shadow(0 0 6px var(--primary-glow));
-  }
-
-  .brand-text {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateX(-8px);
-    transition: opacity var(--transition-normal), transform var(--transition-normal);
+  &:hover {
+    color: var(--primary-light);
   }
 }
 
-/* Divider */
+.brand-icon {
+  font-size: 1.5rem;
+  min-width: 32px;
+  text-align: center;
+}
+
+.brand-text {
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  .expanded & {
+    opacity: 1;
+  }
+}
+
+/* ═══ Divider ═══ */
+
 .menu-divider {
   height: 1px;
-  margin: var(--space-sm) var(--space-lg);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--glass-border-hover) 50%,
-    transparent 100%
-  );
+  background: var(--glass-border);
+  margin: var(--space-sm) var(--space-md);
 }
 
-/* Menu Item */
+/* ═══ Menu Item ═══ */
+
 .menu-item {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md) var(--space-lg);
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   text-decoration: none;
   color: var(--text-muted);
-  min-height: 48px;
-  position: relative;
-  transition: color var(--transition-fast), background var(--transition-fast);
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0;
-    background: var(--primary);
-    border-radius: 0 2px 2px 0;
-    transition: height var(--transition-fast);
-    box-shadow: 0 0 8px var(--primary-glow);
-  }
+  font-size: 0.9rem;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+  transition: all var(--transition-fast);
 
   &:hover {
     color: var(--text-primary);
-    background: rgba(79, 172, 254, 0.06);
-
-    &::before {
-      height: 60%;
-    }
+    background: var(--primary-subtle);
+    border-left-color: var(--primary);
   }
 
   &.active {
     color: var(--primary);
     background: var(--primary-subtle);
-
-    &::before {
-      height: 70%;
-    }
-
-    .menu-icon {
-      filter: drop-shadow(0 0 6px var(--primary-glow));
-    }
+    border-left-color: var(--primary);
+    font-weight: 600;
   }
 }
 
+/* ═══ Menu Icons & Labels ═══ */
+
 .menu-icon {
-  font-size: 1.25rem;
-  min-width: 28px;
+  font-size: 1.3rem;
+  min-width: 32px;
   text-align: center;
-  transition: filter var(--transition-fast);
 }
 
 .menu-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  white-space: nowrap;
   opacity: 0;
-  transform: translateX(-8px);
-  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transition: opacity var(--transition-normal);
+  .expanded & {
+    opacity: 1;
+  }
 }

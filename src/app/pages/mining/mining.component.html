@@ -1,13 +1,13 @@
 <div class="mining-container">
   <h1 class="page-title">Rohstoffabbau</h1>
 
-  <div class="mines-list">
+  <div class="mines-list" role="list" aria-label="Minen Liste">
     @for (mine of mines; track mine.id) {
-      <div class="mine-row">
+      <div class="mine-row" role="listitem">
         
         <!-- Mine Node -->
         <div class="skill-node" [class.locked]="!isMineUnlocked(mine)">
-          <div class="node-image-wrap">
+          <div class="node-image-wrap" aria-hidden="true">
             <img [src]="mine.imagePath" [alt]="mine.title" class="node-image" />
             
             @if (!isMineUnlocked(mine)) {
@@ -22,9 +22,9 @@
 
           <div class="node-details">
             <h3 class="node-title">{{ mine.title }}</h3>
-            <div class="node-level">Level: {{ getSkillLevel(mine.id) }}</div>
+            <div class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(mine.id)">Level: {{ getSkillLevel(mine.id) }}</div>
             
-            <div class="node-cost">
+            <div class="node-cost" aria-label="Kosten">
               <span class="cost-label">Kosten:</span>
               <div class="cost-list">
                 @for (c of getCostEntries(getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id))); track c.name) {
@@ -39,6 +39,7 @@
               class="upgrade-btn" 
               [disabled]="!isMineUnlocked(mine) || !canAfford(getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)))"
               (click)="upgradeSkill(mine.id, getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)))"
+              [attr.aria-label]="mine.title + ' ausbauen'"
             >
               Ausbauen
             </button>
@@ -46,14 +47,14 @@
         </div>
 
         <!-- Upgrades Section -->
-        <div class="mine-upgrades-section">
+        <div class="mine-upgrades-section" role="list" [attr.aria-label]="'Upgrades für ' + mine.title">
           @for (upgrade of mine.upgrades; track upgrade.id) {
             
             <!-- Connector Line -->
-            <div class="skill-connector" [class.unlocked]="isUpgradeUnlocked(mine.id, upgrade)"></div>
+            <div class="skill-connector" [class.unlocked]="isUpgradeUnlocked(mine.id, upgrade)" aria-hidden="true"></div>
 
-            <div class="skill-node" [class.locked]="!isUpgradeUnlocked(mine.id, upgrade)">
-              <div class="node-image-wrap" style="height: 100px;">
+            <div class="skill-node" [class.locked]="!isUpgradeUnlocked(mine.id, upgrade)" role="listitem">
+              <div class="node-image-wrap" style="height: 100px;" aria-hidden="true">
                 <div class="placeholder-icon" style="font-size: 2.5rem; color: rgba(255,255,255,0.3); font-weight: bold;">{{ upgrade.title.charAt(0) }}</div>
                 
                 @if (!isUpgradeUnlocked(mine.id, upgrade)) {
@@ -68,12 +69,12 @@
 
               <div class="node-details" style="padding: 1rem;">
                 <h4 class="node-title" style="font-size: 1rem;">{{ upgrade.title }}</h4>
-                <div class="node-level">Level: {{ getSkillLevel(upgrade.id) }}</div>
+                <div class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(upgrade.id)">Level: {{ getSkillLevel(upgrade.id) }}</div>
                 
                 @if (isUpgradeUnlocked(mine.id, upgrade)) {
-                  <div class="upgrade-bonus" style="color: var(--color-success); font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">+{{ getSkillLevel(upgrade.id) * 5 }}% Produktion</div>
+                  <div class="upgrade-bonus" style="color: var(--color-success); font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;" aria-label="Produktionsbonus">+{{ getSkillLevel(upgrade.id) * 5 }}% Produktion</div>
                   
-                  <div class="node-cost">
+                  <div class="node-cost" aria-label="Kosten">
                     <div class="cost-list">
                       @for (c of getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id))); track c.name) {
                         <div class="cost-item" [style.color]="c.colorVar">
@@ -87,6 +88,7 @@
                     class="upgrade-btn" 
                     [disabled]="!canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
                     (click)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+                    [attr.aria-label]="upgrade.title + ' kaufen'"
                   >
                     Kaufen
                   </button>

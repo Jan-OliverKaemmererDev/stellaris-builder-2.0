@@ -47,7 +47,7 @@
   --text-primary: #ffffff;
   --text-secondary: #e2e8f0;
   --text-muted: #8c9baf;
-  --text-dim: #4a5568;
+  --text-dim: #6b7a8d;
 
   /* Glass */
   --glass-bg: rgba(25, 30, 48, 0.45);
@@ -116,6 +116,34 @@ a {
 }
 
 /* ================================================================
+   Focus Styles (WCAG)
+   ================================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ═══ Skip Navigation Link ═══ */
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--space-md);
+  background: var(--primary);
+  color: var(--bg-dark);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  z-index: 10000;
+  transition: top var(--transition-fast);
+
+  &:focus {
+    top: var(--space-md);
+  }
+}
+
+/* ================================================================
    Scrollbar (Webkit)
    ================================================================ */
 
@@ -133,5 +161,17 @@ a {
 
   &:hover {
     background: var(--primary);
+  }
+}
+
+/* ================================================================
+   Reduced Motion (WCAG)
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

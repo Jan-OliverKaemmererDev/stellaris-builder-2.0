@@ -1,36 +1,53 @@
+/* ================================================================
+   Placeholder Page – Under Construction
+   ================================================================ */
+
+/* ═══ Wrapper ═══ */
+
 .placeholder-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 56px - 48px - 4rem);
+  min-height: calc(100vh - 120px);
 }
 
+/* ═══ Card ═══ */
+
 .placeholder-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 3rem 4rem;
   text-align: center;
-  padding: var(--space-2xl) var(--space-xl);
-  max-width: 420px;
+  box-shadow: var(--glass-shadow);
+  max-width: 480px;
+  width: 90%;
 }
+
+/* ═══ Icon ═══ */
 
 .placeholder-icon {
   font-size: 4rem;
   display: block;
   margin-bottom: var(--space-lg);
-  filter: grayscale(30%);
-  animation: float 3s ease-in-out infinite;
+  animation: floatIcon 3s ease-in-out infinite;
 }
 
-@keyframes float {
+@keyframes floatIcon {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
+
+/* ═══ Typography ═══ */
 
 .placeholder-title {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--text-secondary);
   margin: 0 0 var(--space-sm) 0;
+  letter-spacing: 1px;
 }
 
 .placeholder-subtitle {
@@ -38,6 +55,8 @@
   font-size: 0.95rem;
   margin: 0 0 var(--space-xl) 0;
 }
+
+/* ═══ Progress Bar ═══ */
 
 .placeholder-progress {
   display: flex;
@@ -48,29 +67,28 @@
 
 .progress-bar {
   width: 200px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 2px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill {
-  width: 40%;
+  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, var(--primary-light), var(--primary));
-  border-radius: 2px;
-  animation: loading 2s ease-in-out infinite;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 3px;
+  animation: scanBar 2s ease-in-out infinite;
+  transform-origin: left;
 }
 
-@keyframes loading {
-  0% { transform: translateX(-100%); }
-  50% { transform: translateX(150%); }
-  100% { transform: translateX(-100%); }
+@keyframes scanBar {
+  0%, 100% { transform: scaleX(0.3) translateX(-100%); }
+  50% { transform: scaleX(0.5) translateX(200%); }
 }
 
 .progress-label {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.5px;
 }

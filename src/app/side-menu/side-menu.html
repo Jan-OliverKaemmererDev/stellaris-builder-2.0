@@ -4,14 +4,15 @@
   (mouseenter)="onMouseEnter()"
   (mouseleave)="onMouseLeave()"
   id="side-menu"
+  aria-label="Hauptnavigation"
 >
   <!-- Logo / Home -->
-  <a class="menu-brand" routerLink="/bridge">
-    <span class="brand-icon">◆</span>
+  <a class="menu-brand" routerLink="/bridge" aria-label="Zur Brücke">
+    <span class="brand-icon" aria-hidden="true">◆</span>
     <span class="brand-text">Brücke</span>
   </a>
 
-  <div class="menu-divider"></div>
+  <div class="menu-divider" role="separator"></div>
 
   <!-- Menu Items -->
   @for (item of menuItems; track item.route) {
@@ -20,8 +21,9 @@
       [routerLink]="item.route"
       routerLinkActive="active"
       [id]="'menu-' + item.route.split('/').pop()"
+      [attr.aria-label]="item.label"
     >
-      <span class="menu-icon">{{ item.icon }}</span>
+      <span class="menu-icon" aria-hidden="true">{{ item.icon }}</span>
       <span class="menu-label">{{ item.label }}</span>
     </a>
   }

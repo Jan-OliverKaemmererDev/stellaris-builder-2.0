@@ -1,4 +1,7 @@
 <div class="game-shell">
+  <!-- Skip to Content Link (WCAG) -->
+  <a class="skip-link" href="#main-content">Zum Hauptinhalt springen</a>
+
   <!-- Side Menu -->
   <app-side-menu />
 
@@ -15,29 +18,30 @@
           class="user-avatar"
           (click)="toggleDropdown()"
           id="user-avatar-btn"
-          [attr.aria-expanded]="dropdownOpen()"
+          [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
           aria-haspopup="true"
+          aria-label="Benutzermenü öffnen"
         >
           {{ userInitials }}
         </button>
 
         @if (dropdownOpen()) {
-          <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="Benutzermenü">
             <div class="dropdown-header">
               <span class="dropdown-name">{{ commanderName }}</span>
             </div>
-            <div class="dropdown-divider"></div>
-            <a routerLink="/privacy-policy" class="dropdown-item" id="dropdown-privacy">
-              <span class="dropdown-icon">🔒</span>
+            <div class="dropdown-divider" role="separator"></div>
+            <a routerLink="/privacy-policy" class="dropdown-item" id="dropdown-privacy" role="menuitem">
+              <span class="dropdown-icon" aria-hidden="true">🔒</span>
               Privacy Policy
             </a>
-            <a routerLink="/legal-notice" class="dropdown-item" id="dropdown-legal">
-              <span class="dropdown-icon">📋</span>
+            <a routerLink="/legal-notice" class="dropdown-item" id="dropdown-legal" role="menuitem">
+              <span class="dropdown-icon" aria-hidden="true">📋</span>
               Legal Notice
             </a>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item logout" (click)="logout()" id="dropdown-logout">
-              <span class="dropdown-icon">🚪</span>
+            <div class="dropdown-divider" role="separator"></div>
+            <button class="dropdown-item logout" (click)="logout()" id="dropdown-logout" role="menuitem">
+              <span class="dropdown-icon" aria-hidden="true">🚪</span>
               Logout
             </button>
           </div>
@@ -47,14 +51,14 @@
   </header>
 
   <!-- Main Content -->
-  <main class="game-content">
+  <main class="game-content" id="main-content">
     <router-outlet></router-outlet>
   </main>
 
   <!-- Footer -->
   <footer class="game-footer" id="game-footer">
     <a routerLink="/privacy-policy">Privacy Policy</a>
-    <span class="footer-separator">•</span>
+    <span class="footer-separator" aria-hidden="true">•</span>
     <a routerLink="/legal-notice">Legal Notice</a>
   </footer>
 

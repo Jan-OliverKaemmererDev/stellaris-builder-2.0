@@ -7,13 +7,17 @@ import { Bridge } from './bridge/bridge';
 import { PlaceholderPage } from './placeholder-page/placeholder-page';
 import { FleetComponent } from './pages/fleet/fleet.component';
 import { authGuard } from './guards/auth.guard';
-
 import { MiningComponent } from './pages/mining/mining.component';
 import { EnergyComponent } from './pages/energy/energy.component';
 import { ResearchComponent } from './pages/research/research.component';
 import { InfrastructureComponent } from './pages/infrastructure/infrastructure.component';
 import { TradeComponent } from './pages/trade/trade.component';
 
+/**
+ * Top-level route configuration for the application.
+ * Public routes (landing, legal pages) are accessible without auth.
+ * Game routes under `/bridge` are guarded by {@link authGuard}.
+ */
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'legal-notice', component: LegalNotice },

@@ -2,24 +2,24 @@
   <h1 class="page-title">Flotte & Werft</h1>
 
   <!-- Missionsbereich -->
-  <section class="mission-section">
+  <section class="mission-section" aria-labelledby="mission-heading">
     <div class="mission-card" [class.active]="activeMission()">
-      <div class="mission-bg" style="background-image: url('assets/img/asteroid-belt.png');"></div>
+      <div class="mission-bg" style="background-image: url('assets/img/asteroid-belt.png');" aria-hidden="true"></div>
       
       <div class="mission-content">
-        <h2>Asteroiden-Mission</h2>
+        <h2 id="mission-heading">Asteroiden-Mission</h2>
         <p>Schicke deine Mining Ships in den Asteroidengürtel, um zusätzliche Rohstoffe abzubauen.</p>
         
         @if (activeMission(); as m) {
-          <div class="active-mission-info">
+          <div class="active-mission-info" aria-live="polite">
             <h3>Mission läuft ({{ m.shipCount }} Schiffe)</h3>
-            <div class="progress-bar-wrap">
+            <div class="progress-bar-wrap" role="progressbar" [attr.aria-valuenow]="missionProgress()" aria-valuemin="0" aria-valuemax="100" aria-label="Missionsfortschritt">
               <div class="progress-bar-fill" [style.width.%]="missionProgress()"></div>
             </div>
-            <div class="mission-time">{{ missionTimeLeft() }}</div>
+            <div class="mission-time" aria-label="Verbleibende Zeit">{{ missionTimeLeft() }}</div>
             
             @if (missionReward(); as r) {
-              <div class="mission-reward">
+              <div class="mission-reward" aria-label="Erwartete Beute">
                 <span class="reward-label">Beute:</span>
                 <span class="reward-item" style="color: var(--color-eisen)">{{ r.eisen | number }} Eisen</span>,
                 <span class="reward-item" style="color: var(--color-silber)">{{ r.silber | number }} Silber</span>,
@@ -28,7 +28,7 @@
             }
             
             @if (missionProgress() >= 100) {
-              <button class="action-btn collect-btn" (click)="collectReward()">Belohnung einsammeln</button>
+              <button class="action-btn collect-btn" (click)="collectReward()" aria-label="Belohnung einsammeln">Belohnung einsammeln</button>
             }
           </div>
         } @else {
@@ -38,6 +38,7 @@
               class="action-btn start-btn" 
               [disabled]="availableMiningShips <= 0" 
               (click)="startMission()"
+              aria-label="Asteroiden-Mission starten"
             >
               Mission Starten (60s)
             </button>
@@ -48,25 +49,25 @@
   </section>
 
   <!-- Schiffswerft -->
-  <section class="shipyard-section">
-    <h2>Schiffswerft</h2>
+  <section class="shipyard-section" aria-labelledby="shipyard-heading">
+    <h2 id="shipyard-heading">Schiffswerft</h2>
     
-    <div class="ships-grid">
+    <div class="ships-grid" role="list">
       @for (ship of ships; track ship.id) {
-        <div class="ship-card">
-          <div class="ship-img-wrap">
+        <div class="ship-card" role="listitem">
+          <div class="ship-img-wrap" aria-hidden="true">
             <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img" />
           </div>
           
           <div class="ship-details">
             <div class="ship-header">
               <h3 class="ship-title">{{ ship.title }}</h3>
-              <span class="ship-count">Besitz: {{ getShipCount(ship.id) }}</span>
+              <span class="ship-count" aria-label="Im Besitz">Besitz: {{ getShipCount(ship.id) }}</span>
             </div>
             
             <p class="ship-desc">{{ ship.description }}</p>
             
-            <div class="ship-cost">
+            <div class="ship-cost" aria-label="Baukosten">
               <span class="cost-label">Baukosten:</span>
               <div class="cost-list">
                 @for (c of getCostEntries(ship.cost); track c.name) {
@@ -81,6 +82,7 @@
               class="build-btn" 
               [disabled]="!canAfford(ship.cost)"
               (click)="buildShip(ship)"
+              [attr.aria-label]="ship.title + ' bauen'"
             >
               Bauen
             </button>

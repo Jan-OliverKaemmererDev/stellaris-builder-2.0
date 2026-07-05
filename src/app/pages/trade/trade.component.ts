@@ -1,36 +1,41 @@
 import { Component } from '@angular/core';
 import { SkilltreeComponent, SkillNode } from '../../components/skilltree/skilltree.component';
 
+/**
+ * Trade page displaying the commerce skill tree.
+ * Includes Trading Post, Interstellar Market, and Galactic Exchange upgrades.
+ */
 @Component({
   selector: 'app-trade',
   standalone: true,
   imports: [SkilltreeComponent],
-  template: `<app-skilltree title="Handel & Wirtschaft" [nodes]="nodes"></app-skilltree>`
+  template: `<app-skilltree title="Handel &amp; Wirtschaft" [nodes]="nodes"></app-skilltree>`,
 })
 export class TradeComponent {
+  /** Trade building nodes ordered by unlock progression. */
   nodes: SkillNode[] = [
     {
       id: 'trading_post',
       title: 'Handelsposten',
       imagePath: 'assets/img/infrastructure/trading-post.png',
       baseCost: { eisen: 50, nahrung: 50, energie: 50 },
-      costMultiplier: 1.2
+      costMultiplier: 1.2,
     },
     {
       id: 'interstellar_market',
       title: 'Interstellarer Markt',
-      imagePath: 'assets/img/infrastructure/trading-post.png', // Placeholder
+      imagePath: 'assets/img/infrastructure/trading-post.png',
       baseCost: { eisen: 1500, gold: 200, energie: 200 },
       costMultiplier: 1.4,
-      requiredNode: { id: 'trading_post', level: 10 }
+      requiredNode: { id: 'trading_post', level: 10 },
     },
     {
       id: 'galactic_exchange',
       title: 'Galaktische Börse',
-      imagePath: 'assets/img/infrastructure/trading-post.png', // Placeholder
+      imagePath: 'assets/img/infrastructure/trading-post.png',
       baseCost: { eisen: 5000, gold: 1500, xenonit: 1500, energie: 1000 },
       costMultiplier: 1.6,
-      requiredNode: { id: 'interstellar_market', level: 10 }
-    }
+      requiredNode: { id: 'interstellar_market', level: 10 },
+    },
   ];
 }

@@ -22,11 +22,18 @@
         @for (res of resources(); track res.name) {
           <div class="resource-row">
             <div class="resource-info">
-              <span class="resource-icon">{{ res.icon }}</span>
+              <span class="resource-icon" aria-hidden="true">{{ res.icon }}</span>
               <span class="resource-name">{{ res.name }}</span>
             </div>
             <div class="resource-bar-wrap">
-              <div class="resource-bar">
+              <div
+                class="resource-bar"
+                role="progressbar"
+                [attr.aria-valuenow]="res.current"
+                [attr.aria-valuemin]="0"
+                [attr.aria-valuemax]="res.max"
+                [attr.aria-label]="res.name + ' Vorrat'"
+              >
                 <div
                   class="resource-bar-fill"
                   [style.width.%]="getResourcePercent(res)"
@@ -52,18 +59,25 @@
     <!-- ═══ Supply Card ═══ -->
     <div class="dash-card supply-card" id="card-supply">
       <div class="card-header">
-        <h2 class="card-title">Versorgung & Personal</h2>
+        <h2 class="card-title">Versorgung &amp; Personal</h2>
         <span class="card-badge">Live</span>
       </div>
       <div class="card-body">
         @for (res of supplyResources(); track res.name) {
           <div class="resource-row">
             <div class="resource-info">
-              <span class="resource-icon">{{ res.icon }}</span>
+              <span class="resource-icon" aria-hidden="true">{{ res.icon }}</span>
               <span class="resource-name">{{ res.name }}</span>
             </div>
             <div class="resource-bar-wrap">
-              <div class="resource-bar">
+              <div
+                class="resource-bar"
+                role="progressbar"
+                [attr.aria-valuenow]="res.current"
+                [attr.aria-valuemin]="0"
+                [attr.aria-valuemax]="res.max"
+                [attr.aria-label]="res.name + ' Vorrat'"
+              >
                 <div
                   class="resource-bar-fill"
                   [style.width.%]="getResourcePercent(res)"
@@ -89,16 +103,16 @@
     <!-- ═══ Energy Card (Battery) ═══ -->
     <div class="dash-card energy-card" id="card-energy">
       <div class="card-header">
-        <h2 class="card-title">⚡ Energie-Netz</h2>
+        <h2 class="card-title"><span aria-hidden="true">⚡</span> Energie-Netz</h2>
         <span class="card-badge" [ngClass]="energyColorClass">{{ energyPercentage() | number:'1.0-0' }}% Frei</span>
       </div>
       <div class="card-body energy-body">
-        
-        <div class="battery-container">
+
+        <div class="battery-container" role="progressbar" [attr.aria-valuenow]="energyPercentage()" aria-valuemin="0" aria-valuemax="100" aria-label="Energiekapazität">
           <div class="battery-body" [ngClass]="energyColorClass">
             <div class="battery-fill" [style.width.%]="energyPercentage()"></div>
           </div>
-          <div class="battery-cap"></div>
+          <div class="battery-cap" aria-hidden="true"></div>
         </div>
 
         <div class="energy-details">
@@ -122,13 +136,13 @@
     <!-- ═══ Fleet Card ═══ -->
     <div class="dash-card fleet-card" id="card-fleet">
       <div class="card-header">
-        <h2 class="card-title">🚀 Flotte</h2>
+        <h2 class="card-title"><span aria-hidden="true">🚀</span> Flotte</h2>
         <span class="card-total">{{ totalShips }} Schiffe</span>
       </div>
       <div class="card-body fleet-body">
         @for (ship of fleet(); track ship.name) {
           <div class="fleet-unit">
-            <span class="fleet-icon">{{ ship.icon }}</span>
+            <span class="fleet-icon" aria-hidden="true">{{ ship.icon }}</span>
             <div class="fleet-info">
               <span class="fleet-name">{{ ship.name }}</span>
               <span class="fleet-count">{{ ship.count }}</span>
@@ -144,19 +158,19 @@
         <div class="card-header">
           <h2 class="card-title">
             @if (hasInterstellarMarket()) {
-              🌌 Interstellarer Markt
+              <span aria-hidden="true">🌌</span> Interstellarer Markt
             } @else {
-              🏪 Handelsposten
+              <span aria-hidden="true">🏪</span> Handelsposten
             }
           </h2>
-          <div class="trade-multipliers">
-            <button class="multi-btn" [class.active]="tradeMultiplier() === 100" (click)="setMultiplier(100)">x100</button>
-            <button class="multi-btn" [class.active]="tradeMultiplier() === 1000" (click)="setMultiplier(1000)">x1K</button>
-            <button class="multi-btn" [class.active]="tradeMultiplier() === 10000" (click)="setMultiplier(10000)">x10K</button>
+          <div class="trade-multipliers" role="group" aria-label="Handelsmenge wählen">
+            <button class="multi-btn" [class.active]="tradeMultiplier() === 100" (click)="setMultiplier(100)" [attr.aria-pressed]="tradeMultiplier() === 100 ? 'true' : 'false'">x100</button>
+            <button class="multi-btn" [class.active]="tradeMultiplier() === 1000" (click)="setMultiplier(1000)" [attr.aria-pressed]="tradeMultiplier() === 1000 ? 'true' : 'false'">x1K</button>
+            <button class="multi-btn" [class.active]="tradeMultiplier() === 10000" (click)="setMultiplier(10000)" [attr.aria-pressed]="tradeMultiplier() === 10000 ? 'true' : 'false'">x10K</button>
           </div>
         </div>
         <div class="card-body trade-body">
-          
+
           <!-- Sell Section -->
           <div class="trade-section">
             <h3 class="section-title">Verkaufen</h3>
@@ -164,12 +178,12 @@
               @for (res of sellableResources; track res.id) {
                 <div class="trade-item">
                   <div class="item-info">
-                    <span class="icon">{{ res.icon }}</span>
+                    <span class="icon" aria-hidden="true">{{ res.icon }}</span>
                     <span class="name">{{ res.name }}</span>
                   </div>
                   <div class="item-action">
                     <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | number }} 🪙</span>
-                    <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)">
+                    <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)" [attr.aria-label]="res.name + ' verkaufen'">
                       Verkaufen
                     </button>
                   </div>
@@ -186,12 +200,12 @@
                 @for (res of buyableResources; track res.id) {
                   <div class="trade-item">
                     <div class="item-info">
-                      <span class="icon">{{ res.icon }}</span>
+                      <span class="icon" aria-hidden="true">{{ res.icon }}</span>
                       <span class="name">{{ res.name }}</span>
                     </div>
                     <div class="item-action">
                       <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | number }} 🪙</span>
-                      <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)">
+                      <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)" [attr.aria-label]="res.name + ' kaufen'">
                         Kaufen
                       </button>
                     </div>
