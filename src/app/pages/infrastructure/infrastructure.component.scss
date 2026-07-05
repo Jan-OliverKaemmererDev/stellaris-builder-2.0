@@ -1,0 +1,227 @@
+/* ================================================================
+   Infrastructure Page – Buildings & Upgrades
+   ================================================================ */
+
+/* ═══ Page Layout ═══ */
+
+.infrastructure-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ═══ Page Title ═══ */
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-xl);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ═══ Buildings List ═══ */
+
+.buildings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.building-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: var(--space-md);
+
+  &::-webkit-scrollbar { height: 8px; }
+  &::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
+  &::-webkit-scrollbar-thumb { background: rgba(79, 172, 254, 0.3); border-radius: 4px; }
+}
+
+.building-upgrades-section {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* ═══ Connector ═══ */
+
+.skill-connector {
+  width: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
+
+  &.unlocked::before {
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    box-shadow: 0 0 10px var(--primary-glow);
+  }
+}
+
+/* ═══ Skill Node ═══ */
+
+.skill-node {
+  flex-shrink: 0;
+  width: 220px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  box-shadow: var(--glass-shadow);
+
+  &:hover:not(.locked) {
+    border-color: var(--glass-border-hover);
+    box-shadow: var(--glass-shadow), 0 0 30px rgba(79, 172, 254, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &.locked {
+    opacity: 0.5;
+    filter: grayscale(0.5);
+  }
+}
+
+/* ═══ Node Image ═══ */
+
+.node-image-wrap {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-icon {
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+}
+
+/* ═══ Lock Overlay ═══ */
+
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
+.lock-icon {
+  font-size: 1.5rem;
+}
+
+.lock-req {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0 var(--space-sm);
+}
+
+/* ═══ Node Details ═══ */
+
+.node-details {
+  padding: var(--space-lg);
+}
+
+.node-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.node-level {
+  font-size: 0.85rem;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.node-cost {
+  margin-bottom: var(--space-md);
+}
+
+.cost-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.cost-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.cost-item {
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.upgrade-bonus {
+  color: var(--color-success);
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: var(--space-sm);
+}
+
+/* ═══ Upgrade Button ═══ */
+
+.upgrade-btn {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 36px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
