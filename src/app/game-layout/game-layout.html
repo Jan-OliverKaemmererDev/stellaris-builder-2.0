@@ -7,9 +7,7 @@
 
   <!-- Header Bar -->
   <header class="game-header" id="game-header">
-    <div class="header-left">
-      <img src="assets/logo.png" alt="Stellaris Builder" class="header-logo" />
-    </div>
+    <div class="header-left"></div>
 
     <div class="header-right">
       <!-- User Menu -->
@@ -31,7 +29,12 @@
               <span class="dropdown-name">{{ commanderName }}</span>
             </div>
             <div class="dropdown-divider" role="separator"></div>
-            <a routerLink="/privacy-policy" class="dropdown-item" id="dropdown-privacy" role="menuitem">
+            <a
+              routerLink="/privacy-policy"
+              class="dropdown-item"
+              id="dropdown-privacy"
+              role="menuitem"
+            >
               <span class="dropdown-icon" aria-hidden="true">🔒</span>
               Privacy Policy
             </a>
@@ -40,7 +43,12 @@
               Legal Notice
             </a>
             <div class="dropdown-divider" role="separator"></div>
-            <button class="dropdown-item logout" (click)="logout()" id="dropdown-logout" role="menuitem">
+            <button
+              class="dropdown-item logout"
+              (click)="logout()"
+              id="dropdown-logout"
+              role="menuitem"
+            >
               <span class="dropdown-icon" aria-hidden="true">🚪</span>
               Logout
             </button>
