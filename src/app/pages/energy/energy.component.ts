@@ -64,10 +64,10 @@ export class EnergyComponent {
       baseCost: { eisen: 15 },
       costMultiplier: 1.4,
       upgrades: [
-        { id: 'solar_erweiterte_panele', title: 'Erweiterte Panele', imagePath: 'assets/img/infrastructure/solarkraftwerk.png', requiredLevel: 5, baseCost: { credits: 100, eisen: 50 }, costMultiplier: 1.3 },
-        { id: 'solar_thermische_speicher', title: 'Thermische Speicher', imagePath: 'assets/img/infrastructure/solarkraftwerk.png', requiredLevel: 15, baseCost: { credits: 300, silber: 100 }, costMultiplier: 1.4 },
-        { id: 'solar_orbitalspiegel', title: 'Orbitalspiegel', imagePath: 'assets/img/infrastructure/solarkraftwerk.png', requiredLevel: 30, baseCost: { credits: 1500, gold: 300 }, costMultiplier: 1.6 },
-        { id: 'solar_dyson_schwarm', title: 'Dyson-Schwarm-Prototyp', imagePath: 'assets/img/infrastructure/solarkraftwerk.png', requiredLevel: 50, baseCost: { credits: 8000, xenonit: 200 }, costMultiplier: 1.8 },
+        { id: 'solar_erweiterte_panele', title: 'Erweiterte Panele', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/erweiterte-panele.png', requiredLevel: 5, baseCost: { credits: 100, eisen: 50 }, costMultiplier: 1.3 },
+        { id: 'solar_thermische_speicher', title: 'Thermische Speicher', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/thermische-speicher.png', requiredLevel: 15, baseCost: { credits: 300, silber: 100 }, costMultiplier: 1.4 },
+        { id: 'solar_orbitalspiegel', title: 'Orbitalspiegel', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/orbitalspiegel.png', requiredLevel: 30, baseCost: { credits: 1500, gold: 300 }, costMultiplier: 1.6 },
+        { id: 'solar_dyson_schwarm', title: 'Dyson-Schwarm-Prototyp', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/dyson-schwarm-prototyp.png', requiredLevel: 50, baseCost: { credits: 8000, xenonit: 200 }, costMultiplier: 1.8 },
       ],
     },
     {

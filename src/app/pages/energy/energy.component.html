@@ -54,8 +54,8 @@
             <div class="skill-connector" [class.unlocked]="isUpgradeUnlocked(item.id, upgrade)" aria-hidden="true"></div>
 
             <div class="skill-node" [class.locked]="!isUpgradeUnlocked(item.id, upgrade)" role="listitem">
-              <div class="node-image-wrap" style="height: 100px;">
-                <div class="placeholder-icon" style="font-size: 2.5rem; color: rgba(255,255,255,0.3); font-weight: bold;" aria-hidden="true">{{ upgrade.title.charAt(0) }}</div>
+              <div class="node-image-wrap">
+                <img [src]="upgrade.imagePath" [alt]="upgrade.title" class="node-image" />
                 
                 @if (!isUpgradeUnlocked(item.id, upgrade)) {
                   <div class="lock-overlay">
@@ -67,32 +67,31 @@
                 }
               </div>
 
-              <div class="node-details" style="padding: 1rem;">
-                <h4 class="node-title" style="font-size: 1rem;">{{ upgrade.title }}</h4>
+              <div class="node-details">
+                <h3 class="node-title">{{ upgrade.title }}</h3>
                 <div class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(upgrade.id)">Level: {{ getSkillLevel(upgrade.id) }}</div>
                 
-                @if (isUpgradeUnlocked(item.id, upgrade)) {
-                  <div class="upgrade-bonus" style="color: var(--color-success); font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;" aria-label="Produktionsbonus">+{{ getSkillLevel(upgrade.id) * 5 }}% Leistung</div>
-                  
-                  <div class="node-cost" aria-label="Kosten">
-                    <div class="cost-list">
-                      @for (c of getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id))); track c.name) {
-                        <div class="cost-item" [style.color]="c.colorVar">
-                          {{ c.amount | number }} {{ c.name }}
-                        </div>
-                      }
-                    </div>
+                <div class="upgrade-bonus" style="color: var(--color-success); font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;" aria-label="Produktionsbonus">+{{ getSkillLevel(upgrade.id) * 5 }}% Leistung</div>
+                
+                <div class="node-cost" aria-label="Kosten">
+                  <span class="cost-label">Kosten:</span>
+                  <div class="cost-list">
+                    @for (c of getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id))); track c.name) {
+                      <div class="cost-item" [style.color]="c.colorVar">
+                        {{ c.amount | number }} {{ c.name }}
+                      </div>
+                    }
                   </div>
-                  
-                  <button 
-                    class="upgrade-btn" 
-                    [disabled]="!canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
-                    (click)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
-                    [attr.aria-label]="upgrade.title + ' kaufen'"
-                  >
-                    Kaufen
-                  </button>
-                }
+                </div>
+                
+                <button 
+                  class="upgrade-btn" 
+                  [disabled]="!isUpgradeUnlocked(item.id, upgrade) || !canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+                  (click)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+                  [attr.aria-label]="upgrade.title + ' ausbauen'"
+                >
+                  Ausbauen
+                </button>
               </div>
             </div>
 

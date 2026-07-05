@@ -32,7 +32,7 @@
 
 .building-row {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 0;
   overflow-x: auto;
   padding-bottom: var(--space-md);
@@ -44,7 +44,7 @@
 
 .building-upgrades-section {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 /* ═══ Connector ═══ */
@@ -85,6 +85,8 @@
   overflow: hidden;
   transition: all var(--transition-normal);
   box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
 
   &:hover:not(.locked) {
     border-color: var(--glass-border-hover);
@@ -150,6 +152,9 @@
 
 .node-details {
   padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .node-title {
@@ -205,13 +210,14 @@
   padding: 0.5rem;
   border: none;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  background: var(--color-credits);
   color: #fff;
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all var(--transition-fast);
   min-height: 36px;
+  margin-top: auto;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
