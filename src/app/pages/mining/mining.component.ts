@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { GameStateService, GameResources } from '../../services/game-state.service';
+import { GameStateService } from '../../services/game-state.service';
+import { GameResources } from '../../services/game-state.types';
 
 /** A mine-specific upgrade that boosts production when the parent mine reaches a required level. */
 export interface MineUpgrade {

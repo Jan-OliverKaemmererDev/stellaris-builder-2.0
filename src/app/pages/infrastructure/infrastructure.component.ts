@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { GameStateService, GameResources } from '../../services/game-state.service';
+import { GameStateService } from '../../services/game-state.service';
+import { GameResources } from '../../services/game-state.types';
 
 /** An infrastructure-specific upgrade that boosts production/utility when the parent building reaches a required level. */
 export interface InfrastructureUpgrade {

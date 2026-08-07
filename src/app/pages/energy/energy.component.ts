@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { GameStateService, GameResources } from '../../services/game-state.service';
+import { GameStateService } from '../../services/game-state.service';
+import { GameResources } from '../../services/game-state.types';
 
 /**
  * Represents a single upgrade step for an energy building.
