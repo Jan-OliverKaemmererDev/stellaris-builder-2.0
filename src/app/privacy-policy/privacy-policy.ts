@@ -10,6 +10,7 @@ import { Location } from '@angular/common';
   styleUrl: './privacy-policy.scss',
 })
 export class PrivacyPolicy {
+  /** Injected Angular Location service to manage browser history navigation. */
   private location = inject(Location);
 
   /**

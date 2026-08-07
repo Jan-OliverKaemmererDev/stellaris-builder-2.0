@@ -453,10 +453,13 @@
   border-bottom: 1px solid var(--glass-border);
 }
 
-.trade-grid {
+ul.trade-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--space-md);
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .trade-item {

@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 
 /**
- * Modal dialog that shows resources earned while the player was offline.
- * Displayed automatically on session start if significant production occurred.
+ * Modal dialog component that displays the resources earned while the player was offline.
+ * This dialog is shown automatically when the user logs in and significant offline production has occurred.
  */
 @Component({
   selector: 'app-offline-progress-dialog',
@@ -14,14 +14,20 @@ import { GameStateService } from '../../services/game-state.service';
   styleUrl: './offline-progress-dialog.scss',
 })
 export class OfflineProgressDialog {
+  /** Service responsible for managing game state, resources, and offline calculations. */
   gameState = inject(GameStateService);
 
-  /** The offline earnings data, or `null` if no dialog should be shown. */
+  /**
+   * Retrieves the current offline earnings data from the game state.
+   * @returns An object containing the earned resources, or `null` if no dialog should be displayed.
+   */
   get earnings() {
     return this.gameState.offlineEarnings();
   }
 
-  /** Dismisses the dialog by clearing the offline earnings signal. */
+  /**
+   * Dismisses the dialog by clearing the offline earnings signal in the game state service.
+   */
   close(): void {
     this.gameState.clearOfflineEarnings();
   }

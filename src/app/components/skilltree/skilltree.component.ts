@@ -2,7 +2,9 @@ import { Component, Input, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { GameStateService, GameResources } from '../../services/game-state.service';
 
-/** Definition of a single skill node in the technology tree. */
+/**
+ * Definition of a single skill node in the technology tree.
+ */
 export interface SkillNode {
   /** Unique skill identifier matching the Firestore skills record key. */
   id: string;
@@ -12,9 +14,9 @@ export interface SkillNode {
   imagePath: string;
   /** Base resource cost at level 0; scales with `costMultiplier` per level. */
   baseCost: Partial<GameResources>;
-  /** Multiplicative cost scaling factor per level (e.g. 1.2 = +20%/level). */
+  /** Multiplicative cost scaling factor per level (e.g., 1.2 = +20% per level). */
   costMultiplier: number;
-  /** Optional maximum level cap. */
+  /** Optional maximum level cap for this skill. */
   maxLevel?: number;
   /** Prerequisite node that must reach a specific level before this node unlocks. */
   requiredNode?: { id: string; level: number };
@@ -33,25 +35,40 @@ export interface SkillNode {
   styleUrl: './skilltree.component.scss',
 })
 export class SkilltreeComponent {
-  /** The skill nodes to display in the tree. */
+  /** The list of skill nodes to display in the tree. */
   @Input() nodes: SkillNode[] = [];
 
-  /** The tree's display title shown above the scroll area. */
+  /** The display title shown above the skill tree scroll area. */
   @Input() title: string = 'Skilltree';
 
+  /** Internal reference to the game state service. */
   private gameState = inject(GameStateService);
 
+  /** Defines the display metadata (name and CSS color variable) for each resource type. */
+  private resourceMeta: Record<string, { name: string; colorVar: string }> = {
+    eisen: { name: 'Eisen', colorVar: 'var(--color-eisen)' },
+    silber: { name: 'Silber', colorVar: 'var(--color-silber)' },
+    gold: { name: 'Gold', colorVar: 'var(--color-gold)' },
+    xenonit: { name: 'Xenonit', colorVar: 'var(--color-xenonit)' },
+    energie: { name: 'Energie', colorVar: 'var(--color-energie)' },
+    credits: { name: 'Credits', colorVar: 'var(--color-credits)' },
+    nahrung: { name: 'Nahrung', colorVar: 'var(--color-nahrung)' },
+    personal: { name: 'Personal', colorVar: 'var(--color-personal)' },
+  };
+
   /**
-   * Returns the current level of a skill.
-   * @param id - The skill ID to look up.
+   * Retrieves the current level of a specific skill from the game state.
+   * @param id - The unique identifier of the skill.
+   * @returns The current level of the skill.
    */
   getSkillLevel(id: string): number {
     return this.gameState.getSkillLevel(id);
   }
 
   /**
-   * Checks whether a node's prerequisite is fulfilled.
-   * @param node - The skill node to check.
+   * Checks whether a node's prerequisite conditions are fulfilled.
+   * @param node - The skill node to verify.
+   * @returns True if the node is unlocked, false otherwise.
    */
   isUnlocked(node: SkillNode): boolean {
     if (!node.requiredNode) return true;
@@ -59,27 +76,28 @@ export class SkilltreeComponent {
   }
 
   /**
-   * Calculates the current upgrade cost by applying the cost multiplier to the base cost.
-   * @param node - The skill node to calculate for.
+   * Calculates the current upgrade cost by applying the level multiplier to the base cost.
+   * @param node - The skill node to calculate costs for.
+   * @returns An object containing the computed resource costs.
    */
   getCurrentCost(node: SkillNode): Partial<GameResources> {
     const level = this.getSkillLevel(node.id);
     const multiplier = Math.pow(node.costMultiplier, level);
     const cost: Partial<GameResources> = {};
-    if (node.baseCost.eisen) cost.eisen = Math.floor(node.baseCost.eisen * multiplier);
-    if (node.baseCost.silber) cost.silber = Math.floor(node.baseCost.silber * multiplier);
-    if (node.baseCost.gold) cost.gold = Math.floor(node.baseCost.gold * multiplier);
-    if (node.baseCost.xenonit) cost.xenonit = Math.floor(node.baseCost.xenonit * multiplier);
-    if (node.baseCost.energie) cost.energie = Math.floor(node.baseCost.energie * multiplier);
-    if (node.baseCost.credits) cost.credits = Math.floor(node.baseCost.credits * multiplier);
-    if (node.baseCost.nahrung) cost.nahrung = Math.floor(node.baseCost.nahrung * multiplier);
-    if (node.baseCost.personal) cost.personal = Math.floor(node.baseCost.personal * multiplier);
+    const keys = Object.keys(node.baseCost) as (keyof GameResources)[];
+    
+    for (const key of keys) {
+      if (node.baseCost[key] !== undefined) {
+        cost[key] = Math.floor(node.baseCost[key]! * multiplier);
+      }
+    }
     return cost;
   }
 
   /**
-   * Checks whether the player can afford the current upgrade cost.
+   * Verifies whether the player has enough resources to afford the current upgrade cost.
    * @param node - The skill node to check.
+   * @returns True if the player can afford the upgrade, false otherwise.
    */
   canAfford(node: SkillNode): boolean {
     return this.gameState.canAfford(this.getCurrentCost(node));
@@ -88,6 +106,7 @@ export class SkilltreeComponent {
   /**
    * Attempts to upgrade a skill node by one level.
    * @param node - The skill node to upgrade.
+   * @returns A promise that resolves when the upgrade transaction completes.
    */
   async upgrade(node: SkillNode): Promise<void> {
     if (!this.isUnlocked(node) || !this.canAfford(node)) return;
@@ -99,20 +118,16 @@ export class SkilltreeComponent {
   }
 
   /**
-   * Converts a cost object into a display-ready array of entries with colors.
-   * @param node - The skill node whose cost to format.
+   * Converts a cost object into a display-ready array of formatted entries.
+   * @param node - The skill node whose costs should be formatted.
+   * @returns Array of cost objects with a display name, amount, and color variable.
    */
   getCostEntries(node: SkillNode): { name: string; amount: number; colorVar: string }[] {
     const cost = this.getCurrentCost(node);
-    const entries: { name: string; amount: number; colorVar: string }[] = [];
-    if (cost.eisen) entries.push({ name: 'Eisen', amount: cost.eisen, colorVar: 'var(--color-eisen)' });
-    if (cost.silber) entries.push({ name: 'Silber', amount: cost.silber, colorVar: 'var(--color-silber)' });
-    if (cost.gold) entries.push({ name: 'Gold', amount: cost.gold, colorVar: 'var(--color-gold)' });
-    if (cost.xenonit) entries.push({ name: 'Xenonit', amount: cost.xenonit, colorVar: 'var(--color-xenonit)' });
-    if (cost.energie) entries.push({ name: 'Energie', amount: cost.energie, colorVar: 'var(--color-energie)' });
-    if (cost.credits) entries.push({ name: 'Credits', amount: cost.credits, colorVar: 'var(--color-credits)' });
-    if (cost.nahrung) entries.push({ name: 'Nahrung', amount: cost.nahrung, colorVar: 'var(--color-nahrung)' });
-    if (cost.personal) entries.push({ name: 'Personal', amount: cost.personal, colorVar: 'var(--color-personal)' });
-    return entries;
+    return Object.entries(cost).map(([key, amount]) => ({
+      name: this.resourceMeta[key].name,
+      amount: amount as number,
+      colorVar: this.resourceMeta[key].colorVar,
+    }));
   }
 }

@@ -48,6 +48,7 @@ export interface Mine {
   styleUrl: './mining.component.scss',
 })
 export class MiningComponent {
+  /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
 
   /** All available mines with their upgrade trees. */
@@ -80,9 +81,22 @@ export class MiningComponent {
     },
   ];
 
+  /** Defines the display metadata (name and CSS color variable) for each resource type. */
+  private resourceMeta: Record<string, { name: string; colorVar: string }> = {
+    eisen: { name: 'Eisen', colorVar: 'var(--color-eisen)' },
+    silber: { name: 'Silber', colorVar: 'var(--color-silber)' },
+    gold: { name: 'Gold', colorVar: 'var(--color-gold)' },
+    xenonit: { name: 'Xenonit', colorVar: 'var(--color-xenonit)' },
+    energie: { name: 'Energie', colorVar: 'var(--color-energie)' },
+    credits: { name: 'Credits', colorVar: 'var(--color-credits)' },
+    nahrung: { name: 'Nahrung', colorVar: 'var(--color-nahrung)' },
+    personal: { name: 'Personal', colorVar: 'var(--color-personal)' },
+  };
+
   /**
    * Creates the four standard production upgrades for a mine.
    * @param mineId - The parent mine's skill ID used to build upgrade IDs.
+   * @returns Array of upgrades for the given mine.
    */
   generateUpgrades(mineId: string): MineUpgrade[] {
     return [
@@ -96,6 +110,7 @@ export class MiningComponent {
   /**
    * Returns the current level of a skill.
    * @param id - The skill ID.
+   * @returns The current level, defaulting to 0.
    */
   getSkillLevel(id: string): number {
     return this.gameState.getSkillLevel(id);
@@ -104,6 +119,7 @@ export class MiningComponent {
   /**
    * Checks whether a mine's prerequisite is fulfilled.
    * @param mine - The mine to check.
+   * @returns True if unlocked or no prerequisite exists.
    */
   isMineUnlocked(mine: Mine): boolean {
     if (!mine.requiredNode) return true;
@@ -114,6 +130,7 @@ export class MiningComponent {
    * Checks whether a mine upgrade is unlocked based on the parent mine's level.
    * @param mineId - The parent mine's skill ID.
    * @param upgrade - The upgrade to check.
+   * @returns True if the parent mine meets the level requirement.
    */
   isUpgradeUnlocked(mineId: string, upgrade: MineUpgrade): boolean {
     return this.getSkillLevel(mineId) >= upgrade.requiredMineLevel;
@@ -124,41 +141,34 @@ export class MiningComponent {
    * @param baseCost - The base resource cost.
    * @param multiplier - The cost scaling factor.
    * @param currentLevel - The current skill level.
+   * @returns The calculated resource cost for the next level.
    */
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
     const cost: Partial<GameResources> = {};
     const mult = Math.pow(multiplier, currentLevel);
-    if (baseCost.eisen) cost.eisen = Math.floor(baseCost.eisen * mult);
-    if (baseCost.silber) cost.silber = Math.floor(baseCost.silber * mult);
-    if (baseCost.gold) cost.gold = Math.floor(baseCost.gold * mult);
-    if (baseCost.xenonit) cost.xenonit = Math.floor(baseCost.xenonit * mult);
-    if (baseCost.energie) cost.energie = Math.floor(baseCost.energie * mult);
-    if (baseCost.credits) cost.credits = Math.floor(baseCost.credits * mult);
-    if (baseCost.nahrung) cost.nahrung = Math.floor(baseCost.nahrung * mult);
-    if (baseCost.personal) cost.personal = Math.floor(baseCost.personal * mult);
+    for (const [key, val] of Object.entries(baseCost)) {
+      if (val !== undefined) (cost as any)[key] = Math.floor(val * mult);
+    }
     return cost;
   }
 
   /**
    * Converts a cost object into a display-ready array with color variables.
    * @param cost - The resource cost to format.
+   * @returns Array of objects containing a display name, amount, and CSS color variable.
    */
   getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
-    const entries: { name: string; amount: number; colorVar: string }[] = [];
-    if (cost.eisen) entries.push({ name: 'Eisen', amount: cost.eisen, colorVar: 'var(--color-eisen)' });
-    if (cost.silber) entries.push({ name: 'Silber', amount: cost.silber, colorVar: 'var(--color-silber)' });
-    if (cost.gold) entries.push({ name: 'Gold', amount: cost.gold, colorVar: 'var(--color-gold)' });
-    if (cost.xenonit) entries.push({ name: 'Xenonit', amount: cost.xenonit, colorVar: 'var(--color-xenonit)' });
-    if (cost.energie) entries.push({ name: 'Energie', amount: cost.energie, colorVar: 'var(--color-energie)' });
-    if (cost.credits) entries.push({ name: 'Credits', amount: cost.credits, colorVar: 'var(--color-credits)' });
-    if (cost.nahrung) entries.push({ name: 'Nahrung', amount: cost.nahrung, colorVar: 'var(--color-nahrung)' });
-    if (cost.personal) entries.push({ name: 'Personal', amount: cost.personal, colorVar: 'var(--color-personal)' });
-    return entries;
+    return Object.entries(cost).map(([key, amount]) => ({
+      name: this.resourceMeta[key].name,
+      amount: amount as number,
+      colorVar: this.resourceMeta[key].colorVar,
+    }));
   }
 
   /**
    * Checks whether the player can afford a given cost.
    * @param cost - The resource cost to check.
+   * @returns True if affordable, false otherwise.
    */
   canAfford(cost: Partial<GameResources>): boolean {
     return this.gameState.canAfford(cost);
@@ -168,6 +178,7 @@ export class MiningComponent {
    * Upgrades a skill by one level, deducting the required resources.
    * @param id - The skill ID to upgrade.
    * @param cost - The resource cost for this upgrade.
+   * @returns A promise that resolves when the upgrade is processed.
    */
   async upgradeSkill(id: string, cost: Partial<GameResources>): Promise<void> {
     if (!this.canAfford(cost)) return;

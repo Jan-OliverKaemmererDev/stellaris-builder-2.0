@@ -4,7 +4,9 @@ import { AnimatedNumberComponent } from '../components/animated-number/animated-
 import { Auth } from '@angular/fire/auth';
 import { GameStateService } from '../services/game-state.service';
 
-/** A display-ready resource with current values, max capacity, and production rate. */
+/**
+ * Represents a display-ready resource with current values, max capacity, and production rate.
+ */
 interface Resource {
   name: string;
   icon: string;
@@ -14,7 +16,9 @@ interface Resource {
   colorVar: string;
 }
 
-/** A fleet ship type with its display name, icon, and owned count. */
+/**
+ * Represents a fleet ship type with its display name, icon, and owned count.
+ */
 interface ShipType {
   name: string;
   icon: string;
@@ -22,8 +26,8 @@ interface ShipType {
 }
 
 /**
- * Bridge dashboard component – the main command center view.
- * Displays live resource overview, energy status, fleet summary, and trading panel.
+ * Bridge dashboard component - the main command center view.
+ * Displays a live resource overview, energy status, fleet summary, and a trading panel.
  */
 @Component({
   selector: 'app-bridge',
@@ -33,16 +37,23 @@ interface ShipType {
   styleUrl: './bridge.scss',
 })
 export class Bridge {
+  /** Authentication service to retrieve the current user. */
   private auth = inject(Auth);
+
+  /** Game state service to interact with resources, skills, and trading. */
   private gameState = inject(GameStateService);
 
-  /** Returns the display name for the current user. */
+  /**
+   * Retrieves the display name for the current user.
+   * @returns The user's display name or a default fallback if none exists.
+   */
   get commanderName(): string {
     const user = this.auth.currentUser;
     if (!user) return 'Commander';
     return user.displayName || (user.isAnonymous ? 'Gast-Commander' : 'Commander');
   }
 
+  /** Configuration array for standard resources displayed on the dashboard. */
   baseResources = [
     { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
     { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
@@ -51,12 +62,15 @@ export class Bridge {
     { id: 'credits', name: 'Credits', icon: '🪙', colorVar: '--color-credits' },
   ];
 
+  /** Configuration array for supply and personnel resources displayed on the dashboard. */
   baseSupplyResources = [
     { id: 'nahrung', name: 'Nahrung', icon: '🌾', colorVar: '--color-nahrung' },
     { id: 'personal', name: 'Personal', icon: '👥', colorVar: '--color-personal' },
   ];
 
-  /** Retrieves the array of standard resources for the dashboard. */
+  /**
+   * Computes the array of standard resources enriched with live data from the game state.
+   */
   resources = computed<Resource[]>(() => {
     return this.baseResources.map(r => ({
       ...r,
@@ -66,7 +80,9 @@ export class Bridge {
     }));
   });
 
-  /** Retrieves the array of supply/personnel resources for the dashboard. */
+  /**
+   * Computes the array of supply and personnel resources enriched with live data from the game state.
+   */
   supplyResources = computed<Resource[]>(() => {
     return this.baseSupplyResources.map(r => ({
       ...r,
@@ -76,20 +92,26 @@ export class Bridge {
     }));
   });
 
-  /** Total energy capacity produced by power plants. */
+  /** Total energy capacity produced by all power plants. */
   energyProduced = this.gameState.energyProduced;
 
-  /** Remaining free energy capacity. */
+  /** Remaining free energy capacity after consumption. */
   availableEnergy = this.gameState.availableEnergy;
 
-  /** Percentage of available energy relative to total produced (0–100). */
+  /**
+   * Computes the percentage of available energy relative to the total produced.
+   * @returns A value between 0 and 100 representing the free energy percentage.
+   */
   energyPercentage = computed<number>(() => {
     const max = this.energyProduced();
     if (max <= 0) return 0;
     return Math.max(0, Math.min(100, (this.availableEnergy() / max) * 100));
   });
 
-  /** CSS class indicating the energy status: good, warn, or critical. */
+  /**
+   * Determines the CSS class indicating the energy network's health status.
+   * @returns 'energy-good', 'energy-warn', or 'energy-critical' based on available energy.
+   */
   get energyColorClass(): string {
     const p = this.energyPercentage();
     if (p > 75) return 'energy-good';
@@ -97,7 +119,9 @@ export class Bridge {
     return 'energy-critical';
   }
 
-  /** Reactive fleet composition derived from owned ship skills. */
+  /**
+   * Computes the player's active fleet composition based on unlocked ship skills.
+   */
   fleet = computed<ShipType[]>(() => {
     const s = this.gameState.skills();
     const ships: ShipType[] = [];
@@ -111,37 +135,41 @@ export class Bridge {
     return ships;
   });
 
-  /** Total number of ships across all types. */
+  /**
+   * Retrieves the total number of ships owned across all ship types.
+   * @returns The total ship count.
+   */
   get totalShips(): number {
     return this.fleet().reduce((sum, ship) => sum + ship.count, 0);
   }
 
   /**
-   * Calculates the fill percentage of a resource bar.
-   * @param resource - The resource to calculate for.
+   * Calculates the fill percentage of a resource's progress bar.
+   * @param resource - The resource object to calculate the percentage for.
+   * @returns The percentage filled (0-100).
    */
   getResourcePercent(resource: Resource): number {
     return (resource.current / resource.max) * 100;
   }
 
-  /** Whether the player has unlocked at least one trading building. */
+  /** Checks whether the player has unlocked at least one trading building. */
   hasTradingPost = computed(() => this.gameState.skills()['trading_post'] > 0 || this.gameState.skills()['interstellar_market'] > 0);
 
-  /** Whether the player has unlocked the interstellar market for buying. */
+  /** Checks whether the player has unlocked the interstellar market for buying resources. */
   hasInterstellarMarket = computed(() => this.gameState.skills()['interstellar_market'] > 0);
 
-  /** Current trade multiplier (units per transaction). */
+  /** Signal holding the current trade multiplier (units traded per transaction). */
   tradeMultiplier = signal(100);
 
   /**
-   * Updates the trade multiplier.
+   * Updates the active trade multiplier.
    * @param m - The new multiplier value.
    */
   setMultiplier(m: number): void {
     this.tradeMultiplier.set(m);
   }
 
-  /** Resources available for selling. */
+  /** Configuration array of resources available for selling at the trading post/market. */
   sellableResources = [
     { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
     { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
@@ -149,7 +177,7 @@ export class Bridge {
     { id: 'xenonit', name: 'Xenonit', icon: '💠', colorVar: '--color-xenonit' },
   ] as const;
 
-  /** Resources available for buying. */
+  /** Configuration array of resources available for buying at the interstellar market. */
   buyableResources = [
     { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
     { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
@@ -160,25 +188,28 @@ export class Bridge {
   ] as const;
 
   /**
-   * Returns the credit value per unit for selling a resource.
-   * @param resId - The resource ID.
+   * Retrieves the credit value per unit when selling a specific resource.
+   * @param resId - The identifier of the resource.
+   * @returns The sell price in credits per unit.
    */
   getSellRate(resId: string): number {
     return this.gameState.getSellRate(resId);
   }
 
   /**
-   * Returns the credit cost per unit for buying a resource.
-   * @param resId - The resource ID.
+   * Retrieves the credit cost per unit when buying a specific resource.
+   * @param resId - The identifier of the resource.
+   * @returns The purchase cost in credits per unit.
    */
   getBuyRate(resId: string): number {
     return this.gameState.getBuyRate(resId);
   }
 
   /**
-   * Checks whether the player has enough of a resource to sell.
-   * @param resId - The resource ID.
-   * @param amount - The amount to sell.
+   * Verifies whether the player has enough of a specific resource to complete a sale.
+   * @param resId - The identifier of the resource.
+   * @param amount - The quantity of the resource to sell.
+   * @returns True if the current resource amount is sufficient, false otherwise.
    */
   canSell(resId: string, amount: number): boolean {
     const current = (this.gameState.resources() as unknown as Record<string, number>)[resId] || 0;
@@ -186,9 +217,10 @@ export class Bridge {
   }
 
   /**
-   * Checks whether the player has enough credits to buy a resource.
-   * @param resId - The resource ID.
-   * @param amount - The amount to buy.
+   * Verifies whether the player has enough credits to purchase a specific resource.
+   * @param resId - The identifier of the resource.
+   * @param amount - The quantity of the resource to buy.
+   * @returns True if the player has sufficient credits, false otherwise.
    */
   canBuy(resId: string, amount: number): boolean {
     const cost = this.getBuyRate(resId) * amount;
@@ -196,8 +228,9 @@ export class Bridge {
   }
 
   /**
-   * Sells the current trade multiplier amount of a resource.
-   * @param resId - The resource ID to sell.
+   * Executes a sale transaction for a given resource based on the current trade multiplier.
+   * @param resId - The identifier of the resource to sell.
+   * @returns A promise that resolves when the transaction is complete.
    */
   async sell(resId: string): Promise<void> {
     const amount = this.tradeMultiplier();
@@ -206,8 +239,9 @@ export class Bridge {
   }
 
   /**
-   * Buys the current trade multiplier amount of a resource.
-   * @param resId - The resource ID to buy.
+   * Executes a purchase transaction for a given resource based on the current trade multiplier.
+   * @param resId - The identifier of the resource to buy.
+   * @returns A promise that resolves when the transaction is complete.
    */
   async buy(resId: string): Promise<void> {
     const amount = this.tradeMultiplier();

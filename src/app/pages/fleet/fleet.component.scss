@@ -104,10 +104,11 @@
   box-shadow: 0 0 8px var(--primary-glow);
 }
 
-.mission-time {
+p.mission-time {
   font-size: 0.9rem;
   color: var(--text-muted);
   margin-bottom: var(--space-md);
+  margin-top: 0;
 }
 
 /* ═══ Mission Reward ═══ */
@@ -123,6 +124,14 @@
 .reward-label {
   font-weight: 600;
   color: var(--text-secondary);
+}
+
+ul.reward-list {
+  display: flex;
+  gap: var(--space-xs);
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .reward-item {
@@ -213,10 +222,11 @@
   }
 }
 
-.ship-img-wrap {
+figure.ship-img-wrap {
   height: 180px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
+  margin: 0;
 }
 
 .ship-img {
@@ -269,10 +279,13 @@
   margin-bottom: var(--space-xs);
 }
 
-.cost-list {
+ul.cost-list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .cost-item {

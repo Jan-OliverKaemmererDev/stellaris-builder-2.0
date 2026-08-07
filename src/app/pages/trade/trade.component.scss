@@ -102,7 +102,7 @@
 
 /* ═══ Node Image ═══ */
 
-.node-image-wrap {
+figure.node-image-wrap {
   position: relative;
   height: 140px;
   overflow: hidden;
@@ -110,6 +110,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
 }
 
 .node-image {
@@ -141,11 +142,12 @@
   font-size: 1.5rem;
 }
 
-.lock-req {
+p.lock-req {
   font-size: 0.7rem;
   color: var(--text-muted);
   text-align: center;
   padding: 0 var(--space-sm);
+  margin: 0;
 }
 
 /* ═══ Node Details ═══ */
@@ -164,11 +166,12 @@
   margin: 0 0 var(--space-xs) 0;
 }
 
-.node-level {
+p.node-level {
   font-size: 0.85rem;
   color: var(--primary);
   font-weight: 600;
   margin-bottom: var(--space-md);
+  margin-top: 0;
 }
 
 .node-cost {
@@ -182,10 +185,13 @@
   margin-bottom: var(--space-xs);
 }
 
-.cost-list {
+ul.cost-list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .cost-item {
@@ -196,11 +202,12 @@
   border-radius: var(--radius-sm);
 }
 
-.upgrade-bonus {
+p.upgrade-bonus {
   color: var(--color-success);
   font-size: 0.85rem;
   font-weight: bold;
   margin-bottom: var(--space-sm);
+  margin-top: 0;
 }
 
 /* ═══ Upgrade Button ═══ */

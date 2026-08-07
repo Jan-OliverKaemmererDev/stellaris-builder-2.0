@@ -92,11 +92,12 @@
 
 /* ═══ Node Image ═══ */
 
-.node-image-wrap {
+figure.node-image-wrap {
   position: relative;
   height: 160px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.3);
+  margin: 0;
 }
 
 .node-image {
@@ -127,6 +128,7 @@
   color: var(--text-muted);
   text-align: center;
   padding: 0 var(--space-sm);
+  margin: 0;
 }
 
 /* ═══ Node Details ═══ */
@@ -147,6 +149,7 @@
   color: var(--primary);
   font-weight: 600;
   margin-bottom: var(--space-md);
+  margin-top: 0;
 }
 
 .node-cost {
@@ -160,10 +163,13 @@
   margin-bottom: var(--space-xs);
 }
 
-.cost-list {
+ul.cost-list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .cost-item {

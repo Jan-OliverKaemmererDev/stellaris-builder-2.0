@@ -11,7 +11,7 @@
   <img src="assets/logo.png" alt="Stellaris Builder Logo" class="animated-logo" />
 
   <!-- 3D Scene Wrapper -->
-  <main class="scene">
+  <main class="scene" aria-label="Authentication area">
     <div class="planet" [class.is-flipped]="!isLoginMode()">
       <!-- 3D Planet Visuals (decorative) -->
       <div class="planet-sphere" aria-hidden="true">
@@ -19,14 +19,14 @@
       </div>
 
       <!-- Front Face: Login -->
-      <div class="planet-face front">
+      <section class="planet-face front" aria-label="Login section">
         <div class="glass-panel form-wrapper">
-          <div class="logo-container">
+          <header class="logo-container">
             <h1>Stellaris <span>Builder</span></h1>
             <p class="subtitle">Erschaffe dein Sternenreich</p>
-          </div>
+          </header>
 
-          <form (ngSubmit)="onSubmit()" class="auth-form">
+          <form (ngSubmit)="onSubmit()" class="auth-form" aria-label="Login form">
             <h2 class="form-title">Willkommen zurück Commander</h2>
 
             <div *ngIf="errorMessage()" class="error-alert" role="alert" aria-live="assertive">
@@ -47,6 +47,7 @@
                 (ngModelChange)="email.set($event)"
                 placeholder="commander@earth.com"
                 autocomplete="email"
+                aria-label="Email address"
                 required
               />
             </div>
@@ -61,42 +62,43 @@
                 (ngModelChange)="password.set($event)"
                 placeholder="••••••••"
                 autocomplete="current-password"
+                aria-label="Password"
                 required
               />
             </div>
 
             <div class="button-group">
-              <button type="submit" class="submit-btn primary-glow" [disabled]="isLoading()">
+              <button type="submit" class="submit-btn primary-glow" [disabled]="isLoading()" aria-label="Log in">
                 <span *ngIf="!isLoading()">Einloggen</span>
-                <span *ngIf="isLoading()" class="loader" aria-label="Wird geladen"></span>
+                <span *ngIf="isLoading()" class="loader" aria-label="Loading"></span>
               </button>
-              <button type="button" class="submit-btn guest-btn" (click)="loginAsGuest()" [disabled]="isLoading()">
+              <button type="button" class="submit-btn guest-btn" (click)="loginAsGuest()" [disabled]="isLoading()" aria-label="Log in as guest">
                 <span *ngIf="!isLoading()">Gast</span>
-                <span *ngIf="isLoading()" class="loader" aria-label="Wird geladen"></span>
+                <span *ngIf="isLoading()" class="loader" aria-label="Loading"></span>
               </button>
             </div>
 
-            <div class="toggle-mode">
+            <footer class="toggle-mode">
               <p>
                 Noch kein Commander?
-                <button type="button" class="text-btn" (click)="toggleMode()">
+                <button type="button" class="text-btn" (click)="toggleMode()" aria-label="Switch to registration form">
                   Jetzt registrieren
                 </button>
               </p>
-            </div>
+            </footer>
           </form>
         </div>
-      </div>
+      </section>
 
       <!-- Back Face: Register -->
-      <div class="planet-face back">
+      <section class="planet-face back" aria-label="Registration section">
         <div class="glass-panel form-wrapper">
-          <div class="logo-container">
+          <header class="logo-container">
             <h1>Stellaris <span>Builder</span></h1>
             <p class="subtitle">Rekrutierungsbüro</p>
-          </div>
+          </header>
 
-          <form (ngSubmit)="onSubmit()" class="auth-form">
+          <form (ngSubmit)="onSubmit()" class="auth-form" aria-label="Registration form">
             <h2 class="form-title">Neuen Account erstellen</h2>
 
             <div *ngIf="errorMessage()" class="error-alert" role="alert" aria-live="assertive">
@@ -117,6 +119,7 @@
                 (ngModelChange)="commanderName.set($event)"
                 placeholder="Dein Name"
                 autocomplete="username"
+                aria-label="Commander name"
                 required
               />
             </div>
@@ -131,6 +134,7 @@
                 (ngModelChange)="email.set($event)"
                 placeholder="commander@earth.com"
                 autocomplete="email"
+                aria-label="Email address"
                 required
               />
             </div>
@@ -145,38 +149,39 @@
                 (ngModelChange)="password.set($event)"
                 placeholder="••••••••"
                 autocomplete="new-password"
+                aria-label="Password"
                 required
               />
             </div>
 
             <div class="privacy-policy-check">
               <label>
-                <input type="checkbox" name="privacyAccepted" [ngModel]="privacyAccepted()" (ngModelChange)="privacyAccepted.set($event)" required />
-                Ich akzeptiere die <a routerLink="/privacy-policy" target="_blank" class="text-btn inline-link">Privacy Policy</a>
+                <input type="checkbox" name="privacyAccepted" [ngModel]="privacyAccepted()" (ngModelChange)="privacyAccepted.set($event)" aria-label="Accept privacy policy" required />
+                Ich akzeptiere die <a routerLink="/privacy-policy" target="_blank" class="text-btn inline-link" aria-label="Read privacy policy">Privacy Policy</a>
               </label>
             </div>
 
-            <button type="submit" class="submit-btn primary-glow" [disabled]="isLoading() || !privacyAccepted()">
+            <button type="submit" class="submit-btn primary-glow" [disabled]="isLoading() || !privacyAccepted()" aria-label="Register new account">
               <span *ngIf="!isLoading()">Registrieren</span>
-              <span *ngIf="isLoading()" class="loader" aria-label="Wird geladen"></span>
+              <span *ngIf="isLoading()" class="loader" aria-label="Loading"></span>
             </button>
 
-            <div class="toggle-mode">
+            <footer class="toggle-mode">
               <p>
                 Bereits im Dienst?
-                <button type="button" class="text-btn" (click)="toggleMode()">
+                <button type="button" class="text-btn" (click)="toggleMode()" aria-label="Switch to login form">
                   Hier einloggen
                 </button>
               </p>
-            </div>
+            </footer>
           </form>
         </div>
-      </div>
+      </section>
     </div>
   </main>
 
-  <footer class="landing-footer">
-    <a routerLink="/privacy-policy">Privacy Policy</a>
-    <a routerLink="/legal-notice">Legal notice</a>
+  <footer class="landing-footer" aria-label="Site footer">
+    <a routerLink="/privacy-policy" aria-label="Privacy Policy">Privacy Policy</a>
+    <a routerLink="/legal-notice" aria-label="Legal Notice">Legal notice</a>
   </footer>
 </div>

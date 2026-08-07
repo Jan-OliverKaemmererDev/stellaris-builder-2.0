@@ -126,10 +126,11 @@
   }
 }
 
-.dropdown-divider {
+hr.dropdown-divider {
   height: 1px;
   background: var(--glass-border);
   margin: var(--space-xs) 0;
+  border: none;
 }
 
 .dropdown-item {

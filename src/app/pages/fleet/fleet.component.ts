@@ -28,6 +28,7 @@ export interface ShipDef {
   styleUrl: './fleet.component.scss',
 })
 export class FleetComponent implements OnInit, OnDestroy {
+  /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
 
   /** Available ship types that can be built in the shipyard. */
@@ -62,6 +63,19 @@ export class FleetComponent implements OnInit, OnDestroy {
     },
   ];
 
+  /** Defines the display metadata (name and CSS color variable) for each resource type. */
+  private resourceMeta: Record<string, { name: string; colorVar: string }> = {
+    eisen: { name: 'Eisen', colorVar: 'var(--color-eisen)' },
+    silber: { name: 'Silber', colorVar: 'var(--color-silber)' },
+    gold: { name: 'Gold', colorVar: 'var(--color-gold)' },
+    xenonit: { name: 'Xenonit', colorVar: 'var(--color-xenonit)' },
+    energie: { name: 'Energie', colorVar: 'var(--color-energie)' },
+    credits: { name: 'Credits', colorVar: 'var(--color-credits)' },
+    nahrung: { name: 'Nahrung', colorVar: 'var(--color-nahrung)' },
+    personal: { name: 'Personal', colorVar: 'var(--color-personal)' },
+  };
+
+  /** Internal reference for the mission polling interval. */
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
   /** Mission progress percentage (0–100). */
@@ -95,6 +109,7 @@ export class FleetComponent implements OnInit, OnDestroy {
   /**
    * Returns the number of owned ships of a given type.
    * @param id - The ship skill ID.
+   * @returns The amount of ships owned by the player.
    */
   getShipCount(id: string): number {
     return this.gameState.skills()[id] || 0;
@@ -103,6 +118,7 @@ export class FleetComponent implements OnInit, OnDestroy {
   /**
    * Checks whether the player can afford a given cost.
    * @param cost - The resource cost to check.
+   * @returns True if the player has enough resources.
    */
   canAfford(cost: Partial<GameResources>): boolean {
     return this.gameState.canAfford(cost);
@@ -111,6 +127,7 @@ export class FleetComponent implements OnInit, OnDestroy {
   /**
    * Builds one unit of a ship type by upgrading the corresponding skill.
    * @param ship - The ship definition to build.
+   * @returns A promise that resolves when the ship is built.
    */
   async buildShip(ship: ShipDef): Promise<void> {
     if (!this.canAfford(ship.cost)) return;
@@ -124,18 +141,14 @@ export class FleetComponent implements OnInit, OnDestroy {
   /**
    * Converts a cost object into a display-ready array with color variables.
    * @param cost - The resource cost to format.
+   * @returns Array of objects containing a display name, amount, and CSS color variable.
    */
   getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
-    const entries: { name: string; amount: number; colorVar: string }[] = [];
-    if (cost.eisen) entries.push({ name: 'Eisen', amount: cost.eisen, colorVar: 'var(--color-eisen)' });
-    if (cost.silber) entries.push({ name: 'Silber', amount: cost.silber, colorVar: 'var(--color-silber)' });
-    if (cost.gold) entries.push({ name: 'Gold', amount: cost.gold, colorVar: 'var(--color-gold)' });
-    if (cost.xenonit) entries.push({ name: 'Xenonit', amount: cost.xenonit, colorVar: 'var(--color-xenonit)' });
-    if (cost.energie) entries.push({ name: 'Energie', amount: cost.energie, colorVar: 'var(--color-energie)' });
-    if (cost.credits) entries.push({ name: 'Credits', amount: cost.credits, colorVar: 'var(--color-credits)' });
-    if (cost.nahrung) entries.push({ name: 'Nahrung', amount: cost.nahrung, colorVar: 'var(--color-nahrung)' });
-    if (cost.personal) entries.push({ name: 'Personal', amount: cost.personal, colorVar: 'var(--color-personal)' });
-    return entries;
+    return Object.entries(cost).map(([key, amount]) => ({
+      name: this.resourceMeta[key].name,
+      amount: amount as number,
+      colorVar: this.resourceMeta[key].colorVar,
+    }));
   }
 
   /** Total number of owned mining ships. */
@@ -163,11 +176,8 @@ export class FleetComponent implements OnInit, OnDestroy {
   /** Updates the mission progress percentage and remaining time display. */
   updateMissionProgress(): void {
     const m = this.activeMission();
-    if (!m) {
-      this.missionProgress.set(0);
-      this.missionTimeLeft.set('');
-      return;
-    }
+    if (!m) return this.resetMissionProgress();
+
     const elapsed = Date.now() - m.startTime;
     if (elapsed >= m.durationMs) {
       this.missionProgress.set(100);
@@ -178,16 +188,26 @@ export class FleetComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Resets the mission progress and time left signals to zero. */
+  private resetMissionProgress(): void {
+    this.missionProgress.set(0);
+    this.missionTimeLeft.set('');
+  }
+
   /**
    * Formats remaining milliseconds as a human-readable string.
    * @param remainingMs - Remaining time in milliseconds.
+   * @returns The formatted string (e.g. "Noch 30 Sekunden").
    */
   private formatTimeLeft(remainingMs: number): string {
     const leftSec = Math.ceil(remainingMs / 1000);
     return `Noch ${leftSec} Sekunden`;
   }
 
-  /** Collects the mission reward and clears the active mission. */
+  /**
+   * Collects the mission reward and clears the active mission.
+   * @returns A promise that resolves when the reward is collected.
+   */
   async collectReward(): Promise<void> {
     const m = this.activeMission();
     if (!m || this.missionProgress() < 100) return;

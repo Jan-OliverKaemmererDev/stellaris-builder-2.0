@@ -1,9 +1,9 @@
-<div class="fleet-container">
+<main class="fleet-container" aria-label="Fleet and shipyard page">
   <h1 class="page-title">Flotte & Werft</h1>
 
   <!-- Missionsbereich -->
   <section class="mission-section" aria-labelledby="mission-heading">
-    <div class="mission-card" [class.active]="activeMission()">
+    <article class="mission-card" [class.active]="activeMission()">
       <div class="mission-bg" style="background-image: url('assets/img/asteroid-belt.png');" aria-hidden="true"></div>
       
       <div class="mission-content">
@@ -13,22 +13,24 @@
         @if (activeMission(); as m) {
           <div class="active-mission-info" aria-live="polite">
             <h3>Mission läuft ({{ m.shipCount }} Schiffe)</h3>
-            <div class="progress-bar-wrap" role="progressbar" [attr.aria-valuenow]="missionProgress()" aria-valuemin="0" aria-valuemax="100" aria-label="Missionsfortschritt">
+            <div class="progress-bar-wrap" role="progressbar" [attr.aria-valuenow]="missionProgress()" aria-valuemin="0" aria-valuemax="100" aria-label="Mission progress">
               <div class="progress-bar-fill" [style.width.%]="missionProgress()"></div>
             </div>
-            <div class="mission-time" aria-label="Verbleibende Zeit">{{ missionTimeLeft() }}</div>
+            <p class="mission-time" aria-label="Remaining time">{{ missionTimeLeft() }}</p>
             
             @if (missionReward(); as r) {
-              <div class="mission-reward" aria-label="Erwartete Beute">
+              <div class="mission-reward" aria-label="Expected reward">
                 <span class="reward-label">Beute:</span>
-                <span class="reward-item" style="color: var(--color-eisen)">{{ r.eisen | number }} Eisen</span>,
-                <span class="reward-item" style="color: var(--color-silber)">{{ r.silber | number }} Silber</span>,
-                <span class="reward-item" style="color: var(--color-gold)">{{ r.gold | number }} Gold</span>
+                <ul class="reward-list">
+                  <li class="reward-item" style="color: var(--color-eisen)">{{ r.eisen | number }} Eisen</li>
+                  <li class="reward-item" style="color: var(--color-silber)">{{ r.silber | number }} Silber</li>
+                  <li class="reward-item" style="color: var(--color-gold)">{{ r.gold | number }} Gold</li>
+                </ul>
               </div>
             }
             
             @if (missionProgress() >= 100) {
-              <button class="action-btn collect-btn" (click)="collectReward()" aria-label="Belohnung einsammeln">Belohnung einsammeln</button>
+              <button class="action-btn collect-btn" (click)="collectReward()" aria-label="Collect reward">Belohnung einsammeln</button>
             }
           </div>
         } @else {
@@ -38,57 +40,57 @@
               class="action-btn start-btn" 
               [disabled]="availableMiningShips <= 0" 
               (click)="startMission()"
-              aria-label="Asteroiden-Mission starten"
+              aria-label="Start asteroid mission"
             >
               Mission Starten (60s)
             </button>
           </div>
         }
       </div>
-    </div>
+    </article>
   </section>
 
   <!-- Schiffswerft -->
   <section class="shipyard-section" aria-labelledby="shipyard-heading">
     <h2 id="shipyard-heading">Schiffswerft</h2>
     
-    <div class="ships-grid" role="list">
+    <div class="ships-grid" role="list" aria-label="Shipyard list">
       @for (ship of ships; track ship.id) {
-        <div class="ship-card" role="listitem">
-          <div class="ship-img-wrap" aria-hidden="true">
+        <article class="ship-card" role="listitem">
+          <figure class="ship-img-wrap" aria-hidden="true">
             <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img" />
-          </div>
+          </figure>
           
           <div class="ship-details">
-            <div class="ship-header">
+            <header class="ship-header">
               <h3 class="ship-title">{{ ship.title }}</h3>
-              <span class="ship-count" aria-label="Im Besitz">Besitz: {{ getShipCount(ship.id) }}</span>
-            </div>
+              <span class="ship-count" aria-label="Owned amount">Besitz: {{ getShipCount(ship.id) }}</span>
+            </header>
             
             <p class="ship-desc">{{ ship.description }}</p>
             
-            <div class="ship-cost" aria-label="Baukosten">
+            <div class="ship-cost" aria-label="Build costs">
               <span class="cost-label">Baukosten:</span>
-              <div class="cost-list">
+              <ul class="cost-list" aria-label="Build cost details">
                 @for (c of getCostEntries(ship.cost); track c.name) {
-                  <div class="cost-item" [style.color]="c.colorVar">
+                  <li class="cost-item" [style.color]="c.colorVar">
                     {{ c.amount | number }} {{ c.name }}
-                  </div>
+                  </li>
                 }
-              </div>
+              </ul>
             </div>
             
             <button 
               class="build-btn" 
               [disabled]="!canAfford(ship.cost)"
               (click)="buildShip(ship)"
-              [attr.aria-label]="ship.title + ' bauen'"
+              [attr.aria-label]="'Build ' + ship.title"
             >
               Bauen
             </button>
           </div>
-        </div>
+        </article>
       }
     </div>
   </section>
-</div>
+</main>

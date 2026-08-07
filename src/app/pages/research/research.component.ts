@@ -100,6 +100,18 @@ export class ResearchComponent {
     },
   ];
 
+  /** Defines the display metadata (name and CSS color variable) for each resource type. */
+  private resourceMeta: Record<string, { name: string; colorVar: string }> = {
+    eisen: { name: 'Eisen', colorVar: 'var(--color-eisen)' },
+    silber: { name: 'Silber', colorVar: 'var(--color-silber)' },
+    gold: { name: 'Gold', colorVar: 'var(--color-gold)' },
+    xenonit: { name: 'Xenonit', colorVar: 'var(--color-xenonit)' },
+    energie: { name: 'Energie', colorVar: 'var(--color-energie)' },
+    credits: { name: 'Credits', colorVar: 'var(--color-credits)' },
+    nahrung: { name: 'Nahrung', colorVar: 'var(--color-nahrung)' },
+    personal: { name: 'Personal', colorVar: 'var(--color-personal)' },
+  };
+
   /**
    * Retrieves the current level for a given skill or technology ID.
    * @param id The skill or technology identifier.
@@ -139,14 +151,9 @@ export class ResearchComponent {
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
     const cost: Partial<GameResources> = {};
     const mult = Math.pow(multiplier, currentLevel);
-    if (baseCost.eisen) cost.eisen = Math.floor(baseCost.eisen * mult);
-    if (baseCost.silber) cost.silber = Math.floor(baseCost.silber * mult);
-    if (baseCost.gold) cost.gold = Math.floor(baseCost.gold * mult);
-    if (baseCost.xenonit) cost.xenonit = Math.floor(baseCost.xenonit * mult);
-    if (baseCost.energie) cost.energie = Math.floor(baseCost.energie * mult);
-    if (baseCost.credits) cost.credits = Math.floor(baseCost.credits * mult);
-    if (baseCost.nahrung) cost.nahrung = Math.floor(baseCost.nahrung * mult);
-    if (baseCost.personal) cost.personal = Math.floor(baseCost.personal * mult);
+    for (const [key, val] of Object.entries(baseCost)) {
+      if (val !== undefined) (cost as any)[key] = Math.floor(val * mult);
+    }
     return cost;
   }
 
@@ -156,16 +163,11 @@ export class ResearchComponent {
    * @returns Array of objects containing name, amount, and CSS color variable.
    */
   getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
-    const entries: { name: string; amount: number; colorVar: string }[] = [];
-    if (cost.eisen) entries.push({ name: 'Eisen', amount: cost.eisen, colorVar: 'var(--color-eisen)' });
-    if (cost.silber) entries.push({ name: 'Silber', amount: cost.silber, colorVar: 'var(--color-silber)' });
-    if (cost.gold) entries.push({ name: 'Gold', amount: cost.gold, colorVar: 'var(--color-gold)' });
-    if (cost.xenonit) entries.push({ name: 'Xenonit', amount: cost.xenonit, colorVar: 'var(--color-xenonit)' });
-    if (cost.energie) entries.push({ name: 'Energie', amount: cost.energie, colorVar: 'var(--color-energie)' });
-    if (cost.credits) entries.push({ name: 'Credits', amount: cost.credits, colorVar: 'var(--color-credits)' });
-    if (cost.nahrung) entries.push({ name: 'Nahrung', amount: cost.nahrung, colorVar: 'var(--color-nahrung)' });
-    if (cost.personal) entries.push({ name: 'Personal', amount: cost.personal, colorVar: 'var(--color-personal)' });
-    return entries;
+    return Object.entries(cost).map(([key, amount]) => ({
+      name: this.resourceMeta[key].name,
+      amount: amount as number,
+      colorVar: this.resourceMeta[key].colorVar,
+    }));
   }
 
   /**
@@ -181,6 +183,7 @@ export class ResearchComponent {
    * Processes the purchase or upgrade action for a skill.
    * @param id The identifier of the technology or upgrade.
    * @param cost The cost of the transaction.
+   * @returns A promise that resolves when the upgrade is processed.
    */
   async upgradeSkill(id: string, cost: Partial<GameResources>): Promise<void> {
     if (!this.canAfford(cost)) return;
@@ -191,4 +194,3 @@ export class ResearchComponent {
     }
   }
 }
-

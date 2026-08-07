@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { Location } from '@angular/common';
 
-/** Displays the legal notice / imprint page with terms and conditions. */
+/**
+ * Component that displays the legal notice and imprint page.
+ * Provides static terms, conditions, and a mechanism to navigate back.
+ */
 @Component({
   selector: 'app-legal-notice',
   standalone: true,
@@ -10,11 +13,12 @@ import { Location } from '@angular/common';
   styleUrl: './legal-notice.scss',
 })
 export class LegalNotice {
+  /** Angular service used to interact with the browser's URL history. */
   private location = inject(Location);
 
   /**
-   * Navigates back to the previous page.
-   * @param event - The click event to prevent default anchor behavior.
+   * Navigates the user back to the previous page in their history stack.
+   * @param event - The DOM click event, used to prevent default anchor navigation.
    */
   goBack(event: Event): void {
     event.preventDefault();

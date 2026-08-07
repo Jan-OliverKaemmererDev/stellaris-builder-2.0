@@ -1,99 +1,99 @@
-<div class="energy-container">
-  <h1 class="page-title">Energie</h1>
+<section class="energy-container" aria-labelledby="energy-title">
+  <h1 class="page-title" id="energy-title">Energie</h1>
 
-  <div class="buildings-list" role="list" aria-label="Kraftwerke Liste">
+  <div class="buildings-list" role="list" aria-label="Power plants list">
     @for (item of items; track item.id) {
       <div class="building-row" role="listitem">
         
         <!-- Main Node -->
-        <div class="skill-node" [class.locked]="!isUnlocked(item)">
-          <div class="node-image-wrap">
+        <article class="skill-node" [class.locked]="!isUnlocked(item)" [attr.aria-label]="item.title + ' node'">
+          <figure class="node-image-wrap">
             <img [src]="item.imagePath" alt="" class="node-image" role="presentation" />
             
             @if (!isUnlocked(item)) {
-              <div class="lock-overlay">
+              <div class="lock-overlay" aria-hidden="true">
                 <span class="lock-icon">🔒</span>
-                <div class="lock-req">
+                <p class="lock-req">
                   Benötigt {{ item.requiredNode?.id }} Lvl {{ item.requiredNode?.level }}
-                </div>
+                </p>
               </div>
             }
-          </div>
+          </figure>
 
           <div class="node-details">
-            <h3 class="node-title">{{ item.title }}</h3>
-            <div class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(item.id)">Level: {{ getSkillLevel(item.id) }}</div>
+            <h2 class="node-title">{{ item.title }}</h2>
+            <p class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(item.id)">Level: {{ getSkillLevel(item.id) }}</p>
             
             <div class="node-cost" aria-label="Kosten">
               <span class="cost-label">Kosten:</span>
-              <div class="cost-list">
+              <ul class="cost-list" aria-label="Upgrade costs">
                 @for (c of getCostEntries(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id))); track c.name) {
-                  <div class="cost-item" [style.color]="c.colorVar">
+                  <li class="cost-item" [style.color]="c.colorVar">
                     {{ c.amount | number }} {{ c.name }}
-                  </div>
+                  </li>
                 }
-              </div>
+              </ul>
             </div>
             
             <button 
               class="upgrade-btn" 
               [disabled]="!isUnlocked(item) || !canAfford(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))"
               (click)="upgradeSkill(item.id, getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))"
-              [attr.aria-label]="item.title + ' ausbauen'"
+              [attr.aria-label]="'Upgrade ' + item.title"
             >
               Ausbauen
             </button>
           </div>
-        </div>
+        </article>
 
         <!-- Upgrades Section -->
-        <div class="building-upgrades-section" role="list" [attr.aria-label]="'Upgrades für ' + item.title">
+        <div class="building-upgrades-section" role="list" [attr.aria-label]="'Upgrades for ' + item.title">
           @for (upgrade of item.upgrades; track upgrade.id) {
             
             <!-- Connector Line -->
-            <div class="skill-connector" [class.unlocked]="isUpgradeUnlocked(item.id, upgrade)" aria-hidden="true"></div>
+            <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(item.id, upgrade)" aria-hidden="true"></span>
 
-            <div class="skill-node" [class.locked]="!isUpgradeUnlocked(item.id, upgrade)" role="listitem">
-              <div class="node-image-wrap">
-                <img [src]="upgrade.imagePath" [alt]="upgrade.title" class="node-image" />
+            <article class="skill-node" [class.locked]="!isUpgradeUnlocked(item.id, upgrade)" role="listitem" [attr.aria-label]="upgrade.title + ' upgrade node'">
+              <figure class="node-image-wrap">
+                <img [src]="upgrade.imagePath" [alt]="upgrade.title + ' icon'" class="node-image" />
                 
                 @if (!isUpgradeUnlocked(item.id, upgrade)) {
-                  <div class="lock-overlay">
+                  <div class="lock-overlay" aria-hidden="true">
                     <span class="lock-icon">🔒</span>
-                    <div class="lock-req">
+                    <p class="lock-req">
                       {{ item.title }} Lvl {{ upgrade.requiredLevel }}
-                    </div>
+                    </p>
                   </div>
                 }
-              </div>
+              </figure>
 
               <div class="node-details">
-                <h3 class="node-title">{{ upgrade.title }}</h3>
-                <div class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(upgrade.id)">Level: {{ getSkillLevel(upgrade.id) }}</div>
+                <h2 class="node-title">{{ upgrade.title }}</h2>
+                <p class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(upgrade.id)">Level: {{ getSkillLevel(upgrade.id) }}</p>
                 
-                <div class="upgrade-bonus" style="color: var(--color-success); font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;" aria-label="Produktionsbonus">+{{ getSkillLevel(upgrade.id) * 5 }}% Leistung</div>
+                <p class="upgrade-bonus" aria-label="Production bonus">+{{ getSkillLevel(upgrade.id) * 5 }}% Leistung</p>
                 
                 <div class="node-cost" aria-label="Kosten">
                   <span class="cost-label">Kosten:</span>
-                  <div class="cost-list">
+                  <ul class="cost-list" aria-label="Upgrade costs">
                     @for (c of getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id))); track c.name) {
-                      <div class="cost-item" [style.color]="c.colorVar">
+                      <li class="cost-item" [style.color]="c.colorVar">
                         {{ c.amount | number }} {{ c.name }}
-                      </div>
+                      </li>
                     }
-                  </div>
+                  </ul>
                 </div>
                 
                 <button 
                   class="upgrade-btn" 
                   [disabled]="!isUpgradeUnlocked(item.id, upgrade) || !canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
                   (click)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
-                  [attr.aria-label]="upgrade.title + ' ausbauen'"
+                  [attr.aria-label]="'Upgrade ' + upgrade.title"
                 >
                   Ausbauen
                 </button>
               </div>
-            </div>
+            </article>
 
           }
         </div>
@@ -101,4 +101,4 @@
       </div>
     }
   </div>
-</div>
+</section>

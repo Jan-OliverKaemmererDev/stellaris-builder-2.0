@@ -6,7 +6,7 @@ import { OfflineProgressDialog } from '../components/offline-progress-dialog/off
 
 /**
  * Shell component that wraps all authenticated game pages.
- * Provides the header, sidebar navigation, footer, and user dropdown menu.
+ * Provides the top header, sidebar navigation, footer, and the user dropdown menu.
  */
 @Component({
   selector: 'app-game-layout',
@@ -16,13 +16,19 @@ import { OfflineProgressDialog } from '../components/offline-progress-dialog/off
   styleUrl: './game-layout.scss',
 })
 export class GameLayout {
+  /** Authentication service to retrieve the current user and sign out. */
   private auth = inject(Auth);
+
+  /** Router service for navigating after logging out. */
   private router = inject(Router);
 
-  /** Whether the user dropdown menu is currently open. */
+  /** Signal holding the current visibility state of the user dropdown menu. */
   dropdownOpen = signal(false);
 
-  /** Derives a two-letter initial string from the current user's profile. */
+  /**
+   * Derives a two-letter initial string from the current user's profile.
+   * @returns A string representing the user's initials, e.g., 'JD'.
+   */
   get userInitials(): string {
     const user = this.auth.currentUser;
     if (!user) return '?';
@@ -33,8 +39,9 @@ export class GameLayout {
   }
 
   /**
-   * Extracts up to two initials from a display name.
-   * @param name - The user's display name.
+   * Extracts up to two initials from a provided display name.
+   * @param name - The user's full display name.
+   * @returns The extracted initials formatted as uppercase.
    */
   private getInitialsFromName(name: string): string {
     const parts = name.trim().split(/\s+/);
@@ -44,20 +51,25 @@ export class GameLayout {
     return name.substring(0, 2).toUpperCase();
   }
 
-  /** Returns the commander display name for the greeting. */
+  /**
+   * Retrieves the commander's display name for greetings in the UI.
+   * @returns The display name or a fallback title if none is set.
+   */
   get commanderName(): string {
     const user = this.auth.currentUser;
     if (!user) return 'Commander';
     return user.displayName || (user.isAnonymous ? 'Gast-Commander' : 'Commander');
   }
 
-  /** Toggles the user dropdown menu open/closed. */
+  /**
+   * Toggles the user dropdown menu open or closed.
+   */
   toggleDropdown(): void {
     this.dropdownOpen.set(!this.dropdownOpen());
   }
 
   /**
-   * Closes the dropdown when clicking outside the user menu.
+   * Closes the dropdown menu when a click occurs outside the user menu area.
    * @param event - The document click event.
    */
   @HostListener('document:click', ['$event'])
@@ -69,15 +81,18 @@ export class GameLayout {
   }
 
   /**
-   * Closes the dropdown when the Escape key is pressed.
-   * @param event - The keyboard event.
+   * Closes the dropdown menu when the Escape key is pressed.
+   * @param _event - The global keyboard event.
    */
   @HostListener('document:keydown.escape', ['$event'])
   onEscapePress(_event: Event): void {
     this.dropdownOpen.set(false);
   }
 
-  /** Signs the user out and navigates back to the landing page. */
+  /**
+   * Signs the current user out of the application and redirects to the landing page.
+   * @returns A promise that resolves when the logout process completes.
+   */
   async logout(): Promise<void> {
     try {
       await signOut(this.auth);

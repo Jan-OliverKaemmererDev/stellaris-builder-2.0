@@ -1,12 +1,12 @@
 <div class="game-shell">
   <!-- Skip to Content Link (WCAG) -->
-  <a class="skip-link" href="#main-content">Zum Hauptinhalt springen</a>
+  <a class="skip-link" href="#main-content" aria-label="Skip to main content">Zum Hauptinhalt springen</a>
 
   <!-- Side Menu -->
   <app-side-menu />
 
   <!-- Header Bar -->
-  <header class="game-header" id="game-header">
+  <header class="game-header" id="game-header" aria-label="Top bar">
     <div class="header-left"></div>
 
     <div class="header-right">
@@ -18,36 +18,38 @@
           id="user-avatar-btn"
           [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
           aria-haspopup="true"
-          aria-label="Benutzermenü öffnen"
+          aria-label="Open user menu"
         >
           {{ userInitials }}
         </button>
 
         @if (dropdownOpen()) {
-          <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="Benutzermenü">
-            <div class="dropdown-header">
+          <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="User menu">
+            <header class="dropdown-header">
               <span class="dropdown-name">{{ commanderName }}</span>
-            </div>
-            <div class="dropdown-divider" role="separator"></div>
+            </header>
+            <hr class="dropdown-divider" role="separator">
             <a
               routerLink="/privacy-policy"
               class="dropdown-item"
               id="dropdown-privacy"
               role="menuitem"
+              aria-label="Privacy Policy"
             >
               <span class="dropdown-icon" aria-hidden="true">🔒</span>
               Privacy Policy
             </a>
-            <a routerLink="/legal-notice" class="dropdown-item" id="dropdown-legal" role="menuitem">
+            <a routerLink="/legal-notice" class="dropdown-item" id="dropdown-legal" role="menuitem" aria-label="Legal Notice">
               <span class="dropdown-icon" aria-hidden="true">📋</span>
               Legal Notice
             </a>
-            <div class="dropdown-divider" role="separator"></div>
+            <hr class="dropdown-divider" role="separator">
             <button
               class="dropdown-item logout"
               (click)="logout()"
               id="dropdown-logout"
               role="menuitem"
+              aria-label="Log out"
             >
               <span class="dropdown-icon" aria-hidden="true">🚪</span>
               Logout
@@ -59,15 +61,15 @@
   </header>
 
   <!-- Main Content -->
-  <main class="game-content" id="main-content">
+  <main class="game-content" id="main-content" aria-label="Main game content">
     <router-outlet></router-outlet>
   </main>
 
   <!-- Footer -->
-  <footer class="game-footer" id="game-footer">
-    <a routerLink="/privacy-policy">Privacy Policy</a>
+  <footer class="game-footer" id="game-footer" aria-label="Site footer">
+    <a routerLink="/privacy-policy" aria-label="Privacy Policy">Privacy Policy</a>
     <span class="footer-separator" aria-hidden="true">•</span>
-    <a routerLink="/legal-notice">Legal Notice</a>
+    <a routerLink="/legal-notice" aria-label="Legal Notice">Legal Notice</a>
   </footer>
 
   <app-offline-progress-dialog></app-offline-progress-dialog>

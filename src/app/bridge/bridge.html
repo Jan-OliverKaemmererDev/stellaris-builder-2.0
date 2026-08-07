@@ -1,4 +1,4 @@
-<div class="bridge-dashboard">
+<main class="bridge-dashboard" aria-label="Bridge command dashboard">
   <!-- Commander Welcome -->
   <section class="commander-section" id="commander-welcome">
     <h1 class="page-title">
@@ -10,17 +10,17 @@
   </section>
 
   <!-- Dashboard Grid -->
-  <div class="dashboard-grid">
+  <section class="dashboard-grid" aria-label="Dashboard overview">
 
     <!-- ═══ Resources Card ═══ -->
-    <div class="dash-card resources-card" id="card-resources">
-      <div class="card-header">
+    <article class="dash-card resources-card" id="card-resources" aria-label="Resources overview">
+      <header class="card-header">
         <h2 class="card-title">Rohstoffe</h2>
-        <span class="card-badge">Live</span>
-      </div>
+        <span class="card-badge" aria-label="Live data indicator">Live</span>
+      </header>
       <div class="card-body">
         @for (res of resources(); track res.name) {
-          <div class="resource-row">
+          <article class="resource-row" [attr.aria-label]="res.name + ' resource status'">
             <div class="resource-info">
               <span class="resource-icon" aria-hidden="true">{{ res.icon }}</span>
               <span class="resource-name">{{ res.name }}</span>
@@ -32,7 +32,7 @@
                 [attr.aria-valuenow]="res.current"
                 [attr.aria-valuemin]="0"
                 [attr.aria-valuemax]="res.max"
-                [attr.aria-label]="res.name + ' Vorrat'"
+                [attr.aria-label]="res.name + ' supply level'"
               >
                 <div
                   class="resource-bar-fill"
@@ -48,23 +48,23 @@
                 <span class="resource-max">/ {{ res.max | number }}</span>
               </div>
             </div>
-            <div class="resource-rate" [class.positive]="res.rate > 0">
+            <span class="resource-rate" [class.positive]="res.rate > 0">
               +{{ res.rate }}/h
-            </div>
-          </div>
+            </span>
+          </article>
         }
       </div>
-    </div>
+    </article>
 
     <!-- ═══ Supply Card ═══ -->
-    <div class="dash-card supply-card" id="card-supply">
-      <div class="card-header">
+    <article class="dash-card supply-card" id="card-supply" aria-label="Supply and personnel overview">
+      <header class="card-header">
         <h2 class="card-title">Versorgung &amp; Personal</h2>
-        <span class="card-badge">Live</span>
-      </div>
+        <span class="card-badge" aria-label="Live data indicator">Live</span>
+      </header>
       <div class="card-body">
         @for (res of supplyResources(); track res.name) {
-          <div class="resource-row">
+          <article class="resource-row" [attr.aria-label]="res.name + ' resource status'">
             <div class="resource-info">
               <span class="resource-icon" aria-hidden="true">{{ res.icon }}</span>
               <span class="resource-name">{{ res.name }}</span>
@@ -76,7 +76,7 @@
                 [attr.aria-valuenow]="res.current"
                 [attr.aria-valuemin]="0"
                 [attr.aria-valuemax]="res.max"
-                [attr.aria-label]="res.name + ' Vorrat'"
+                [attr.aria-label]="res.name + ' supply level'"
               >
                 <div
                   class="resource-bar-fill"
@@ -92,70 +92,70 @@
                 <span class="resource-max">/ {{ res.max | number }}</span>
               </div>
             </div>
-            <div class="resource-rate" [class.positive]="res.rate > 0">
+            <span class="resource-rate" [class.positive]="res.rate > 0">
               +{{ res.rate }}/h
-            </div>
-          </div>
+            </span>
+          </article>
         }
       </div>
-    </div>
+    </article>
 
     <!-- ═══ Energy Card (Battery) ═══ -->
-    <div class="dash-card energy-card" id="card-energy">
-      <div class="card-header">
+    <article class="dash-card energy-card" id="card-energy" aria-label="Energy grid status">
+      <header class="card-header">
         <h2 class="card-title"><span aria-hidden="true">⚡</span> Energie-Netz</h2>
         <span class="card-badge" [ngClass]="energyColorClass">{{ energyPercentage() | number:'1.0-0' }}% Frei</span>
-      </div>
+      </header>
       <div class="card-body energy-body">
 
-        <div class="battery-container" role="progressbar" [attr.aria-valuenow]="energyPercentage()" aria-valuemin="0" aria-valuemax="100" aria-label="Energiekapazität">
+        <figure class="battery-container" role="progressbar" [attr.aria-valuenow]="energyPercentage()" aria-valuemin="0" aria-valuemax="100" aria-label="Energy capacity level">
           <div class="battery-body" [ngClass]="energyColorClass">
             <div class="battery-fill" [style.width.%]="energyPercentage()"></div>
           </div>
           <div class="battery-cap" aria-hidden="true"></div>
-        </div>
+        </figure>
 
-        <div class="energy-details">
+        <dl class="energy-details" aria-label="Energy statistics">
           <div class="energy-stat">
-            <span class="stat-label">Produziert (Kapazität)</span>
-            <span class="stat-value text-success">{{ energyProduced() | number }}</span>
+            <dt class="stat-label">Produziert (Kapazität)</dt>
+            <dd class="stat-value text-success">{{ energyProduced() | number }}</dd>
           </div>
           <div class="energy-stat">
-            <span class="stat-label">Verbraucht (Unterhalt)</span>
-            <span class="stat-value text-danger">{{ (energyProduced() - availableEnergy()) | number }}</span>
+            <dt class="stat-label">Verbraucht (Unterhalt)</dt>
+            <dd class="stat-value text-danger">{{ (energyProduced() - availableEnergy()) | number }}</dd>
           </div>
           <div class="energy-stat highlight">
-            <span class="stat-label">Freie Energie</span>
-            <span class="stat-value">{{ availableEnergy() | number }}</span>
+            <dt class="stat-label">Freie Energie</dt>
+            <dd class="stat-value">{{ availableEnergy() | number }}</dd>
           </div>
-        </div>
+        </dl>
 
       </div>
-    </div>
+    </article>
 
     <!-- ═══ Fleet Card ═══ -->
-    <div class="dash-card fleet-card" id="card-fleet">
-      <div class="card-header">
+    <article class="dash-card fleet-card" id="card-fleet" aria-label="Fleet composition">
+      <header class="card-header">
         <h2 class="card-title"><span aria-hidden="true">🚀</span> Flotte</h2>
-        <span class="card-total">{{ totalShips }} Schiffe</span>
-      </div>
+        <span class="card-total" aria-label="Total ship count">{{ totalShips }} Schiffe</span>
+      </header>
       <div class="card-body fleet-body">
         @for (ship of fleet(); track ship.name) {
-          <div class="fleet-unit">
+          <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'">
             <span class="fleet-icon" aria-hidden="true">{{ ship.icon }}</span>
             <div class="fleet-info">
               <span class="fleet-name">{{ ship.name }}</span>
               <span class="fleet-count">{{ ship.count }}</span>
             </div>
-          </div>
+          </article>
         }
       </div>
-    </div>
+    </article>
 
     <!-- ═══ Trading Card ═══ -->
     @if (hasTradingPost()) {
-      <div class="dash-card trade-card" id="card-trade">
-        <div class="card-header">
+      <article class="dash-card trade-card" id="card-trade" [attr.aria-label]="hasInterstellarMarket() ? 'Interstellar market' : 'Trading post'">
+        <header class="card-header">
           <h2 class="card-title">
             @if (hasInterstellarMarket()) {
               <span aria-hidden="true">🌌</span> Interstellarer Markt
@@ -163,61 +163,61 @@
               <span aria-hidden="true">🏪</span> Handelsposten
             }
           </h2>
-          <div class="trade-multipliers" role="group" aria-label="Handelsmenge wählen">
+          <div class="trade-multipliers" role="group" aria-label="Select trade quantity">
             <button class="multi-btn" [class.active]="tradeMultiplier() === 100" (click)="setMultiplier(100)" [attr.aria-pressed]="tradeMultiplier() === 100 ? 'true' : 'false'">x100</button>
             <button class="multi-btn" [class.active]="tradeMultiplier() === 1000" (click)="setMultiplier(1000)" [attr.aria-pressed]="tradeMultiplier() === 1000 ? 'true' : 'false'">x1K</button>
             <button class="multi-btn" [class.active]="tradeMultiplier() === 10000" (click)="setMultiplier(10000)" [attr.aria-pressed]="tradeMultiplier() === 10000 ? 'true' : 'false'">x10K</button>
           </div>
-        </div>
+        </header>
         <div class="card-body trade-body">
 
           <!-- Sell Section -->
-          <div class="trade-section">
+          <section class="trade-section" aria-label="Sell resources">
             <h3 class="section-title">Verkaufen</h3>
-            <div class="trade-grid">
+            <ul class="trade-grid" role="list">
               @for (res of sellableResources; track res.id) {
-                <div class="trade-item">
+                <li class="trade-item" [attr.aria-label]="res.name + ' trade option'">
                   <div class="item-info">
                     <span class="icon" aria-hidden="true">{{ res.icon }}</span>
                     <span class="name">{{ res.name }}</span>
                   </div>
                   <div class="item-action">
                     <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | number }} 🪙</span>
-                    <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)" [attr.aria-label]="res.name + ' verkaufen'">
+                    <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)" [attr.aria-label]="'Sell ' + res.name">
                       Verkaufen
                     </button>
                   </div>
-                </div>
+                </li>
               }
-            </div>
-          </div>
+            </ul>
+          </section>
 
           <!-- Buy Section -->
           @if (hasInterstellarMarket()) {
-            <div class="trade-section mt-3">
+            <section class="trade-section mt-3" aria-label="Buy resources">
               <h3 class="section-title">Einkaufen</h3>
-              <div class="trade-grid">
+              <ul class="trade-grid" role="list">
                 @for (res of buyableResources; track res.id) {
-                  <div class="trade-item">
+                  <li class="trade-item" [attr.aria-label]="res.name + ' trade option'">
                     <div class="item-info">
                       <span class="icon" aria-hidden="true">{{ res.icon }}</span>
                       <span class="name">{{ res.name }}</span>
                     </div>
                     <div class="item-action">
                       <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | number }} 🪙</span>
-                      <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)" [attr.aria-label]="res.name + ' kaufen'">
+                      <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)" [attr.aria-label]="'Buy ' + res.name">
                         Kaufen
                       </button>
                     </div>
-                  </div>
+                  </li>
                 }
-              </div>
-            </div>
+              </ul>
+            </section>
           }
 
         </div>
-      </div>
+      </article>
     }
 
-  </div>
-</div>
+  </section>
+</main>

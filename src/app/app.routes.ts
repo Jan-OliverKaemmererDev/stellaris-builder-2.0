@@ -4,7 +4,6 @@ import { LegalNotice } from './legal-notice/legal-notice';
 import { PrivacyPolicy } from './privacy-policy/privacy-policy';
 import { GameLayout } from './game-layout/game-layout';
 import { Bridge } from './bridge/bridge';
-import { PlaceholderPage } from './placeholder-page/placeholder-page';
 import { FleetComponent } from './pages/fleet/fleet.component';
 import { authGuard } from './guards/auth.guard';
 import { MiningComponent } from './pages/mining/mining.component';

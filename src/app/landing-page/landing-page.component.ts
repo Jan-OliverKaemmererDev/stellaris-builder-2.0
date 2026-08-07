@@ -6,7 +6,7 @@ import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Router, RouterLink } from '@angular/router';
 
 /**
- * Landing page with login/registration forms on a 3D rotating planet.
+ * Landing page with login and registration forms on a 3D rotating planet.
  * Supports email/password authentication and anonymous guest login.
  */
 @Component({
@@ -17,8 +17,13 @@ import { Router, RouterLink } from '@angular/router';
   styleUrls: ['./landing-page.component.scss'],
 })
 export class LandingPageComponent {
+  /** Authentication service to retrieve the current user and sign out. */
   private auth = inject(Auth);
+  
+  /** Router service for navigating after logging in. */
   private router = inject(Router);
+  
+  /** Firestore service for creating and updating user documents. */
   private firestore = inject(Firestore);
 
   /** Whether the form is in login mode (`true`) or registration mode (`false`). */
@@ -42,10 +47,12 @@ export class LandingPageComponent {
   /** Current success message to display, or `null`. */
   successMessage = signal<string | null>(null);
 
-  /** Whether an auth operation is in progress. */
+  /** Whether an authentication operation is currently in progress. */
   isLoading = signal(false);
 
-  /** Toggles between login and registration mode, resetting messages. */
+  /**
+   * Toggles between login and registration mode, resetting all fields and messages.
+   */
   toggleMode(): void {
     this.isLoginMode.set(!this.isLoginMode());
     this.errorMessage.set(null);
@@ -54,21 +61,16 @@ export class LandingPageComponent {
     this.privacyAccepted.set(false);
   }
 
-  /** Handles form submission: delegates to login or registration handler. */
+  /**
+   * Handles the primary form submission by delegating to login or registration.
+   * @returns A promise that resolves when the auth operation completes.
+   */
   async onSubmit(): Promise<void> {
     if (!this.validateFields()) return;
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-
+    this.resetAuthUI();
     try {
-      if (this.isLoginMode()) {
-        await this.handleLogin();
-      } else {
-        await this.handleRegistration();
-      }
+      await this.executeAuth();
     } catch (error: unknown) {
-      console.error(error);
       this.handleAuthError(error);
     } finally {
       this.isLoading.set(false);
@@ -76,8 +78,29 @@ export class LandingPageComponent {
   }
 
   /**
+   * Resets the authentication UI states (loading, errors, success) before an operation.
+   */
+  private resetAuthUI(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+  }
+
+  /**
+   * Executes the authentication based on the current mode (login or registration).
+   * @returns A promise that resolves after the respective operation finishes.
+   */
+  private async executeAuth(): Promise<void> {
+    if (this.isLoginMode()) {
+      await this.handleLogin();
+    } else {
+      await this.handleRegistration();
+    }
+  }
+
+  /**
    * Validates required fields and privacy acceptance.
-   * Sets an error message and returns `false` if validation fails.
+   * @returns `true` if all fields are valid, `false` otherwise.
    */
   private validateFields(): boolean {
     if (!this.email() || !this.password() || (!this.isLoginMode() && !this.commanderName())) {
@@ -93,18 +116,24 @@ export class LandingPageComponent {
     return true;
   }
 
-  /** Signs in with email and password, then navigates to the bridge. */
+  /**
+   * Signs in with email and password, then navigates to the bridge.
+   * @returns A promise that resolves when login is successful.
+   */
   private async handleLogin(): Promise<void> {
     await signInWithEmailAndPassword(this.auth, this.email(), this.password());
     this.router.navigate(['/bridge']);
   }
 
-  /** Creates a new account, saves the commander profile, and switches to login mode. */
+  /**
+   * Creates a new account, saves the commander profile, and switches to login mode.
+   * @returns A promise that resolves when registration is successful.
+   */
   private async handleRegistration(): Promise<void> {
-    const userCredential = await createUserWithEmailAndPassword(this.auth, this.email(), this.password());
-    if (userCredential.user) {
-      await updateProfile(userCredential.user, { displayName: this.commanderName() });
-      await this.createUserDocument(userCredential.user.uid);
+    const cred = await createUserWithEmailAndPassword(this.auth, this.email(), this.password());
+    if (cred.user) {
+      await updateProfile(cred.user, { displayName: this.commanderName() });
+      await this.createUserDocument(cred.user.uid);
     }
     this.isLoginMode.set(true);
     this.password.set('');
@@ -114,27 +143,27 @@ export class LandingPageComponent {
 
   /**
    * Creates a Firestore user document with profile data.
-   * @param uid - The new user's UID.
+   * @param uid - The new user's unique identifier.
+   * @returns A promise that resolves when the document is created.
    */
   private async createUserDocument(uid: string): Promise<void> {
     const userDocRef = doc(this.firestore, `users/${uid}`);
-    await setDoc(userDocRef, {
-      uid,
-      email: this.email(),
-      commanderName: this.commanderName(),
+    const data = {
+      uid, email: this.email(), commanderName: this.commanderName(),
       createdAt: new Date().toISOString(),
-    });
+    };
+    await setDoc(userDocRef, data);
   }
 
-  /** Signs in anonymously and creates a guest user document. */
+  /**
+   * Signs in anonymously and creates a guest user document.
+   * @returns A promise that resolves when guest login is successful.
+   */
   async loginAsGuest(): Promise<void> {
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-
+    this.resetAuthUI();
     try {
-      const userCredential = await signInAnonymously(this.auth);
-      await this.createGuestDocument(userCredential.user.uid);
+      const cred = await signInAnonymously(this.auth);
+      await this.createGuestDocument(cred.user.uid);
       this.router.navigate(['/bridge']);
     } catch (error: unknown) {
       console.error(error);
@@ -146,46 +175,33 @@ export class LandingPageComponent {
 
   /**
    * Creates or merges a Firestore document for a guest user.
-   * @param uid - The anonymous user's UID.
+   * @param uid - The anonymous user's unique identifier.
+   * @returns A promise that resolves when the document is merged.
    */
   private async createGuestDocument(uid: string): Promise<void> {
     const userDocRef = doc(this.firestore, `users/${uid}`);
-    await setDoc(
-      userDocRef,
-      {
-        uid,
-        email: null,
-        commanderName: `Gast-${uid.substring(0, 5)}`,
-        isGuest: true,
-        createdAt: new Date().toISOString(),
-      },
-      { merge: true },
-    );
+    const data = {
+      uid, email: null, isGuest: true,
+      commanderName: `Gast-${uid.substring(0, 5)}`,
+      createdAt: new Date().toISOString(),
+    };
+    await setDoc(userDocRef, data, { merge: true });
   }
 
   /**
    * Maps Firebase Auth error codes to German user-facing messages.
-   * @param error - The caught authentication error.
+   * @param error - The caught authentication error object.
    */
   private handleAuthError(error: unknown): void {
     const code = (error as { code?: string })?.code;
-    switch (code) {
-      case 'auth/invalid-email':
-        this.errorMessage.set('Ungültige E-Mail-Adresse.');
-        break;
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-      case 'auth/invalid-credential':
-        this.errorMessage.set('E-Mail oder Passwort ist falsch.');
-        break;
-      case 'auth/email-already-in-use':
-        this.errorMessage.set('Diese E-Mail wird bereits verwendet.');
-        break;
-      case 'auth/weak-password':
-        this.errorMessage.set('Das Passwort muss mindestens 6 Zeichen lang sein.');
-        break;
-      default:
-        this.errorMessage.set('Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es später.');
-    }
+    const errorMap: Record<string, string> = {
+      'auth/invalid-email': 'Ungültige E-Mail-Adresse.',
+      'auth/user-not-found': 'E-Mail oder Passwort ist falsch.',
+      'auth/wrong-password': 'E-Mail oder Passwort ist falsch.',
+      'auth/invalid-credential': 'E-Mail oder Passwort ist falsch.',
+      'auth/email-already-in-use': 'Diese E-Mail wird bereits verwendet.',
+      'auth/weak-password': 'Das Passwort muss mindestens 6 Zeichen lang sein.',
+    };
+    this.errorMessage.set(errorMap[code || ''] || 'Ein unerwarteter Fehler ist aufgetreten.');
   }
 }
