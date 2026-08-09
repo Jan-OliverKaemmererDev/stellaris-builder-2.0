@@ -91,25 +91,53 @@
   top: calc(100% + 8px);
   right: 0;
   min-width: 220px;
-  background: rgba(13, 17, 23, 0.95);
+  background: rgba(35, 43, 56, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   box-shadow: var(--glass-shadow), 0 0 30px rgba(0, 0, 0, 0.4);
   padding: var(--space-sm) 0;
-  animation: dropdownFadeIn 0.2s ease;
+  animation: pixelReveal 0.3s step-end forwards;
+  transform-origin: top right;
   z-index: 200;
 }
 
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+$pixel-cols: 8;
+$pixel-rows: 6;
+$pixel-max-dist: ($pixel-cols - 1) + ($pixel-rows - 1);
+
+@keyframes pixelReveal {
+  @for $s from 0 through $pixel-max-dist {
+    $percentage: ($s / $pixel-max-dist) * 100%;
+    
+    $image-list: ();
+    $position-list: ();
+    $size-list: ();
+    
+    @for $r from 0 to $pixel-rows {
+      @for $c from 0 to $pixel-cols {
+        $d: ($pixel-cols - 1 - $c) + $r;
+        @if $d <= $s {
+           $image-list: append($image-list, linear-gradient(#000, #000), comma);
+           $pos-x: if($pixel-cols == 1, 0, ($c / ($pixel-cols - 1)) * 100%);
+           $pos-y: if($pixel-rows == 1, 0, ($r / ($pixel-rows - 1)) * 100%);
+           $position-list: append($position-list, #{$pos-x} #{$pos-y}, comma);
+           $size-list: append($size-list, calc(100% / #{$pixel-cols}) calc(100% / #{$pixel-rows}), comma);
+        }
+      }
+    }
+    
+    #{$percentage} {
+       -webkit-mask-image: $image-list;
+       -webkit-mask-position: $position-list;
+       -webkit-mask-size: $size-list;
+       -webkit-mask-repeat: no-repeat;
+       mask-image: $image-list;
+       mask-position: $position-list;
+       mask-size: $size-list;
+       mask-repeat: no-repeat;
+    }
   }
 }
 
