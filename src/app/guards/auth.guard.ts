@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { Auth } from '@angular/fire/auth';
+import { Auth, authState } from '@angular/fire/auth';
+import { map, take } from 'rxjs';
 
 /**
  * Route guard that restricts access to authenticated users only.
@@ -10,9 +11,13 @@ export const authGuard: CanActivateFn = () => {
   const auth = inject(Auth);
   const router = inject(Router);
 
-  if (auth.currentUser) {
-    return true;
-  }
-
-  return router.createUrlTree(['/']);
+  return authState(auth).pipe(
+    take(1),
+    map(user => {
+      if (user) {
+        return true;
+      }
+      return router.createUrlTree(['/']);
+    })
+  );
 };

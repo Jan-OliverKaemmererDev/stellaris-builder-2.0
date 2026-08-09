@@ -89,7 +89,7 @@
 
   &:hover {
     border-color: var(--glass-border-hover);
-    box-shadow: var(--glass-shadow), 0 0 40px rgba(79, 172, 254, 0.06);
+    box-shadow: var(--glass-shadow);
   }
 }
 
@@ -201,27 +201,6 @@
   border-radius: 4px;
   transition: width 1s ease;
   position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.2) 50%,
-      transparent 100%
-    );
-    animation: shimmer 2s ease-in-out infinite;
-  }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
 }
 
 .resource-values {
@@ -341,9 +320,9 @@
   transition: width 0.5s ease-out, background-color 0.5s ease;
 }
 
-.battery-body.energy-good .battery-fill { background: var(--color-success); box-shadow: 0 0 15px var(--color-success); }
-.battery-body.energy-warn .battery-fill { background: var(--color-energie); box-shadow: 0 0 15px var(--color-energie); }
-.battery-body.energy-critical .battery-fill { background: var(--color-danger); box-shadow: 0 0 15px var(--color-danger); animation: pulseCritical 1s infinite; }
+.battery-body.energy-good .battery-fill { background: var(--color-success); }
+.battery-body.energy-warn .battery-fill { background: var(--color-energie); }
+.battery-body.energy-critical .battery-fill { background: var(--color-danger); animation: pulseCritical 1s infinite; }
 
 .battery-cap {
   width: 8px;
@@ -392,7 +371,7 @@
     border-top: 1px dashed rgba(255, 255, 255, 0.1);
 
     .stat-label { color: var(--text-secondary); font-weight: 500; }
-    .stat-value { color: var(--primary); font-size: 1.1rem; text-shadow: 0 0 8px var(--primary-glow); }
+    .stat-value { color: var(--primary); font-size: 1.1rem; }
   }
 }
 
@@ -430,7 +409,6 @@
     background: var(--primary-subtle);
     border-color: var(--primary);
     color: var(--primary);
-    box-shadow: 0 0 10px var(--primary-glow);
   }
 }
 
@@ -515,7 +493,6 @@ ul.trade-grid {
     &:hover:not(:disabled) {
       background: var(--color-success);
       color: var(--bg-dark);
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
     }
   }
 
@@ -527,7 +504,6 @@ ul.trade-grid {
     &:hover:not(:disabled) {
       background: var(--color-danger);
       color: var(--bg-dark);
-      box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
     }
   }
 

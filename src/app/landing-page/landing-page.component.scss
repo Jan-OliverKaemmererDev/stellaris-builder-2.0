@@ -274,7 +274,7 @@ $primary-light: #00f2fe;
   border: none;
   border-radius: 10px;
   background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
-  color: $text-light;
+  color: $bg-dark;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -300,6 +300,7 @@ $primary-light: #00f2fe;
 .guest-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  color: $text-light;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
