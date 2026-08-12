@@ -84,13 +84,11 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  transition: all var(--transition-normal);
   box-shadow: var(--glass-shadow);
 
   &:hover:not(.locked) {
     border-color: var(--glass-border-hover);
     box-shadow: var(--glass-shadow), 0 0 30px rgba(79, 172, 254, 0.1);
-    transform: translateY(-2px);
   }
 
   &.locked {

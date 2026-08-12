@@ -100,9 +100,12 @@
 /* ═══ Menu Icons & Labels ═══ */
 
 .menu-icon {
-  font-size: 1.3rem;
-  min-width: 32px;
-  text-align: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
+  margin: 0 2px;
 }
 
 .menu-label {

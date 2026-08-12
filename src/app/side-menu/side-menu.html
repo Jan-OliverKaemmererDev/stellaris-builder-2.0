@@ -23,7 +23,7 @@
       [id]="'menu-' + item.route.split('/').pop()"
       [attr.aria-label]="item.label"
     >
-      <span class="menu-icon" aria-hidden="true">{{ item.icon }}</span>
+      <img class="menu-icon" [src]="'assets/side-menu-icons/' + item.icon" aria-hidden="true" alt="" />
       <span class="menu-label">{{ item.label }}</span>
     </a>
   }

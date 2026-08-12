@@ -214,12 +214,10 @@ ul.reward-list {
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--glass-shadow);
-  transition: all var(--transition-normal);
 
   &:hover {
     border-color: var(--glass-border-hover);
     box-shadow: var(--glass-shadow), 0 0 30px rgba(79, 172, 254, 0.1);
-    transform: translateY(-3px);
   }
 }
 

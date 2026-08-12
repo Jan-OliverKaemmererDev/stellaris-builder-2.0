@@ -208,35 +208,3 @@ hr.dropdown-divider {
   min-height: calc(100vh - 56px - 48px);
   transition: margin-left var(--transition-normal);
 }
-
-/* ================================================================
-   Footer
-   ================================================================ */
-
-.game-footer {
-  margin-left: var(--sidebar-collapsed);
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-md);
-  border-top: 1px solid var(--glass-border);
-  background: rgba(9, 10, 15, 0.6);
-  transition: margin-left var(--transition-normal);
-
-  a {
-    color: var(--text-dim);
-    font-size: 0.8rem;
-    text-decoration: none;
-    transition: color var(--transition-fast);
-
-    &:hover {
-      color: var(--primary);
-    }
-  }
-
-  .footer-separator {
-    color: var(--text-dim);
-    font-size: 0.6rem;
-  }
-}
