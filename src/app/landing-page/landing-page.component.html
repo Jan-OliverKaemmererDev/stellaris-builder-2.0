@@ -154,6 +154,21 @@
               />
             </div>
 
+            <div class="input-group">
+              <label for="confirm-password-reg">Passwort wiederholen</label>
+              <input
+                type="password"
+                id="confirm-password-reg"
+                name="confirmPassword"
+                [ngModel]="confirmPassword()"
+                (ngModelChange)="confirmPassword.set($event)"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                aria-label="Confirm Password"
+                required
+              />
+            </div>
+
             <div class="privacy-policy-check">
               <label>
                 <input type="checkbox" name="privacyAccepted" [ngModel]="privacyAccepted()" (ngModelChange)="privacyAccepted.set($event)" aria-label="Accept privacy policy" required />

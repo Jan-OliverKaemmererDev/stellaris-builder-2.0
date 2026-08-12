@@ -35,6 +35,9 @@ export class LandingPageComponent {
   /** Bound password input value. */
   password = signal('');
 
+  /** Bound confirm password input value (registration only). */
+  confirmPassword = signal('');
+
   /** Bound commander name input value (registration only). */
   commanderName = signal('');
 
@@ -59,6 +62,7 @@ export class LandingPageComponent {
     this.successMessage.set(null);
     this.commanderName.set('');
     this.privacyAccepted.set(false);
+    this.confirmPassword.set('');
   }
 
   /**
@@ -103,11 +107,31 @@ export class LandingPageComponent {
    * @returns `true` if all fields are valid, `false` otherwise.
    */
   private validateFields(): boolean {
-    if (!this.email() || !this.password() || (!this.isLoginMode() && !this.commanderName())) {
+    if (!this.email() || !this.password() || (!this.isLoginMode() && (!this.commanderName() || !this.confirmPassword()))) {
       this.errorMessage.set('Bitte fülle alle Felder aus.');
       this.successMessage.set(null);
       return false;
     }
+
+    if (!this.isLoginMode() && this.password() !== this.confirmPassword()) {
+      this.errorMessage.set('Die Passwörter stimmen nicht überein.');
+      this.successMessage.set(null);
+      return false;
+    }
+
+    if (!this.isLoginMode() && this.commanderName().trim().length < 3) {
+      this.errorMessage.set('Der Commander Name muss mindestens 3 Zeichen lang sein.');
+      this.successMessage.set(null);
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@.]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.email())) {
+      this.errorMessage.set('Ungültige E-Mail-Adresse.');
+      this.successMessage.set(null);
+      return false;
+    }
+
     if (!this.isLoginMode() && !this.privacyAccepted()) {
       this.errorMessage.set('Bitte akzeptiere die Privacy Policy.');
       this.successMessage.set(null);
@@ -137,6 +161,7 @@ export class LandingPageComponent {
     }
     this.isLoginMode.set(true);
     this.password.set('');
+    this.confirmPassword.set('');
     this.commanderName.set('');
     this.successMessage.set('Account erfolgreich erstellt! Bitte einloggen.');
   }

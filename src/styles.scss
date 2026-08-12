@@ -175,3 +175,33 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ================================================================
+   Upgrade Button (shared across skill-nodes)
+   ================================================================ */
+
+.upgrade-btn {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--color-credits);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 36px;
+  margin-top: auto;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--primary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+}

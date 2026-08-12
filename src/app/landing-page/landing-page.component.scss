@@ -304,7 +304,6 @@ $primary-light: #00f2fe;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
   }
 
@@ -322,7 +321,6 @@ $primary-light: #00f2fe;
 .primary-glow {
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
   }
 
   &:active {

@@ -181,30 +181,4 @@ ul.cost-list {
   border-radius: var(--radius-sm);
 }
 
-/* ═══ Upgrade Button ═══ */
 
-.upgrade-btn {
-  width: 100%;
-  padding: 0.6rem;
-  border: none;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--primary-light), var(--primary));
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  min-height: 40px;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-}
