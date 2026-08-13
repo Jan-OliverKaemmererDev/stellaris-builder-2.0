@@ -1,0 +1,69 @@
+# ================================================================
+#  Stellaris Builder – Apache Configuration for SPA Hosting
+# ================================================================
+
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # If an existing asset or directory is requested, serve it directly
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+  RewriteRule ^ - [L]
+
+  # Otherwise, redirect all requests to index.html (SPA routing)
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# ================================================================
+#  MIME Types – Ensure correct Content-Type headers
+# ================================================================
+<IfModule mod_mime.c>
+  # Fonts
+  AddType font/ttf .ttf
+  AddType font/otf .otf
+  AddType font/woff .woff
+  AddType font/woff2 .woff2
+
+  # Web assets
+  AddType text/css .css
+  AddType application/javascript .js
+  AddType application/json .json
+
+  # Images
+  AddType image/png .png
+  AddType image/svg+xml .svg
+  AddType image/x-icon .ico
+  AddType image/webp .webp
+</IfModule>
+
+# ================================================================
+#  Caching – Optimized cache headers for hashed Angular builds
+# ================================================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Hashed files (CSS/JS) – cache for 1 year (immutable via hash)
+  <FilesMatch "\.[a-f0-9]{8}\.(css|js)$">
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Fonts – cache for 1 year
+  <FilesMatch "\.(ttf|otf|woff|woff2)$">
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Images – cache for 1 month
+  <FilesMatch "\.(png|jpg|jpeg|gif|svg|ico|webp)$">
+    ExpiresDefault "access plus 1 month"
+  </FilesMatch>
+
+  # index.html – never cache (to always get latest build)
+  <FilesMatch "index\.html$">
+    ExpiresDefault "access plus 0 seconds"
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+  </FilesMatch>
+</IfModule>

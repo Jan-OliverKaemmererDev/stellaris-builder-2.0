@@ -1,6 +1,8 @@
 import { Component, inject, signal, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { Auth, signOut } from '@angular/fire/auth';
+import { deleteUser } from 'firebase/auth';
+import { Firestore, doc, deleteDoc } from '@angular/fire/firestore';
 import { SideMenu } from '../side-menu/side-menu';
 import { OfflineProgressDialog } from '../components/offline-progress-dialog/offline-progress-dialog';
 
@@ -21,6 +23,9 @@ export class GameLayout {
 
   /** Router service for navigating after logging out. */
   private router = inject(Router);
+
+  /** Firestore service for deleting guest user documents on logout. */
+  private firestore = inject(Firestore);
 
   /** Signal holding the current visibility state of the user dropdown menu. */
   dropdownOpen = signal(false);
@@ -91,15 +96,36 @@ export class GameLayout {
 
   /**
    * Signs the current user out of the application and redirects to the landing page.
+   * If the user is an anonymous guest, their Firestore data and Firebase Auth account
+   * are deleted before redirecting.
    * @returns A promise that resolves when the logout process completes.
    */
   async logout(): Promise<void> {
     try {
-      await signOut(this.auth);
+      const user = this.auth.currentUser;
+      if (user?.isAnonymous) {
+        await this.deleteGuestData(user.uid);
+        await deleteUser(user);
+      } else {
+        await signOut(this.auth);
+      }
       this.dropdownOpen.set(false);
       this.router.navigate(['/']);
     } catch (error) {
       console.error('Logout error:', error);
     }
+  }
+
+  /**
+   * Deletes all Firestore documents associated with a guest user.
+   * Removes the game state sub-document first, then the user profile document.
+   * @param uid - The anonymous user's unique identifier.
+   * @returns A promise that resolves when all documents are deleted.
+   */
+  private async deleteGuestData(uid: string): Promise<void> {
+    const gameStateRef = doc(this.firestore, `users/${uid}/game/state`);
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    await deleteDoc(gameStateRef);
+    await deleteDoc(userDocRef);
   }
 }
