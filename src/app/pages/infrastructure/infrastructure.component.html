@@ -8,7 +8,7 @@
         <!-- Building Node -->
         <article class="skill-node" [class.locked]="!isBuildingUnlocked(building)" [attr.aria-label]="building.title + ' node'">
           <figure class="node-image-wrap">
-            <img [src]="building.imagePath" alt="" class="node-image" role="presentation" />
+            <img [src]="building.imagePath" alt="" class="node-image clickable-image" role="presentation" (click)="openImage(building.imagePath)" />
             
             @if (!isBuildingUnlocked(building)) {
               <div class="lock-overlay" aria-hidden="true">
@@ -54,8 +54,8 @@
             <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(building.id, upgrade)" aria-hidden="true"></span>
 
             <article class="skill-node" [class.locked]="!isUpgradeUnlocked(building.id, upgrade)" role="listitem" [attr.aria-label]="upgrade.title + ' upgrade node'">
-              <figure class="node-image-wrap" style="height: 100px;">
-                <div class="placeholder-icon" style="font-size: 2.5rem; color: rgba(255,255,255,0.3); font-weight: bold;" aria-hidden="true">{{ upgrade.title.charAt(0) }}</div>
+              <figure class="node-image-wrap">
+                <img [src]="upgrade.imagePath" [alt]="upgrade.title + ' icon'" class="node-image clickable-image" (click)="openImage(upgrade.imagePath)" />
                 
                 @if (!isUpgradeUnlocked(building.id, upgrade)) {
                   <div class="lock-overlay" aria-hidden="true">
@@ -67,8 +67,8 @@
                 }
               </figure>
 
-              <div class="node-details" style="padding: 1rem;">
-                <h2 class="node-title" style="font-size: 1rem;">{{ upgrade.title }}</h2>
+              <div class="node-details">
+                <h2 class="node-title">{{ upgrade.title }}</h2>
                 <p class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(upgrade.id)">Level: {{ getSkillLevel(upgrade.id) }}</p>
                 
                 @if (isUpgradeUnlocked(building.id, upgrade)) {
@@ -102,4 +102,13 @@
       </div>
     }
   </div>
+
+  @if (selectedImage) {
+    <div class="image-lightbox-overlay" (click)="closeImage()">
+      <div class="lightbox-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeImage()" aria-label="Schließen">✕</button>
+        <img [src]="selectedImage" alt="Vergrößerte Ansicht" class="lightbox-image" />
+      </div>
+    </div>
+  }
 </section>

@@ -7,8 +7,8 @@
         
         <!-- Mine Node -->
         <article class="skill-node" [class.locked]="!isMineUnlocked(mine)" [attr.aria-label]="mine.title + ' node'">
-          <figure class="node-image-wrap" aria-hidden="true">
-            <img [src]="mine.imagePath" [alt]="mine.title" class="node-image" />
+          <figure class="node-image-wrap">
+            <img [src]="mine.imagePath" alt="" class="node-image clickable-image" role="presentation" (click)="openImage(mine.imagePath)" />
             
             @if (!isMineUnlocked(mine)) {
               <div class="lock-overlay">
@@ -54,8 +54,8 @@
             <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(mine.id, upgrade)" aria-hidden="true"></span>
 
             <article class="skill-node" [class.locked]="!isUpgradeUnlocked(mine.id, upgrade)" role="listitem" [attr.aria-label]="upgrade.title + ' upgrade node'">
-              <figure class="node-image-wrap" aria-hidden="true">
-                <img [src]="upgrade.imagePath" [alt]="upgrade.title" class="node-image" />
+              <figure class="node-image-wrap">
+                <img [src]="upgrade.imagePath" [alt]="upgrade.title + ' icon'" class="node-image clickable-image" (click)="openImage(upgrade.imagePath)" />
                 
                 @if (!isUpgradeUnlocked(mine.id, upgrade)) {
                   <div class="lock-overlay">
@@ -101,4 +101,13 @@
       </div>
     }
   </div>
+
+  @if (selectedImage) {
+    <div class="image-lightbox-overlay" (click)="closeImage()">
+      <div class="lightbox-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeImage()" aria-label="Schließen">✕</button>
+        <img [src]="selectedImage" alt="Vergrößerte Ansicht" class="lightbox-image" />
+      </div>
+    </div>
+  }
 </section>

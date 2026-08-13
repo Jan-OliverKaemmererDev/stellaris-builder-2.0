@@ -8,7 +8,7 @@
         <!-- Main Node -->
         <article class="skill-node" [class.locked]="!isUnlocked(item)" [attr.aria-label]="item.title + ' node'">
           <figure class="node-image-wrap">
-            <img [src]="item.imagePath" alt="" class="node-image" role="presentation" />
+            <img [src]="item.imagePath" alt="" class="node-image clickable-image" role="presentation" (click)="openImage(item.imagePath)" />
             
             @if (!isUnlocked(item)) {
               <div class="lock-overlay" aria-hidden="true">
@@ -101,4 +101,13 @@
       </div>
     }
   </div>
+
+  @if (selectedImage) {
+    <div class="image-lightbox-overlay" (click)="closeImage()">
+      <div class="lightbox-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeImage()" aria-label="Schließen">✕</button>
+        <img [src]="selectedImage" alt="Vergrößerte Ansicht" class="lightbox-image" />
+      </div>
+    </div>
+  }
 </section>

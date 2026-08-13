@@ -32,6 +32,24 @@ export class FleetComponent implements OnInit, OnDestroy {
   /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
 
+  /** Currently selected image path for the lightbox overlay. */
+  selectedImage: string | null = null;
+
+  /**
+   * Opens the image lightbox.
+   * @param imagePath Path of the image to display.
+   */
+  openImage(imagePath: string | undefined): void {
+    if (imagePath) {
+      this.selectedImage = imagePath;
+    }
+  }
+
+  /** Closes the image lightbox. */
+  closeImage(): void {
+    this.selectedImage = null;
+  }
+
   /** Available ship types that can be built in the shipyard. */
   ships: ShipDef[] = [
     {
