@@ -279,7 +279,7 @@
   text-align: right;
 }
 
-/* ═══ Energy Card (Battery) ═══ */
+/* ═══ Energy Card (Pie Chart) ═══ */
 
 .energy-card {
   grid-column: span 1;
@@ -287,74 +287,117 @@
 
 .energy-body {
   gap: var(--space-xl);
-}
-
-.battery-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: var(--space-md) 0;
-}
-
-.battery-body {
-  flex: 1;
-  height: 40px;
-  border: 2px solid var(--text-secondary);
-  border-radius: 6px;
-  padding: 3px;
-  background: rgba(0, 0, 0, 0.4);
-  position: relative;
-  overflow: hidden;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
-  transition: border-color var(--transition-normal);
-
-  &.energy-good { border-color: var(--color-success); }
-  &.energy-warn { border-color: var(--color-energie); }
-  &.energy-critical { border-color: var(--color-danger); }
-}
-
-.battery-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.5s ease-out, background-color 0.5s ease;
-}
-
-.battery-body.energy-good .battery-fill { background: var(--color-success); }
-.battery-body.energy-warn .battery-fill { background: var(--color-energie); }
-.battery-body.energy-critical .battery-fill { background: var(--color-danger); animation: pulseCritical 1s infinite; }
-
-.battery-cap {
-  width: 8px;
-  height: 20px;
-  background: var(--glass-border);
-  border-radius: 0 4px 4px 0;
-  box-shadow: inset 2px 0 5px rgba(0,0,0,0.3);
-}
-
-@keyframes pulseCritical {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
-}
-
-.energy-details {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+}
+
+.pie-chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-md) 0 0 0;
+  position: relative;
+  width: 300px;
+  height: 150px;
+  min-height: 150px;
+  flex-shrink: 0;
+  margin: 0 auto;
+}
+
+.pie-chart {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5), inset 0 5px 20px rgba(0,0,0,0.5);
+  border: 2px solid #48e5e5;
+  border-bottom: none;
+  transition: background 0.5s ease;
+}
+
+.pie-chart-overlay {
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 90px;
+  background: var(--bg-dark);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 8px;
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.8), 0 -5px 10px rgba(0,0,0,0.5);
+  border: 2px solid #48e5e5;
+  border-bottom: none;
+
+  .overlay-value {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  
+  .overlay-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+}
+
+.energy-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
   background: rgba(0, 0, 0, 0.2);
   padding: var(--space-md);
   border-radius: var(--radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
 .energy-stat {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.9rem;
+
+  &.highlight-top {
+    margin-bottom: var(--space-xs);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+
+    .stat-label { color: var(--text-secondary); font-weight: 500; }
+    .stat-value { font-size: 1.1rem; }
+  }
+
+  &.legend-item {
+    font-size: 0.85rem;
+  }
 
   .stat-label {
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .legend-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 4px rgba(0,0,0,0.5);
   }
 
   .stat-value {
@@ -363,15 +406,6 @@
 
     &.text-success { color: var(--color-success); }
     &.text-danger { color: var(--color-danger); }
-  }
-
-  &.highlight {
-    margin-top: var(--space-xs);
-    padding-top: var(--space-xs);
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
-
-    .stat-label { color: var(--text-secondary); font-weight: 500; }
-    .stat-value { color: var(--primary); font-size: 1.1rem; }
   }
 }
 

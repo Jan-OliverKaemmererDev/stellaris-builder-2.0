@@ -101,30 +101,39 @@
     <!-- ═══ Energy Card (Battery) ═══ -->
     <article class="dash-card energy-card" id="card-energy" aria-label="Energy grid status">
       <header class="card-header">
-        <h2 class="card-title"><span aria-hidden="true">⚡</span> Energie-Netz</h2>
+        <h2 class="card-title">
+          <img src="assets/side-menu-icons/energy.png" alt="" aria-hidden="true" style="height: 1.2em; width: auto; vertical-align: text-bottom; margin-right: 4px;">
+          Energie-Netz
+        </h2>
         <span class="card-badge" [ngClass]="energyColorClass">{{ energyPercentage() | number:'1.0-0' }}% Frei</span>
       </header>
       <div class="card-body energy-body">
 
-        <figure class="battery-container" role="progressbar" [attr.aria-valuenow]="energyPercentage()" aria-valuemin="0" aria-valuemax="100" aria-label="Energy capacity level">
-          <div class="battery-body" [ngClass]="energyColorClass">
-            <div class="battery-fill" [style.width.%]="energyPercentage()"></div>
+        <figure class="pie-chart-container" role="img" aria-label="Energy consumption pie chart">
+          <div class="pie-chart" [style.background]="pieChartGradient()"></div>
+          
+          <div class="pie-chart-overlay">
+            <span class="overlay-value text-success">{{ energyPercentage() | number:'1.0-0' }}%</span>
+            <span class="overlay-label">Frei</span>
           </div>
-          <div class="battery-cap" aria-hidden="true"></div>
         </figure>
 
-        <dl class="energy-details" aria-label="Energy statistics">
-          <div class="energy-stat">
+        <dl class="energy-legend" aria-label="Energy breakdown">
+          <div class="energy-stat highlight-top">
             <dt class="stat-label">Produziert (Kapazität)</dt>
             <dd class="stat-value text-success">{{ energyProduced() | number }}</dd>
           </div>
-          <div class="energy-stat">
-            <dt class="stat-label">Verbraucht (Unterhalt)</dt>
-            <dd class="stat-value text-danger">{{ (energyProduced() - availableEnergy()) | number }}</dd>
-          </div>
-          <div class="energy-stat highlight">
-            <dt class="stat-label">Freie Energie</dt>
-            <dd class="stat-value">{{ availableEnergy() | number }}</dd>
+          
+          <div class="legend-list">
+            @for (item of energyBreakdown(); track item.label) {
+              <div class="energy-stat legend-item">
+                <dt class="stat-label with-color">
+                  <span class="legend-color-dot" [style.background-color]="item.color" aria-hidden="true"></span>
+                  {{ item.label }}
+                </dt>
+                <dd class="stat-value" [class.text-success]="item.label === 'Freie Energie'">{{ item.value | number }}</dd>
+              </div>
+            }
           </div>
         </dl>
 

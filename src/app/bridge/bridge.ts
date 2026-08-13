@@ -3,6 +3,8 @@ import { DecimalPipe, NgClass } from '@angular/common';
 import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
 import { Auth } from '@angular/fire/auth';
 import { GameStateService } from '../services/game-state.service';
+import { ENERGY_UPKEEP, SHIP_IDS } from '../services/game-state.types';
+import * as MathUtils from '../services/game-math.utils';
 
 /**
  * Represents a display-ready resource with current values, max capacity, and production rate.
@@ -106,6 +108,66 @@ export class Bridge {
     const max = this.energyProduced();
     if (max <= 0) return 0;
     return Math.max(0, Math.min(100, (this.availableEnergy() / max) * 100));
+  });
+
+  /**
+   * Computes the energy breakdown by category for the pie chart.
+   */
+  energyBreakdown = computed<{ label: string, value: number, color: string }[]>(() => {
+    const s = this.gameState.skills();
+    const groups = [
+      { label: 'Minen & Anlagen', ids: ['eisenmine', 'silbermine', 'goldmine', 'lager', 'refinery'], color: '#a8b2c1' },
+      { label: 'Forschung & Tech', ids: ['biolabor', 'ki_automatisierung', 'antriebstechnik'], color: '#9b59b6' },
+      { label: 'Wirtschaft', ids: ['trading_post', 'interstellar_market', 'galactic_exchange'], color: '#f1c40f' },
+      { label: 'Schiffswerften', ids: ['orbital_shipyard', 'large_station'], color: '#e67e22' },
+      { label: 'Flotte', ids: ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship'], color: '#3498db' }
+    ];
+
+    const breakdown = groups.map(g => {
+      const val = g.ids.reduce((sum, id) => {
+        const level = s[id] || 0;
+        if (!level || !ENERGY_UPKEEP[id]) return sum;
+        return sum + (SHIP_IDS.includes(id) ? ENERGY_UPKEEP[id] * level : MathUtils.calcCumulativeUpkeep(ENERGY_UPKEEP[id], level));
+      }, 0);
+      return { label: g.label, value: val, color: g.color };
+    }).filter(g => g.value > 0);
+
+    const available = this.availableEnergy();
+    if (available > 0) {
+      breakdown.push({ label: 'Freie Energie', value: available, color: 'var(--color-success)' });
+    }
+
+    return breakdown;
+  });
+
+  /**
+   * Generates a conic-gradient string for the gauge (half pie chart) based on the energy breakdown.
+   */
+  pieChartGradient = computed<string>(() => {
+    const breakdown = this.energyBreakdown();
+    const total = breakdown.reduce((sum, item) => sum + item.value, 0);
+    if (total === 0) return 'conic-gradient(from 270deg at 50% 100%, rgba(255, 255, 255, 0.05) 0deg 180deg)';
+
+    let currentAngle = 0;
+    const gradientStops: string[] = [];
+    
+    breakdown.forEach((item, index) => {
+      const degrees = (item.value / total) * 180;
+      const endAngle = currentAngle + degrees;
+      
+      // Use ~0.57 degrees for a 1.5px gap (at 150px radius: (1.5 / (150*2*PI)) * 360 = 0.573)
+      const gap = (index < breakdown.length - 1) ? 0.57 : 0;
+      
+      gradientStops.push(`${item.color} ${currentAngle}deg ${endAngle - gap}deg`);
+      
+      if (gap > 0) {
+        gradientStops.push(`#48e5e5 ${endAngle - gap}deg ${endAngle}deg`);
+      }
+      
+      currentAngle += degrees;
+    });
+
+    return `conic-gradient(from 270deg at 50% 100%, ${gradientStops.join(', ')})`;
   });
 
   /**
