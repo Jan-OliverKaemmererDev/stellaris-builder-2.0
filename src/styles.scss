@@ -81,6 +81,9 @@
   /* Sidebar */
   --sidebar-collapsed: 64px;
   --sidebar-expanded: 260px;
+
+  /* Cursors */
+  --cursor-default: url('/assets/cursors/default.svg') 2 2, auto;
 }
 
 /* ================================================================
@@ -101,6 +104,7 @@ html, body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  cursor: var(--cursor-default);
 }
 
 a {

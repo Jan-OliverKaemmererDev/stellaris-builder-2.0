@@ -28,8 +28,8 @@ export class SideMenu {
 
   /** All menu items displayed in the sidebar navigation. */
   menuItems: MenuItem[] = [
-    { icon: 'mining.png', label: 'Rohstoffabbau', route: '/bridge/mining' },
     { icon: 'energy.png', label: 'Energie', route: '/bridge/energy' },
+    { icon: 'mining.png', label: 'Rohstoffabbau', route: '/bridge/mining' },
     { icon: 'research.png', label: 'Forschungszentrum', route: '/bridge/research' },
     { icon: 'infrastructure.png', label: 'Infrastruktur', route: '/bridge/infrastructure' },
     { icon: 'trade.png', label: 'Handel & Wirtschaft', route: '/bridge/trade' },
