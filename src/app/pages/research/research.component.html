@@ -12,7 +12,7 @@
             
             @if (!isUnlocked(item)) {
               <div class="lock-overlay" aria-hidden="true">
-                <span class="lock-icon">🔒</span>
+                <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                 <p class="lock-req">
                   Benötigt {{ item.requiredNode?.id }} Lvl {{ item.requiredNode?.level }}
                 </p>
@@ -59,7 +59,7 @@
                 
                 @if (!isUpgradeUnlocked(item.id, upgrade)) {
                   <div class="lock-overlay" aria-hidden="true">
-                    <span class="lock-icon">🔒</span>
+                    <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                     <p class="lock-req">
                       {{ item.title }} Lvl {{ upgrade.requiredLevel }}
                     </p>
@@ -105,7 +105,7 @@
   @if (selectedImage) {
     <div class="image-lightbox-overlay" (click)="closeImage()">
       <div class="lightbox-content" (click)="$event.stopPropagation()">
-        <button class="close-btn" (click)="closeImage()" aria-label="Schließen">✕</button>
+        <img src="assets/icons/close.png" class="close-btn" (click)="closeImage()" alt="Schließen" />
         <img [src]="selectedImage" alt="Vergrößerte Ansicht" class="lightbox-image" />
       </div>
     </div>

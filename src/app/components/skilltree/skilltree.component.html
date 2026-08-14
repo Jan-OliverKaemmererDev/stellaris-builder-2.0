@@ -19,7 +19,7 @@
 
             @if (!isUnlocked(node)) {
               <div class="lock-overlay" aria-hidden="true">
-                <span class="lock-icon">🔒</span>
+                <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                 <p class="lock-req">
                   Benötigt {{ node.requiredNode?.id }} Level {{ node.requiredNode?.level }}
                 </p>

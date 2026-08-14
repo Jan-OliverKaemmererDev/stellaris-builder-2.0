@@ -12,7 +12,7 @@
             
             @if (!isMineUnlocked(mine)) {
               <div class="lock-overlay">
-                <span class="lock-icon">🔒</span>
+                <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                 <p class="lock-req">
                   Benötigt {{ mine.requiredNode?.id }} Lvl {{ mine.requiredNode?.level }}
                 </p>
@@ -59,7 +59,7 @@
                 
                 @if (!isUpgradeUnlocked(mine.id, upgrade)) {
                   <div class="lock-overlay">
-                    <span class="lock-icon">🔒</span>
+                    <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                     <p class="lock-req">
                       {{ mine.title }} Lvl {{ upgrade.requiredMineLevel }}
                     </p>
@@ -105,7 +105,7 @@
   @if (selectedImage) {
     <div class="image-lightbox-overlay" (click)="closeImage()">
       <div class="lightbox-content" (click)="$event.stopPropagation()">
-        <button class="close-btn" (click)="closeImage()" aria-label="Schließen">✕</button>
+        <img src="assets/icons/close.png" class="close-btn" (click)="closeImage()" alt="Schließen" />
         <img [src]="selectedImage" alt="Vergrößerte Ansicht" class="lightbox-image" />
       </div>
     </div>
