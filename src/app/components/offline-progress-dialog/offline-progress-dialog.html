@@ -5,7 +5,7 @@
 
     <section class="resources" aria-label="Offline production earnings">
       <article class="resource" *ngIf="earnings.eisen > 0" aria-label="Iron earnings">
-        <span class="icon-container eisen" aria-hidden="true">⛓️</span>
+        <span class="icon-container eisen" aria-hidden="true"><img src="assets/icons/rohstoffe/iron.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
         <div class="details">
           <span class="label">Eisen</span>
           <span class="amount">+{{ earnings.eisen | number }}</span>
@@ -13,7 +13,7 @@
       </article>
 
       <article class="resource" *ngIf="earnings.silber > 0" aria-label="Silver earnings">
-        <span class="icon-container silber" aria-hidden="true">🔗</span>
+        <span class="icon-container silber" aria-hidden="true"><img src="assets/icons/rohstoffe/silver.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
         <div class="details">
           <span class="label">Silber</span>
           <span class="amount">+{{ earnings.silber | number }}</span>
@@ -21,7 +21,7 @@
       </article>
 
       <article class="resource" *ngIf="earnings.gold > 0" aria-label="Gold earnings">
-        <span class="icon-container gold" aria-hidden="true">✨</span>
+        <span class="icon-container gold" aria-hidden="true"><img src="assets/icons/rohstoffe/gold.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
         <div class="details">
           <span class="label">Gold</span>
           <span class="amount">+{{ earnings.gold | number }}</span>
@@ -29,7 +29,7 @@
       </article>
 
       <article class="resource" *ngIf="earnings.xenonit > 0" aria-label="Xenonite earnings">
-        <span class="icon-container xenonit" aria-hidden="true">💠</span>
+        <span class="icon-container xenonit" aria-hidden="true"><img src="assets/icons/rohstoffe/xenonit.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
         <div class="details">
           <span class="label">Xenonit</span>
           <span class="amount">+{{ earnings.xenonit | number }}</span>
@@ -37,7 +37,7 @@
       </article>
 
       <article class="resource" *ngIf="earnings.credits > 0" aria-label="Credits earnings">
-        <span class="icon-container credits" aria-hidden="true">🪙</span>
+        <span class="icon-container credits" aria-hidden="true"><img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
         <div class="details">
           <span class="label">Credits</span>
           <span class="amount">+{{ earnings.credits | number }}</span>
@@ -45,7 +45,7 @@
       </article>
 
       <article class="resource" *ngIf="earnings.nahrung > 0" aria-label="Food earnings">
-        <span class="icon-container nahrung" aria-hidden="true">🌾</span>
+        <span class="icon-container nahrung" aria-hidden="true"><img src="assets/icons/rohstoffe/food.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
         <div class="details">
           <span class="label">Nahrung</span>
           <span class="amount">+{{ earnings.nahrung | number }}</span>
@@ -53,7 +53,7 @@
       </article>
 
       <article class="resource" *ngIf="earnings.personal > 0" aria-label="Personnel earnings">
-        <span class="icon-container personal" aria-hidden="true">👥</span>
+        <span class="icon-container personal" aria-hidden="true"><img src="assets/icons/rohstoffe/staff.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
         <div class="details">
           <span class="label">Personal</span>
           <span class="amount">+{{ earnings.personal | number }}</span>

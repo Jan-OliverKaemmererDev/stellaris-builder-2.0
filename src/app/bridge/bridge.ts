@@ -57,17 +57,17 @@ export class Bridge {
 
   /** Configuration array for standard resources displayed on the dashboard. */
   baseResources = [
-    { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
-    { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
-    { id: 'gold', name: 'Gold', icon: '✨', colorVar: '--color-gold' },
-    { id: 'xenonit', name: 'Xenonit', icon: '💠', colorVar: '--color-xenonit' },
-    { id: 'credits', name: 'Credits', icon: '🪙', colorVar: '--color-credits' },
+    { id: 'eisen', name: 'Eisen', icon: 'assets/icons/rohstoffe/iron.png', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: 'assets/icons/rohstoffe/silver.png', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: 'assets/icons/rohstoffe/gold.png', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: 'assets/icons/rohstoffe/xenonit.png', colorVar: '--color-xenonit' },
+    { id: 'credits', name: 'Credits', icon: 'assets/icons/rohstoffe/credits.png', colorVar: '--color-credits' },
   ];
 
   /** Configuration array for supply and personnel resources displayed on the dashboard. */
   baseSupplyResources = [
-    { id: 'nahrung', name: 'Nahrung', icon: '🌾', colorVar: '--color-nahrung' },
-    { id: 'personal', name: 'Personal', icon: '👥', colorVar: '--color-personal' },
+    { id: 'nahrung', name: 'Nahrung', icon: 'assets/icons/rohstoffe/food.png', colorVar: '--color-nahrung' },
+    { id: 'personal', name: 'Personal', icon: 'assets/icons/rohstoffe/staff.png', colorVar: '--color-personal' },
   ];
 
   /**
@@ -187,10 +187,10 @@ export class Bridge {
   fleet = computed<ShipType[]>(() => {
     const s = this.gameState.skills();
     const ships: ShipType[] = [];
-    if (s['kolonisierungsschiffe']) ships.push({ name: 'Kolonie-Schiffe', icon: '🌍', count: s['kolonisierungsschiffe'] });
-    if (s['logistikschiff']) ships.push({ name: 'Logistikschiffe', icon: '📦', count: s['logistikschiff'] });
-    if (s['transportschiffe']) ships.push({ name: 'Transportschiffe', icon: '🚚', count: s['transportschiffe'] });
-    if (s['mining_ship']) ships.push({ name: 'Mining Ships', icon: '⛏️', count: s['mining_ship'] });
+    if (s['kolonisierungsschiffe']) ships.push({ name: 'Kolonie-Schiffe', icon: 'assets/icons/fleet/colony-ship.png', count: s['kolonisierungsschiffe'] });
+    if (s['logistikschiff']) ships.push({ name: 'Logistikschiffe', icon: 'assets/icons/fleet/logistics-ship.png', count: s['logistikschiff'] });
+    if (s['transportschiffe']) ships.push({ name: 'Transportschiffe', icon: 'assets/icons/fleet/transport-ship.png', count: s['transportschiffe'] });
+    if (s['mining_ship']) ships.push({ name: 'Mining Ships', icon: 'assets/icons/fleet/mining-ship.png', count: s['mining_ship'] });
     if (ships.length === 0) {
       ships.push({ name: 'Keine Schiffe', icon: '🛸', count: 0 });
     }
@@ -233,20 +233,20 @@ export class Bridge {
 
   /** Configuration array of resources available for selling at the trading post/market. */
   sellableResources = [
-    { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
-    { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
-    { id: 'gold', name: 'Gold', icon: '✨', colorVar: '--color-gold' },
-    { id: 'xenonit', name: 'Xenonit', icon: '💠', colorVar: '--color-xenonit' },
+    { id: 'eisen', name: 'Eisen', icon: 'assets/icons/rohstoffe/iron.png', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: 'assets/icons/rohstoffe/silver.png', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: 'assets/icons/rohstoffe/gold.png', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: 'assets/icons/rohstoffe/xenonit.png', colorVar: '--color-xenonit' },
   ] as const;
 
   /** Configuration array of resources available for buying at the interstellar market. */
   buyableResources = [
-    { id: 'eisen', name: 'Eisen', icon: '⛓️', colorVar: '--color-eisen' },
-    { id: 'silber', name: 'Silber', icon: '🔗', colorVar: '--color-silber' },
-    { id: 'gold', name: 'Gold', icon: '✨', colorVar: '--color-gold' },
-    { id: 'xenonit', name: 'Xenonit', icon: '💠', colorVar: '--color-xenonit' },
-    { id: 'nahrung', name: 'Nahrung', icon: '🌾', colorVar: '--color-nahrung' },
-    { id: 'personal', name: 'Personal', icon: '👥', colorVar: '--color-personal' },
+    { id: 'eisen', name: 'Eisen', icon: 'assets/icons/rohstoffe/iron.png', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: 'assets/icons/rohstoffe/silver.png', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: 'assets/icons/rohstoffe/gold.png', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: 'assets/icons/rohstoffe/xenonit.png', colorVar: '--color-xenonit' },
+    { id: 'nahrung', name: 'Nahrung', icon: 'assets/icons/rohstoffe/food.png', colorVar: '--color-nahrung' },
+    { id: 'personal', name: 'Personal', icon: 'assets/icons/rohstoffe/staff.png', colorVar: '--color-personal' },
   ] as const;
 
   /**

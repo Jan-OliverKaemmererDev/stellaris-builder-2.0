@@ -22,7 +22,13 @@
         @for (res of resources(); track res.name) {
           <article class="resource-row" [attr.aria-label]="res.name + ' resource status'">
             <div class="resource-info">
-              <span class="resource-icon" aria-hidden="true">{{ res.icon }}</span>
+              <span class="resource-icon" aria-hidden="true">
+                @if (res.icon.includes('/')) {
+                  <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
+                } @else {
+                  {{ res.icon }}
+                }
+              </span>
               <span class="resource-name">{{ res.name }}</span>
             </div>
             <div class="resource-bar-wrap">
@@ -65,7 +71,13 @@
         @for (res of supplyResources(); track res.name) {
           <article class="resource-row" [attr.aria-label]="res.name + ' resource status'">
             <div class="resource-info">
-              <span class="resource-icon" aria-hidden="true">{{ res.icon }}</span>
+              <span class="resource-icon" aria-hidden="true">
+                @if (res.icon.includes('/')) {
+                  <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
+                } @else {
+                  {{ res.icon }}
+                }
+              </span>
               <span class="resource-name">{{ res.name }}</span>
             </div>
             <div class="resource-bar-wrap">
@@ -149,7 +161,13 @@
       <div class="card-body fleet-body">
         @for (ship of fleet(); track ship.name) {
           <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'">
-            <span class="fleet-icon" aria-hidden="true">{{ ship.icon }}</span>
+            <span class="fleet-icon" aria-hidden="true">
+              @if (ship.icon.includes('/')) {
+                <img [src]="ship.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
+              } @else {
+                {{ ship.icon }}
+              }
+            </span>
             <div class="fleet-info">
               <span class="fleet-name">{{ ship.name }}</span>
               <span class="fleet-count">{{ ship.count }}</span>
@@ -185,11 +203,17 @@
               @for (res of sellableResources; track res.id) {
                 <li class="trade-item" [attr.aria-label]="res.name + ' trade option'">
                   <div class="item-info">
-                    <span class="icon" aria-hidden="true">{{ res.icon }}</span>
+                    <span class="icon" aria-hidden="true">
+                      @if (res.icon.includes('/')) {
+                        <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
+                      } @else {
+                        {{ res.icon }}
+                      }
+                    </span>
                     <span class="name">{{ res.name }}</span>
                   </div>
                   <div class="item-action">
-                    <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | number }} 🪙</span>
+                    <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | number }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                     <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)" [attr.aria-label]="'Sell ' + res.name">
                       Verkaufen
                     </button>
@@ -207,11 +231,17 @@
                 @for (res of buyableResources; track res.id) {
                   <li class="trade-item" [attr.aria-label]="res.name + ' trade option'">
                     <div class="item-info">
-                      <span class="icon" aria-hidden="true">{{ res.icon }}</span>
+                      <span class="icon" aria-hidden="true">
+                        @if (res.icon.includes('/')) {
+                          <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
+                        } @else {
+                          {{ res.icon }}
+                        }
+                      </span>
                       <span class="name">{{ res.name }}</span>
                     </div>
                     <div class="item-action">
-                      <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | number }} 🪙</span>
+                      <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | number }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                       <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)" [attr.aria-label]="'Buy ' + res.name">
                         Kaufen
                       </button>
