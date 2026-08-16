@@ -160,7 +160,7 @@
       </header>
       <div class="card-body fleet-body">
         @for (ship of fleet(); track ship.name) {
-          <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'">
+          <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'" [routerLink]="['/bridge/fleet']">
             <span class="fleet-icon" aria-hidden="true">
               @if (ship.icon.includes('/')) {
                 <img [src]="ship.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">

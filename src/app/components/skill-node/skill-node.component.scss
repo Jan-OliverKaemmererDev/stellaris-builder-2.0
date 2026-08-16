@@ -14,20 +14,77 @@
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  overflow: hidden;
+  /* overflow: hidden; Removed to allow glow border to spill out */
   box-shadow: var(--glass-shadow);
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
+  z-index: 1;
 
   &:hover:not(.locked) {
     border-color: var(--glass-border-hover);
     box-shadow: var(--glass-shadow), 0 0 30px rgba(79, 172, 254, 0.1);
+
+    .glow-border {
+      opacity: 1;
+      
+      &::before {
+        animation: rotate-glow 2s linear infinite;
+      }
+    }
   }
 
   &.locked {
     opacity: 0.5;
     filter: grayscale(0.5);
+  }
+}
+
+.glow-border {
+  position: absolute;
+  inset: -1px; /* Cover the existing border */
+  border-radius: var(--radius-xl);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  overflow: hidden;
+  
+  /* Mask to only show the border area */
+  padding: 2px; /* Thickness of the glowing border */
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  /* Outer glow effect */
+  filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.8)) drop-shadow(0 0 20px rgba(79, 172, 254, 0.4));
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 250%; /* Large enough to cover corners when rotating */
+    height: 250%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    background: conic-gradient(
+      transparent 60%,
+      rgba(79, 172, 254, 0.4) 80%,
+      rgba(79, 172, 254, 1) 95%,
+      rgba(255, 255, 255, 1) 100%
+    );
+  }
+}
+
+@keyframes rotate-glow {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 
@@ -37,6 +94,8 @@ figure.node-image-wrap {
   position: relative;
   height: 140px;
   overflow: hidden;
+  border-top-left-radius: calc(var(--radius-xl) - 1px);
+  border-top-right-radius: calc(var(--radius-xl) - 1px);
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;

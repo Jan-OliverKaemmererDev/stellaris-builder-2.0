@@ -2,6 +2,9 @@
    Game Layout Shell
    ================================================================ */
 
+@use "sass:math";
+@use "sass:list";
+
 .game-shell {
   min-height: 100vh;
   display: flex;
@@ -109,7 +112,7 @@ $pixel-max-dist: ($pixel-cols - 1) + ($pixel-rows - 1);
 
 @keyframes pixelReveal {
   @for $s from 0 through $pixel-max-dist {
-    $percentage: ($s / $pixel-max-dist) * 100%;
+    $percentage: math.div($s, $pixel-max-dist) * 100%;
     
     $image-list: ();
     $position-list: ();
@@ -119,11 +122,20 @@ $pixel-max-dist: ($pixel-cols - 1) + ($pixel-rows - 1);
       @for $c from 0 to $pixel-cols {
         $d: ($pixel-cols - 1 - $c) + $r;
         @if $d <= $s {
-           $image-list: append($image-list, linear-gradient(#000, #000), comma);
-           $pos-x: if($pixel-cols == 1, 0, ($c / ($pixel-cols - 1)) * 100%);
-           $pos-y: if($pixel-rows == 1, 0, ($r / ($pixel-rows - 1)) * 100%);
-           $position-list: append($position-list, #{$pos-x} #{$pos-y}, comma);
-           $size-list: append($size-list, calc(100% / #{$pixel-cols}) calc(100% / #{$pixel-rows}), comma);
+           $image-list: list.append($image-list, linear-gradient(#000, #000), comma);
+           
+           $pos-x: 0;
+           @if $pixel-cols > 1 {
+             $pos-x: math.div($c, ($pixel-cols - 1)) * 100%;
+           }
+           
+           $pos-y: 0;
+           @if $pixel-rows > 1 {
+             $pos-y: math.div($r, ($pixel-rows - 1)) * 100%;
+           }
+           
+           $position-list: list.append($position-list, #{$pos-x} #{$pos-y}, comma);
+           $size-list: list.append($size-list, calc(100% / #{$pixel-cols}) calc(100% / #{$pixel-rows}), comma);
         }
       }
     }

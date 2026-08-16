@@ -2,6 +2,9 @@
    Lightbox Component – Reusable full-screen image overlay
    ================================================================ */
 
+@use "sass:math";
+@use "sass:list";
+
 .image-lightbox-overlay {
   position: fixed;
   inset: 0;
@@ -12,6 +15,10 @@
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.3s ease-out forwards;
+}
+
+.lightbox-wrapper {
+  filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 25px rgba(59, 130, 246, 0.4));
 }
 
 .lightbox-content {
@@ -26,8 +33,9 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   padding: 40px 50px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
   overflow-y: auto;
+  animation: pixelRevealCenter 0.4s step-end forwards, lightboxBounce 0.3s ease-out 0.4s forwards;
 }
 
 /* ═══ Title ═══ */
@@ -49,9 +57,10 @@
 .lightbox-image {
   width: 100%;
   max-height: 400px;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: var(--radius-lg);
-  filter: drop-shadow(0 5px 20px #3B82F6);
+  overflow: hidden;
+  filter: drop-shadow(0px 0px 12px #3B82F6);
   flex-shrink: 0;
 }
 
@@ -97,4 +106,65 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+$lightbox-pixel-cols: 10;
+$lightbox-pixel-rows: 8;
+$lightbox-c-center: math.div($lightbox-pixel-cols, 2);
+$lightbox-r-center: math.div($lightbox-pixel-rows, 2);
+$lightbox-max-dist: $lightbox-c-center + $lightbox-r-center;
+
+@keyframes pixelRevealCenter {
+  @for $s from 0 through $lightbox-max-dist {
+    $percentage: math.div($s, $lightbox-max-dist) * 100%;
+    
+    $image-list: ();
+    $position-list: ();
+    $size-list: ();
+    
+    @for $r from 0 to $lightbox-pixel-rows {
+      @for $c from 0 to $lightbox-pixel-cols {
+        $d: math.abs($c - $lightbox-c-center) + math.abs($r - $lightbox-r-center);
+        @if $d <= $s {
+           $image-list: list.append($image-list, linear-gradient(#000, #000), comma);
+           
+           $pos-x: 0;
+           @if $lightbox-pixel-cols > 1 {
+             $pos-x: math.div($c, ($lightbox-pixel-cols - 1)) * 100%;
+           }
+           
+           $pos-y: 0;
+           @if $lightbox-pixel-rows > 1 {
+             $pos-y: math.div($r, ($lightbox-pixel-rows - 1)) * 100%;
+           }
+           
+           $position-list: list.append($position-list, #{$pos-x} #{$pos-y}, comma);
+           $size-list: list.append($size-list, calc(100% / #{$lightbox-pixel-cols} + 1px) calc(100% / #{$lightbox-pixel-rows} + 1px), comma);
+        }
+      }
+    }
+    
+    @if list.length($image-list) == 0 {
+        $image-list: list.append($image-list, linear-gradient(transparent, transparent), comma);
+        $position-list: list.append($position-list, 0 0, comma);
+        $size-list: list.append($size-list, 100% 100%, comma);
+    }
+    
+    #{$percentage} {
+       -webkit-mask-image: $image-list;
+       -webkit-mask-position: $position-list;
+       -webkit-mask-size: $size-list;
+       -webkit-mask-repeat: no-repeat;
+       mask-image: $image-list;
+       mask-position: $position-list;
+       mask-size: $size-list;
+       mask-repeat: no-repeat;
+    }
+  }
+}
+
+@keyframes lightboxBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
 }
