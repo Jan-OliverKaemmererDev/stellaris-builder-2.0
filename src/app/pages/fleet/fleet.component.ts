@@ -118,12 +118,8 @@ export class FleetComponent implements OnInit, OnDestroy {
   /** Reference to the active mission signal from the game state. */
   activeMission = this.gameState.activeMission;
 
-  /** Computed mission reward based on the number of deployed ships. */
-  missionReward = computed(() => {
-    const m = this.activeMission();
-    if (!m) return null;
-    return { eisen: m.shipCount * 500, silber: m.shipCount * 200, gold: m.shipCount * 50 };
-  });
+  /** The randomly generated reward when the mission completes. */
+  generatedReward = signal<Partial<GameResources> | null>(null);
 
   /** Starts polling the mission progress every 100ms. */
   ngOnInit(): void {
@@ -218,16 +214,37 @@ export class FleetComponent implements OnInit, OnDestroy {
     if (elapsed >= m.durationMs) {
       this.missionProgress.set(100);
       this.missionTimeLeft.set('Mission abgeschlossen!');
+      
+      // Generate random reward if not already generated
+      if (!this.generatedReward()) {
+        this.generatedReward.set(this.calculateRandomReward(m.shipCount));
+      }
     } else {
       this.missionProgress.set((elapsed / m.durationMs) * 100);
       this.missionTimeLeft.set(this.formatTimeLeft(m.durationMs - elapsed));
+      this.generatedReward.set(null);
     }
+  }
+
+  /**
+   * Calculates a random reward based on ship count.
+   * @param shipCount - The number of deployed mining ships.
+   * @returns The generated reward object.
+   */
+  private calculateRandomReward(shipCount: number): Partial<GameResources> {
+    const variance = () => 0.5 + Math.random(); // 0.5 to 1.5 multiplier
+    return {
+      eisen: Math.floor(shipCount * 500 * variance()),
+      silber: Math.floor(shipCount * 200 * variance()),
+      gold: Math.floor(shipCount * 50 * variance()),
+    };
   }
 
   /** Resets the mission progress and time left signals to zero. */
   private resetMissionProgress(): void {
     this.missionProgress.set(0);
     this.missionTimeLeft.set('');
+    this.generatedReward.set(null);
   }
 
   /**
@@ -246,10 +263,12 @@ export class FleetComponent implements OnInit, OnDestroy {
    */
   async collectReward(): Promise<void> {
     const m = this.activeMission();
-    if (!m || this.missionProgress() < 100) return;
-    const reward = { eisen: m.shipCount * 500, silber: m.shipCount * 200, gold: m.shipCount * 50 };
+    const reward = this.generatedReward();
+    if (!m || this.missionProgress() < 100 || !reward) return;
+    
     try {
       await this.gameState.completeMission(reward);
+      this.generatedReward.set(null);
     } catch (e) {
       console.error('Failed to collect reward', e);
     }

@@ -19,14 +19,18 @@
             </div>
             <p class="mission-time" aria-label="Remaining time">{{ missionTimeLeft() }}</p>
             
-            @if (missionReward(); as r) {
+            @if (generatedReward(); as r) {
               <div class="mission-reward" aria-label="Expected reward">
-                <span class="reward-label">Beute:</span>
+                <span class="reward-label">Beute gesammelt:</span>
                 <ul class="reward-list">
                   <li class="reward-item" style="color: var(--color-eisen)">{{ r.eisen | number }} Eisen</li>
                   <li class="reward-item" style="color: var(--color-silber)">{{ r.silber | number }} Silber</li>
                   <li class="reward-item" style="color: var(--color-gold)">{{ r.gold | number }} Gold</li>
                 </ul>
+              </div>
+            } @else {
+              <div class="mission-reward pending">
+                <span class="reward-label">Rohstoffe werden abgebaut...</span>
               </div>
             }
             

@@ -2,6 +2,9 @@
    Offline Progress Dialog
    ================================================================ */
 
+@use "sass:math";
+@use "sass:list";
+
 /* ═══ Overlay ═══ */
 
 .overlay {
@@ -14,6 +17,10 @@
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.4s ease-out;
+
+  &.collecting {
+    animation: fadeOut 0.4s ease-out forwards;
+  }
 }
 
 /* ═══ Dialog ═══ */
@@ -27,7 +34,11 @@
   width: 90%;
   text-align: center;
   box-shadow: var(--glass-shadow), 0 0 60px rgba(79, 172, 254, 0.08);
-  animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: pixelRevealCenter 0.4s step-end forwards, lightboxBounce 0.3s ease-out 0.4s forwards;
+
+  &.collecting {
+    animation: pixelHideCenter 0.4s step-end forwards;
+  }
 
   h2 {
     font-family: var(--font-display);
@@ -136,13 +147,118 @@
   to { opacity: 1; }
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+$lightbox-pixel-cols: 10;
+$lightbox-pixel-rows: 8;
+$lightbox-c-center: math.div($lightbox-pixel-cols, 2);
+$lightbox-r-center: math.div($lightbox-pixel-rows, 2);
+$lightbox-max-dist: $lightbox-c-center + $lightbox-r-center;
+
+@keyframes pixelRevealCenter {
+  @for $s from 0 through $lightbox-max-dist {
+    $percentage: math.div($s, $lightbox-max-dist) * 100%;
+    
+    $image-list: ();
+    $position-list: ();
+    $size-list: ();
+    
+    @for $r from 0 to $lightbox-pixel-rows {
+      @for $c from 0 to $lightbox-pixel-cols {
+        $d: math.abs($c - $lightbox-c-center) + math.abs($r - $lightbox-r-center);
+        @if $d <= $s {
+           $image-list: list.append($image-list, linear-gradient(#000, #000), comma);
+           
+           $pos-x: 0;
+           @if $lightbox-pixel-cols > 1 {
+             $pos-x: math.div($c, ($lightbox-pixel-cols - 1)) * 100%;
+           }
+           
+           $pos-y: 0;
+           @if $lightbox-pixel-rows > 1 {
+             $pos-y: math.div($r, ($lightbox-pixel-rows - 1)) * 100%;
+           }
+           
+           $position-list: list.append($position-list, #{$pos-x} #{$pos-y}, comma);
+           $size-list: list.append($size-list, calc(100% / #{$lightbox-pixel-cols} + 1px) calc(100% / #{$lightbox-pixel-rows} + 1px), comma);
+        }
+      }
+    }
+    
+    @if list.length($image-list) == 0 {
+        $image-list: list.append($image-list, linear-gradient(transparent, transparent), comma);
+        $position-list: list.append($position-list, 0 0, comma);
+        $size-list: list.append($size-list, 100% 100%, comma);
+    }
+    
+    #{$percentage} {
+       -webkit-mask-image: $image-list;
+       -webkit-mask-position: $position-list;
+       -webkit-mask-size: $size-list;
+       -webkit-mask-repeat: no-repeat;
+       mask-image: $image-list;
+       mask-position: $position-list;
+       mask-size: $size-list;
+       mask-repeat: no-repeat;
+    }
   }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+}
+
+@keyframes pixelHideCenter {
+  @for $s from 0 through $lightbox-max-dist {
+    $percentage: math.div($s, $lightbox-max-dist) * 100%;
+    $current-dist: $lightbox-max-dist - $s;
+    
+    $image-list: ();
+    $position-list: ();
+    $size-list: ();
+    
+    @for $r from 0 to $lightbox-pixel-rows {
+      @for $c from 0 to $lightbox-pixel-cols {
+        $d: math.abs($c - $lightbox-c-center) + math.abs($r - $lightbox-r-center);
+        @if $d <= $current-dist {
+           $image-list: list.append($image-list, linear-gradient(#000, #000), comma);
+           
+           $pos-x: 0;
+           @if $lightbox-pixel-cols > 1 {
+             $pos-x: math.div($c, ($lightbox-pixel-cols - 1)) * 100%;
+           }
+           
+           $pos-y: 0;
+           @if $lightbox-pixel-rows > 1 {
+             $pos-y: math.div($r, ($lightbox-pixel-rows - 1)) * 100%;
+           }
+           
+           $position-list: list.append($position-list, #{$pos-x} #{$pos-y}, comma);
+           $size-list: list.append($size-list, calc(100% / #{$lightbox-pixel-cols} + 1px) calc(100% / #{$lightbox-pixel-rows} + 1px), comma);
+        }
+      }
+    }
+    
+    @if list.length($image-list) == 0 {
+        $image-list: list.append($image-list, linear-gradient(transparent, transparent), comma);
+        $position-list: list.append($position-list, 0 0, comma);
+        $size-list: list.append($size-list, 100% 100%, comma);
+    }
+    
+    #{$percentage} {
+       -webkit-mask-image: $image-list;
+       -webkit-mask-position: $position-list;
+       -webkit-mask-size: $size-list;
+       -webkit-mask-repeat: no-repeat;
+       mask-image: $image-list;
+       mask-position: $position-list;
+       mask-size: $size-list;
+       mask-repeat: no-repeat;
+    }
   }
+}
+
+@keyframes lightboxBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
 }

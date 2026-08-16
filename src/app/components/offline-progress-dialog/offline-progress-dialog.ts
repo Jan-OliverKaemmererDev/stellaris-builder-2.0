@@ -16,6 +16,7 @@ import { GameStateService } from '../../services/game-state.service';
 export class OfflineProgressDialog {
   /** Service responsible for managing game state, resources, and offline calculations. */
   gameState = inject(GameStateService);
+  isCollecting = false;
 
   /**
    * Retrieves the current offline earnings data from the game state.
@@ -29,6 +30,10 @@ export class OfflineProgressDialog {
    * Dismisses the dialog by clearing the offline earnings signal in the game state service.
    */
   close(): void {
-    this.gameState.clearOfflineEarnings();
+    this.isCollecting = true;
+    setTimeout(() => {
+      this.gameState.clearOfflineEarnings();
+      this.isCollecting = false;
+    }, 400); // 400ms duration for the pixel hide animation
   }
 }

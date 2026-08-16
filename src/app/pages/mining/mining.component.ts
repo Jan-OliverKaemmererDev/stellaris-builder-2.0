@@ -113,7 +113,7 @@ export class MiningComponent {
       resourceName: 'Eisen',
       baseRate: 150,
       description: 'Baut Eisenerz in den Asteroiden ab.',
-      effectFn: (lvl, skills) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${Math.floor(calcExponential(150, lvl) * getMineBonus('eisenmine', skills))} Eisen/h`,
+      effectFn: (lvl, skills) => `Produziert ${Math.floor(calcExponential(150, Math.max(1, lvl)) * getMineBonus('eisenmine', skills))} Eisen/h`,
       upgrades: this.generateUpgrades('eisenmine'),
     },
     {
@@ -126,7 +126,7 @@ export class MiningComponent {
       resourceName: 'Silber',
       baseRate: 80,
       description: 'Gewinnt wertvolles Silber aus tiefen Schächten.',
-      effectFn: (lvl, skills) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${Math.floor(calcExponential(80, lvl) * getMineBonus('silbermine', skills))} Silber/h`,
+      effectFn: (lvl, skills) => `Produziert ${Math.floor(calcExponential(80, Math.max(1, lvl)) * getMineBonus('silbermine', skills))} Silber/h`,
       upgrades: this.generateUpgrades('silbermine'),
     },
     {
@@ -139,7 +139,7 @@ export class MiningComponent {
       resourceName: 'Gold',
       baseRate: 30,
       description: 'Extrahiert seltenes Gold aus den tiefsten Minen.',
-      effectFn: (lvl, skills) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${Math.floor(calcExponential(30, lvl) * getMineBonus('goldmine', skills))} Gold/h`,
+      effectFn: (lvl, skills) => `Produziert ${Math.floor(calcExponential(30, Math.max(1, lvl)) * getMineBonus('goldmine', skills))} Gold/h`,
       upgrades: this.generateUpgrades('goldmine'),
     },
   ];
@@ -163,10 +163,10 @@ export class MiningComponent {
    */
   generateUpgrades(mineId: string): MineUpgrade[] {
     return [
-      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/infrastructure/upgrades/mining/roboter-arbeiter.png', requiredMineLevel: 5, baseCost: { credits: 100, energie: 50 }, costMultiplier: 1.4, description: 'Automatisierte Roboter erhöhen die Abbaugeschwindigkeit.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
-      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/infrastructure/upgrades/mining/transportlaster.png', requiredMineLevel: 15, baseCost: { credits: 500, eisen: 200, energie: 100 }, costMultiplier: 1.5, description: 'Schwere Transporter für schnelleren Materialtransport.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
-      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/infrastructure/upgrades/mining/ki-automation.png', requiredMineLevel: 30, baseCost: { credits: 2000, silber: 500, energie: 300 }, costMultiplier: 1.6, description: 'Künstliche Intelligenz optimiert den gesamten Abbau.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
-      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/infrastructure/upgrades/mining/hochgeschwindigkeitszug.png', requiredMineLevel: 50, baseCost: { credits: 10000, gold: 1000, energie: 1000 }, costMultiplier: 1.8, description: 'Hochgeschwindigkeitszüge für den Materialtransport.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
+      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/infrastructure/upgrades/mining/roboter-arbeiter.png', requiredMineLevel: 5, baseCost: { credits: 100, energie: 50 }, costMultiplier: 1.4, description: 'Automatisierte Roboter erhöhen die Abbaugeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/infrastructure/upgrades/mining/transportlaster.png', requiredMineLevel: 15, baseCost: { credits: 500, eisen: 200, energie: 100 }, costMultiplier: 1.5, description: 'Schwere Transporter für schnelleren Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/infrastructure/upgrades/mining/ki-automation.png', requiredMineLevel: 30, baseCost: { credits: 2000, silber: 500, energie: 300 }, costMultiplier: 1.6, description: 'Künstliche Intelligenz optimiert den gesamten Abbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/infrastructure/upgrades/mining/hochgeschwindigkeitszug.png', requiredMineLevel: 50, baseCost: { credits: 10000, gold: 1000, energie: 1000 }, costMultiplier: 1.8, description: 'Hochgeschwindigkeitszüge für den Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
     ];
   }
 

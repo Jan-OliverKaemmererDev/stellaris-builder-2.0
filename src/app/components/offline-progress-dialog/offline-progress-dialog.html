@@ -1,5 +1,5 @@
-<div class="overlay" *ngIf="earnings" role="dialog" aria-modal="true" aria-labelledby="offline-dialog-title">
-  <section class="dialog" aria-label="Offline progress summary">
+<div class="overlay" *ngIf="earnings" [class.collecting]="isCollecting" role="dialog" aria-modal="true" aria-labelledby="offline-dialog-title">
+  <section class="dialog" [class.collecting]="isCollecting" aria-label="Offline progress summary">
     <h2 id="offline-dialog-title">Willkommen zurück, Commander!</h2>
     <p>Während deiner Abwesenheit hat dein Imperium fleißig weiterproduziert.</p>
 
