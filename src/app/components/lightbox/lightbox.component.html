@@ -1,0 +1,21 @@
+@if (data) {
+  <div class="image-lightbox-overlay" (click)="closed.emit()" role="dialog" aria-modal="true" [attr.aria-label]="data.title + ' Details'">
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <img src="assets/icons/close.png" class="close-btn" (click)="closed.emit()" alt="Schließen" />
+
+      <!-- Title above the image -->
+      <h2 class="lightbox-title">{{ data.title }}</h2>
+
+      <!-- Enlarged image -->
+      <img [src]="data.imagePath" [alt]="data.title" class="lightbox-image" />
+
+      <!-- Description & dynamic effect below the image -->
+      <div class="lightbox-info">
+        <p class="lightbox-description">{{ data.description }}</p>
+        @if (data.effectText) {
+          <p class="lightbox-effect">{{ data.effectText }}</p>
+        }
+      </div>
+    </div>
+  </div>
+}

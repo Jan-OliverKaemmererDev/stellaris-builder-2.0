@@ -2,6 +2,7 @@ import { Component, inject, computed, OnInit, OnDestroy, signal } from '@angular
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
+import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 
 /** Definition of a purchasable ship type in the shipyard. */
 export interface ShipDef {
@@ -15,6 +16,8 @@ export interface ShipDef {
   imagePath: string;
   /** Resource cost to build one unit. */
   cost: Partial<GameResources>;
+  /** Dynamically computes the effect text based on the owned count. */
+  effectFn: (count: number) => string;
 }
 
 /**
@@ -24,7 +27,7 @@ export interface ShipDef {
 @Component({
   selector: 'app-fleet',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule, DecimalPipe, LightboxComponent],
   templateUrl: './fleet.component.html',
   styleUrl: './fleet.component.scss',
 })
@@ -32,22 +35,25 @@ export class FleetComponent implements OnInit, OnDestroy {
   /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
 
-  /** Currently selected image path for the lightbox overlay. */
-  selectedImage: string | null = null;
+  /** Currently selected lightbox data, or null if closed. */
+  selectedLightbox: LightboxData | null = null;
 
   /**
-   * Opens the image lightbox.
-   * @param imagePath Path of the image to display.
+   * Opens the lightbox with ship details.
+   * @param ship The ship whose details should be shown.
    */
-  openImage(imagePath: string | undefined): void {
-    if (imagePath) {
-      this.selectedImage = imagePath;
-    }
+  openLightbox(ship: ShipDef): void {
+    this.selectedLightbox = {
+      imagePath: ship.imagePath,
+      title: ship.title,
+      description: ship.description,
+      effectText: ship.effectFn(this.getShipCount(ship.id)),
+    };
   }
 
-  /** Closes the image lightbox. */
-  closeImage(): void {
-    this.selectedImage = null;
+  /** Closes the lightbox overlay. */
+  closeLightbox(): void {
+    this.selectedLightbox = null;
   }
 
   /** Available ship types that can be built in the shipyard. */
@@ -55,23 +61,26 @@ export class FleetComponent implements OnInit, OnDestroy {
     {
       id: 'kolonisierungsschiffe',
       title: 'Kolonisierungsschiff',
-      description: 'Besiedelt ferne Planeten. Erhöht dauerhaft die Personal-Produktion (+10/h) und Kapazität (+1000).',
+      description: 'Besiedelt ferne Planeten. Erhöht dauerhaft die Personal-Produktion und Kapazität.',
       imagePath: 'assets/img/fleet/kolonisierungsschiffe.png',
       cost: { eisen: 5000, nahrung: 1000, credits: 500, energie: 100 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 10} Personal/h, +${count * 1000} Personalkapazität`,
     },
     {
       id: 'logistikschiff',
       title: 'Logistikschiff',
-      description: 'Erhöht die globale Lagerkapazität aller Rohstoffe um 10%.',
+      description: 'Erhöht die globale Lagerkapazität aller Rohstoffe.',
       imagePath: 'assets/img/fleet/logistikschiff.png',
       cost: { eisen: 2000, credits: 500, energie: 50 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 10}% globale Lagerkapazität`,
     },
     {
       id: 'transportschiffe',
       title: 'Transportschiff',
-      description: 'Versorgt deine Planeten mit Materialien. Produziert passiv Nahrung (+200/h) und Eisen (+150/h).',
+      description: 'Versorgt deine Planeten mit Materialien.',
       imagePath: 'assets/img/fleet/transportschiffe.png',
       cost: { eisen: 3000, silber: 1000, energie: 50 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 200} Nahrung/h, +${count * 150} Eisen/h`,
     },
     {
       id: 'mining_ship',
@@ -79,6 +88,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       description: 'Kann in den Asteroidengürtel geschickt werden, um Rohstoffe abzubauen.',
       imagePath: 'assets/img/fleet/mining-ship.png',
       cost: { eisen: 1000, silber: 200, energie: 20 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `${count} Schiffe für Missionen verfügbar`,
     },
   ];
 

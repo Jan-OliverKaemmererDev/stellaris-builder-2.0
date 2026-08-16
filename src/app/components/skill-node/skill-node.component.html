@@ -1,0 +1,45 @@
+<article class="skill-node" [class.locked]="locked" [attr.aria-label]="title + ' node'">
+  <figure class="node-image-wrap">
+    @if (showPlaceholder) {
+      <div class="placeholder-icon" aria-hidden="true">{{ placeholderChar }}</div>
+    } @else {
+      <img [src]="imagePath" [alt]="title + ' icon'" class="node-image clickable-image" (click)="imageClicked.emit()" />
+    }
+
+    @if (locked) {
+      <div class="lock-overlay" aria-hidden="true">
+        <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+        <p class="lock-req">{{ lockText }}</p>
+      </div>
+    }
+  </figure>
+
+  <div class="node-details">
+    <h2 class="node-title">{{ title }}</h2>
+    <p class="node-level" [attr.aria-label]="'Level ' + level">Level: {{ level }}</p>
+
+    @if (effectText) {
+      <p class="node-effect" aria-label="Wirkung">{{ effectText }}</p>
+    }
+
+    <div class="node-cost" aria-label="Kosten">
+      <span class="cost-label">Kosten:</span>
+      <ul class="cost-list" aria-label="Upgrade costs">
+        @for (c of costEntries; track c.name) {
+          <li class="cost-item" [style.color]="c.colorVar">
+            {{ c.amount | number }} {{ c.name }}
+          </li>
+        }
+      </ul>
+    </div>
+
+    <button
+      class="upgrade-btn"
+      [disabled]="locked || !canAfford"
+      (click)="upgradeClicked.emit()"
+      [attr.aria-label]="buttonText + ' ' + title"
+    >
+      {{ buttonText }}
+    </button>
+  </div>
+</article>

@@ -6,45 +6,19 @@
       <div class="building-row" role="listitem">
         
         <!-- Building Node -->
-        <article class="skill-node" [class.locked]="!isBuildingUnlocked(building)" [attr.aria-label]="building.title + ' node'">
-          <figure class="node-image-wrap">
-            <img [src]="building.imagePath" alt="" class="node-image clickable-image" role="presentation" (click)="openImage(building.imagePath)" />
-            
-            @if (!isBuildingUnlocked(building)) {
-              <div class="lock-overlay" aria-hidden="true">
-                <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-                <p class="lock-req">
-                  Benötigt {{ building.requiredNode?.id }} Lvl {{ building.requiredNode?.level }}
-                </p>
-              </div>
-            }
-          </figure>
-
-          <div class="node-details">
-            <h2 class="node-title">{{ building.title }}</h2>
-            <p class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(building.id)">Level: {{ getSkillLevel(building.id) }}</p>
-            
-            <div class="node-cost" aria-label="Build costs">
-              <span class="cost-label">Kosten:</span>
-              <ul class="cost-list" aria-label="Build cost details">
-                @for (c of getCostEntries(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id))); track c.name) {
-                  <li class="cost-item" [style.color]="c.colorVar">
-                    {{ c.amount | number }} {{ c.name }}
-                  </li>
-                }
-              </ul>
-            </div>
-            
-            <button 
-              class="upgrade-btn" 
-              [disabled]="!isBuildingUnlocked(building) || !canAfford(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
-              (click)="upgradeSkill(building.id, getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
-              [attr.aria-label]="'Upgrade ' + building.title"
-            >
-              Ausbauen
-            </button>
-          </div>
-        </article>
+        <app-skill-node
+          [title]="building.title"
+          [imagePath]="building.imagePath"
+          [level]="getSkillLevel(building.id)"
+          [locked]="!isBuildingUnlocked(building)"
+          [lockText]="'Benötigt ' + (building.requiredNode?.id ?? '') + ' Lvl ' + (building.requiredNode?.level ?? '')"
+          [effectText]="building.effectFn(getSkillLevel(building.id))"
+          [costEntries]="getCostEntries(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
+          [canAfford]="canAfford(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
+          [buttonText]="'Ausbauen'"
+          (imageClicked)="openLightbox(building)"
+          (upgradeClicked)="upgradeSkill(building.id, getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
+        />
 
         <!-- Upgrades Section -->
         <div class="building-upgrades-section" role="list" [attr.aria-label]="'Upgrades for ' + building.title">
@@ -53,48 +27,19 @@
             <!-- Connector Line -->
             <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(building.id, upgrade)" aria-hidden="true"></span>
 
-            <article class="skill-node" [class.locked]="!isUpgradeUnlocked(building.id, upgrade)" role="listitem" [attr.aria-label]="upgrade.title + ' upgrade node'">
-              <figure class="node-image-wrap">
-                <img [src]="upgrade.imagePath" [alt]="upgrade.title + ' icon'" class="node-image clickable-image" (click)="openImage(upgrade.imagePath)" />
-                
-                @if (!isUpgradeUnlocked(building.id, upgrade)) {
-                  <div class="lock-overlay" aria-hidden="true">
-                    <span class="lock-icon"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-                    <p class="lock-req">
-                      {{ building.title }} Lvl {{ upgrade.requiredBuildingLevel }}
-                    </p>
-                  </div>
-                }
-              </figure>
-
-              <div class="node-details">
-                <h2 class="node-title">{{ upgrade.title }}</h2>
-                <p class="node-level" [attr.aria-label]="'Level ' + getSkillLevel(upgrade.id)">Level: {{ getSkillLevel(upgrade.id) }}</p>
-                
-                @if (isUpgradeUnlocked(building.id, upgrade)) {
-                  <p class="upgrade-bonus" aria-label="Production bonus">+{{ getSkillLevel(upgrade.id) * 5 }}% Effizienz</p>
-                  
-                  <div class="node-cost" aria-label="Build costs">
-                    <ul class="cost-list" aria-label="Build cost details">
-                      @for (c of getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id))); track c.name) {
-                        <li class="cost-item" [style.color]="c.colorVar">
-                          {{ c.amount | number }} {{ c.name }}
-                        </li>
-                      }
-                    </ul>
-                  </div>
-                  
-                  <button 
-                    class="upgrade-btn" 
-                    [disabled]="!canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
-                    (click)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
-                    [attr.aria-label]="'Purchase ' + upgrade.title"
-                  >
-                    Kaufen
-                  </button>
-                }
-              </div>
-            </article>
+            <app-skill-node
+              [title]="upgrade.title"
+              [imagePath]="upgrade.imagePath"
+              [level]="getSkillLevel(upgrade.id)"
+              [locked]="!isUpgradeUnlocked(building.id, upgrade)"
+              [lockText]="building.title + ' Lvl ' + upgrade.requiredBuildingLevel"
+              [effectText]="upgrade.effectFn(getSkillLevel(upgrade.id))"
+              [costEntries]="getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+              [canAfford]="canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+              [buttonText]="'Kaufen'"
+              (imageClicked)="openLightbox(upgrade)"
+              (upgradeClicked)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+            />
 
           }
         </div>
@@ -103,12 +48,5 @@
     }
   </div>
 
-  @if (selectedImage) {
-    <div class="image-lightbox-overlay" (click)="closeImage()">
-      <div class="lightbox-content" (click)="$event.stopPropagation()">
-        <img src="assets/icons/close.png" class="close-btn" (click)="closeImage()" alt="Schließen" />
-        <img [src]="selectedImage" alt="Vergrößerte Ansicht" class="lightbox-image" />
-      </div>
-    </div>
-  }
+  <app-lightbox [data]="selectedLightbox" (closed)="closeLightbox()" />
 </section>

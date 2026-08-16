@@ -58,7 +58,7 @@
       @for (ship of ships; track ship.id) {
         <article class="ship-card" role="listitem">
           <figure class="ship-img-wrap" aria-hidden="true">
-            <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openImage(ship.imagePath)" />
+            <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openLightbox(ship)" />
           </figure>
           
           <div class="ship-details">
@@ -68,6 +68,7 @@
             </header>
             
             <p class="ship-desc">{{ ship.description }}</p>
+            <p class="ship-effect">{{ ship.effectFn(getShipCount(ship.id)) }}</p>
             
             <div class="ship-cost" aria-label="Build costs">
               <span class="cost-label">Baukosten:</span>
@@ -94,12 +95,5 @@
     </div>
   </section>
 
-  @if (selectedImage) {
-    <div class="image-lightbox-overlay" (click)="closeImage()">
-      <div class="lightbox-content" (click)="$event.stopPropagation()">
-        <img src="assets/icons/close.png" class="close-btn" (click)="closeImage()" alt="Schließen" />
-        <img [src]="selectedImage" alt="Vergrößerte Ansicht" class="lightbox-image" />
-      </div>
-    </div>
-  }
+  <app-lightbox [data]="selectedLightbox" (closed)="closeLightbox()" />
 </main>

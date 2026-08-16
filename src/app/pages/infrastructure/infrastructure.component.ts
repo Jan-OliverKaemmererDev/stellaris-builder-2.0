@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
+import { calcExponential } from '../../services/game-math.utils';
+import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
+import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 
 /** An infrastructure-specific upgrade that boosts production/utility when the parent building reaches a required level. */
 export interface InfrastructureUpgrade {
@@ -17,6 +20,10 @@ export interface InfrastructureUpgrade {
   baseCost: Partial<GameResources>;
   /** Multiplicative cost scaling factor per level. */
   costMultiplier: number;
+  /** Short description of what this upgrade does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level. */
+  effectFn: (level: number) => string;
 }
 
 /** An infrastructure building node with its own upgrade chain. */
@@ -35,6 +42,10 @@ export interface InfrastructureItem {
   upgrades: InfrastructureUpgrade[];
   /** Prerequisite node that must reach a specific level to unlock this building. */
   requiredNode?: { id: string; level: number };
+  /** Short description of what this building does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level. */
+  effectFn: (level: number) => string;
 }
 
 /**
@@ -43,7 +54,7 @@ export interface InfrastructureItem {
 @Component({
   selector: 'app-infrastructure',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
   templateUrl: './infrastructure.component.html',
   styleUrl: './infrastructure.component.scss',
 })
@@ -51,22 +62,25 @@ export class InfrastructureComponent {
   /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
 
-  /** Currently selected image path for the lightbox overlay. */
-  selectedImage: string | null = null;
+  /** Currently selected lightbox data, or null if closed. */
+  selectedLightbox: LightboxData | null = null;
 
   /**
-   * Opens the image lightbox.
-   * @param imagePath Path of the image to display.
+   * Opens the lightbox for a building or upgrade.
+   * @param item The building or upgrade to display.
    */
-  openImage(imagePath: string | undefined): void {
-    if (imagePath) {
-      this.selectedImage = imagePath;
-    }
+  openLightbox(item: InfrastructureItem | InfrastructureUpgrade): void {
+    this.selectedLightbox = {
+      imagePath: item.imagePath,
+      title: item.title,
+      description: item.description,
+      effectText: item.effectFn(this.getSkillLevel(item.id)),
+    };
   }
 
-  /** Closes the image lightbox. */
-  closeImage(): void {
-    this.selectedImage = null;
+  /** Closes the lightbox overlay. */
+  closeLightbox(): void {
+    this.selectedLightbox = null;
   }
 
   /** All available infrastructure buildings with their upgrade trees. */
@@ -77,6 +91,8 @@ export class InfrastructureComponent {
       imagePath: 'assets/img/infrastructure/central-warehouse.png',
       baseCost: { eisen: 50, silber: 50, energie: 10 },
       costMultiplier: 1.4,
+      description: 'Erweitert die Lagerkapazität aller Rohstoffe.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Lagermultiplikator: ×${Math.pow(1.5, lvl).toFixed(1)}`,
       upgrades: this.generateLagerUpgrades(),
     },
     {
@@ -86,6 +102,8 @@ export class InfrastructureComponent {
       baseCost: { eisen: 150, energie: 50 },
       costMultiplier: 1.4,
       requiredNode: { id: 'lager', level: 5 },
+      description: 'Verarbeitet Rohstoffe zu wertvollem Xenonit.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${calcExponential(10, lvl)} Xenonit/h`,
       upgrades: this.generateRefineryUpgrades(),
     },
     {
@@ -95,6 +113,8 @@ export class InfrastructureComponent {
       baseCost: { eisen: 1200, silber: 400, energie: 200 },
       costMultiplier: 1.5,
       requiredNode: { id: 'refinery', level: 10 },
+      description: 'Ermöglicht den Bau fortschrittlicher Raumschiffe.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${calcExponential(2, lvl)} Personal/h`,
       upgrades: this.generateShipyardUpgrades(),
     },
     {
@@ -104,6 +124,8 @@ export class InfrastructureComponent {
       baseCost: { eisen: 8000, gold: 1000, energie: 500 },
       costMultiplier: 1.8,
       requiredNode: { id: 'orbital_shipyard', level: 10 },
+      description: 'Eine massive Raumstation als Zentrum deines Imperiums.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${calcExponential(5, lvl)} Personal/h`,
       upgrades: this.generateStationUpgrades(),
     },
   ];
@@ -126,10 +148,10 @@ export class InfrastructureComponent {
    */
   generateLagerUpgrades(): InfrastructureUpgrade[] {
     return [
-      { id: 'lager_erweiterte_ladebucht', title: 'Erweiterte Ladebucht', imagePath: 'assets/img/infrastructure/extended-loading-bay.png', requiredBuildingLevel: 5, baseCost: { credits: 150, eisen: 100, energie: 20 }, costMultiplier: 1.3 },
-      { id: 'lager_automatisierte_logistik', title: 'Automatisierte Logistik', imagePath: 'assets/img/infrastructure/automated-logistics.png', requiredBuildingLevel: 15, baseCost: { credits: 500, silber: 200, energie: 100 }, costMultiplier: 1.4 },
-      { id: 'lager_quantenspeicher', title: 'Quantenspeicher', imagePath: 'assets/img/infrastructure/quantum-memory.png', requiredBuildingLevel: 30, baseCost: { credits: 2500, gold: 500, energie: 300 }, costMultiplier: 1.6 },
-      { id: 'lager_subraum_kompression', title: 'Subraum-Kompression', imagePath: 'assets/img/infrastructure/subspace-compression.png', requiredBuildingLevel: 50, baseCost: { credits: 12000, xenonit: 500, energie: 1500 }, costMultiplier: 1.8 },
+      { id: 'lager_erweiterte_ladebucht', title: 'Erweiterte Ladebucht', imagePath: 'assets/img/infrastructure/extended-loading-bay.png', requiredBuildingLevel: 5, baseCost: { credits: 150, eisen: 100, energie: 20 }, costMultiplier: 1.3, description: 'Größere Ladebuchten für schnelleren Warenumschlag.', effectFn: (lvl) => `+${lvl * 5}% Lagerkapazität` },
+      { id: 'lager_automatisierte_logistik', title: 'Automatisierte Logistik', imagePath: 'assets/img/infrastructure/automated-logistics.png', requiredBuildingLevel: 15, baseCost: { credits: 500, silber: 200, energie: 100 }, costMultiplier: 1.4, description: 'Drohnen und KI optimieren die Lagerverwaltung.', effectFn: (lvl) => `+${lvl * 5}% Lagerkapazität` },
+      { id: 'lager_quantenspeicher', title: 'Quantenspeicher', imagePath: 'assets/img/infrastructure/quantum-memory.png', requiredBuildingLevel: 30, baseCost: { credits: 2500, gold: 500, energie: 300 }, costMultiplier: 1.6, description: 'Speichert Materie in komprimierten Quantenzuständen.', effectFn: (lvl) => `+${lvl * 5}% Lagerkapazität` },
+      { id: 'lager_subraum_kompression', title: 'Subraum-Kompression', imagePath: 'assets/img/infrastructure/subspace-compression.png', requiredBuildingLevel: 50, baseCost: { credits: 12000, xenonit: 500, energie: 1500 }, costMultiplier: 1.8, description: 'Lagert Rohstoffe in einer Subraum-Tasche.', effectFn: (lvl) => `+${lvl * 5}% Lagerkapazität` },
     ];
   }
 
@@ -139,10 +161,10 @@ export class InfrastructureComponent {
    */
   generateRefineryUpgrades(): InfrastructureUpgrade[] {
     return [
-      { id: 'refinery_thermalschmelze', title: 'Thermalschmelze', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 5, baseCost: { credits: 300, eisen: 200, energie: 100 }, costMultiplier: 1.4 },
-      { id: 'refinery_katalytische_konverter', title: 'Katalytische Konverter', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 15, baseCost: { credits: 1000, silber: 400, energie: 300 }, costMultiplier: 1.5 },
-      { id: 'refinery_plasma_extraktion', title: 'Plasma-Extraktion', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 30, baseCost: { credits: 4000, gold: 1000, energie: 800 }, costMultiplier: 1.7 },
-      { id: 'refinery_antimaterie_anreicherung', title: 'Antimaterie-Anreicherung', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 50, baseCost: { credits: 20000, xenonit: 1000, energie: 3000 }, costMultiplier: 1.9 },
+      { id: 'refinery_thermalschmelze', title: 'Thermalschmelze', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 5, baseCost: { credits: 300, eisen: 200, energie: 100 }, costMultiplier: 1.4, description: 'Schmilzt Erze bei extremen Temperaturen ein.', effectFn: (lvl) => `+${lvl * 5}% Raffinerieeffizienz` },
+      { id: 'refinery_katalytische_konverter', title: 'Katalytische Konverter', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 15, baseCost: { credits: 1000, silber: 400, energie: 300 }, costMultiplier: 1.5, description: 'Katalysatoren beschleunigen chemische Reaktionen.', effectFn: (lvl) => `+${lvl * 5}% Raffinerieeffizienz` },
+      { id: 'refinery_plasma_extraktion', title: 'Plasma-Extraktion', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 30, baseCost: { credits: 4000, gold: 1000, energie: 800 }, costMultiplier: 1.7, description: 'Extrahiert Xenonit mittels Plasmaströmen.', effectFn: (lvl) => `+${lvl * 5}% Raffinerieeffizienz` },
+      { id: 'refinery_antimaterie_anreicherung', title: 'Antimaterie-Anreicherung', imagePath: 'assets/img/infrastructure/refinery.png', requiredBuildingLevel: 50, baseCost: { credits: 20000, xenonit: 1000, energie: 3000 }, costMultiplier: 1.9, description: 'Reichert Xenonit mit Antimaterie-Partikeln an.', effectFn: (lvl) => `+${lvl * 5}% Raffinerieeffizienz` },
     ];
   }
 
@@ -152,10 +174,10 @@ export class InfrastructureComponent {
    */
   generateShipyardUpgrades(): InfrastructureUpgrade[] {
     return [
-      { id: 'shipyard_montage_drohnen', title: 'Montage-Drohnen', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 5, baseCost: { credits: 800, eisen: 500, energie: 200 }, costMultiplier: 1.4 },
-      { id: 'shipyard_modulare_werftdocks', title: 'Modulare Werftdocks', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 15, baseCost: { credits: 2500, silber: 800, energie: 500 }, costMultiplier: 1.5 },
-      { id: 'shipyard_ki_konstruktion', title: 'KI-gestützte Konstruktion', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 30, baseCost: { credits: 8000, gold: 2000, energie: 1500 }, costMultiplier: 1.7 },
-      { id: 'shipyard_naniten_fabrikation', title: 'Naniten-Fabrikation', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 50, baseCost: { credits: 30000, xenonit: 2000, energie: 5000 }, costMultiplier: 1.9 },
+      { id: 'shipyard_montage_drohnen', title: 'Montage-Drohnen', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 5, baseCost: { credits: 800, eisen: 500, energie: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen beschleunigen die Schiffsproduktion.', effectFn: (lvl) => `+${lvl * 5}% Werft-Effizienz` },
+      { id: 'shipyard_modulare_werftdocks', title: 'Modulare Werftdocks', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 15, baseCost: { credits: 2500, silber: 800, energie: 500 }, costMultiplier: 1.5, description: 'Modulare Docks für parallelen Schiffsbau.', effectFn: (lvl) => `+${lvl * 5}% Werft-Effizienz` },
+      { id: 'shipyard_ki_konstruktion', title: 'KI-gestützte Konstruktion', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 30, baseCost: { credits: 8000, gold: 2000, energie: 1500 }, costMultiplier: 1.7, description: 'KI plant und überwacht komplexe Schiffskonstruktionen.', effectFn: (lvl) => `+${lvl * 5}% Werft-Effizienz` },
+      { id: 'shipyard_naniten_fabrikation', title: 'Naniten-Fabrikation', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredBuildingLevel: 50, baseCost: { credits: 30000, xenonit: 2000, energie: 5000 }, costMultiplier: 1.9, description: 'Naniten bauen Schiffe Atom für Atom zusammen.', effectFn: (lvl) => `+${lvl * 5}% Werft-Effizienz` },
     ];
   }
 
@@ -165,49 +187,26 @@ export class InfrastructureComponent {
    */
   generateStationUpgrades(): InfrastructureUpgrade[] {
     return [
-      { id: 'station_verstaerkte_huelle', title: 'Verstärkte Hülle', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 5, baseCost: { credits: 2000, eisen: 1500, energie: 500 }, costMultiplier: 1.5 },
-      { id: 'station_hydroponische_gaerten', title: 'Hydroponische Gärten', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 15, baseCost: { credits: 5000, nahrung: 2000, energie: 1000 }, costMultiplier: 1.6 },
-      { id: 'station_kommerz_hub', title: 'Kommerz-Hub', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 30, baseCost: { credits: 15000, gold: 5000, energie: 2500 }, costMultiplier: 1.8 },
-      { id: 'station_orbitaler_verteidigungsring', title: 'Orbitaler Verteidigungsring', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 50, baseCost: { credits: 50000, xenonit: 5000, energie: 10000 }, costMultiplier: 2.0 },
+      { id: 'station_verstaerkte_huelle', title: 'Verstärkte Hülle', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 5, baseCost: { credits: 2000, eisen: 1500, energie: 500 }, costMultiplier: 1.5, description: 'Verstärkte Panzerung schützt die Station vor Meteoriteneinschlägen.', effectFn: (lvl) => `+${lvl * 5}% Stationseffizienz` },
+      { id: 'station_hydroponische_gaerten', title: 'Hydroponische Gärten', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 15, baseCost: { credits: 5000, nahrung: 2000, energie: 1000 }, costMultiplier: 1.6, description: 'Selbstversorgende Gärten für die Besatzung.', effectFn: (lvl) => `+${lvl * 5}% Stationseffizienz` },
+      { id: 'station_kommerz_hub', title: 'Kommerz-Hub', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 30, baseCost: { credits: 15000, gold: 5000, energie: 2500 }, costMultiplier: 1.8, description: 'Ein Handelszentrum zieht Händler aus der ganzen Galaxie an.', effectFn: (lvl) => `+${lvl * 5}% Stationseffizienz` },
+      { id: 'station_orbitaler_verteidigungsring', title: 'Orbitaler Verteidigungsring', imagePath: 'assets/img/infrastructure/large-station.png', requiredBuildingLevel: 50, baseCost: { credits: 50000, xenonit: 5000, energie: 10000 }, costMultiplier: 2.0, description: 'Ein Ring aus Waffenplattformen verteidigt die Station.', effectFn: (lvl) => `+${lvl * 5}% Stationseffizienz` },
     ];
   }
 
-  /**
-   * Retrieves the current level for a given skill or building ID.
-   * @param id The skill or building identifier.
-   * @returns The current level, defaulting to 0.
-   */
   getSkillLevel(id: string): number {
     return this.gameState.getSkillLevel(id);
   }
 
-  /**
-   * Checks if a main building is unlocked based on its prerequisite.
-   * @param building The building to check.
-   * @returns True if unlocked or no prerequisite exists.
-   */
   isBuildingUnlocked(building: InfrastructureItem): boolean {
     if (!building.requiredNode) return true;
     return this.getSkillLevel(building.requiredNode.id) >= building.requiredNode.level;
   }
 
-  /**
-   * Checks if an upgrade is unlocked based on its parent building's level.
-   * @param buildingId The parent building identifier.
-   * @param upgrade The upgrade to check.
-   * @returns True if the parent building meets the level requirement.
-   */
   isUpgradeUnlocked(buildingId: string, upgrade: InfrastructureUpgrade): boolean {
     return this.getSkillLevel(buildingId) >= upgrade.requiredBuildingLevel;
   }
 
-  /**
-   * Calculates the current cost for the next level of a building or upgrade.
-   * @param baseCost The base cost at level 1.
-   * @param multiplier The cost scaling multiplier.
-   * @param currentLevel The current level of the building or upgrade.
-   * @returns The calculated resource cost for the next level.
-   */
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
     const cost: Partial<GameResources> = {};
     const mult = Math.pow(multiplier, currentLevel);
@@ -217,12 +216,7 @@ export class InfrastructureComponent {
     return cost;
   }
 
-  /**
-   * Transforms a Partial<GameResources> object into an array of displayable cost entries.
-   * @param cost The calculated resource cost.
-   * @returns Array of objects containing name, amount, and CSS color variable.
-   */
-  getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
+  getCostEntries(cost: Partial<GameResources>): CostEntry[] {
     return Object.entries(cost).map(([key, amount]) => ({
       name: this.resourceMeta[key].name,
       amount: amount as number,
@@ -230,21 +224,10 @@ export class InfrastructureComponent {
     }));
   }
 
-  /**
-   * Determines if the player has enough resources to afford the given cost.
-   * @param cost The required resource cost.
-   * @returns True if affordable, false otherwise.
-   */
   canAfford(cost: Partial<GameResources>): boolean {
     return this.gameState.canAfford(cost);
   }
 
-  /**
-   * Processes the purchase or upgrade action for a skill.
-   * @param id The identifier of the building or upgrade.
-   * @param cost The cost of the transaction.
-   * @returns A promise that resolves when the upgrade is processed.
-   */
   async upgradeSkill(id: string, cost: Partial<GameResources>): Promise<void> {
     if (!this.canAfford(cost)) return;
     try {

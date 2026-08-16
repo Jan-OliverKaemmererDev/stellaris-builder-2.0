@@ -234,6 +234,16 @@ figure.ship-img-wrap {
   object-fit: cover;
 }
 
+.clickable-image {
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+}
+
 /* ═══ Ship Details ═══ */
 
 .ship-details {
@@ -264,6 +274,13 @@ figure.ship-img-wrap {
   font-size: 0.85rem;
   color: var(--text-muted);
   line-height: 1.5;
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.ship-effect {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--color-success);
   margin: 0 0 var(--space-md) 0;
 }
 
@@ -320,71 +337,4 @@ ul.cost-list {
     cursor: not-allowed;
     transform: none;
   }
-}
-
-/* ═══ Image Lightbox ═══ */
-
-.clickable-image {
-  cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-
-  &:hover {
-    transform: scale(1.05);
-    filter: brightness(1.1);
-  }
-}
-
-.image-lightbox-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.lightbox-content {
-  position: relative;
-  width: 650px;
-  height: 650px;
-  max-width: 90vw;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  padding: 60px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
-}
-
-.lightbox-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: var(--radius-lg);
-  filter: drop-shadow(0 5px 20px #3B82F6);
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  z-index: 10;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }

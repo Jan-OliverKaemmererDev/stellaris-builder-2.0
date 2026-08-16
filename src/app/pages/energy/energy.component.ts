@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
+import { calcExponential } from '../../services/game-math.utils';
+import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
+import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 
 /**
  * Represents a single upgrade step for an energy building.
@@ -19,6 +22,10 @@ export interface EnergyUpgrade {
   baseCost: Partial<GameResources>;
   /** Multiplier for the cost per level. */
   costMultiplier: number;
+  /** Short description of what this upgrade does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level. */
+  effectFn: (level: number) => string;
 }
 
 /**
@@ -39,6 +46,10 @@ export interface EnergyItem {
   upgrades: EnergyUpgrade[];
   /** Optional prerequisite building and its required level. */
   requiredNode?: { id: string; level: number };
+  /** Short description of what this building does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level. */
+  effectFn: (level: number) => string;
 }
 
 /**
@@ -48,7 +59,7 @@ export interface EnergyItem {
 @Component({
   selector: 'app-energy',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
   templateUrl: './energy.component.html',
   styleUrl: './energy.component.scss',
 })
@@ -56,22 +67,25 @@ export class EnergyComponent {
   /** Injected game state service for resource management and skill levels. */
   gameState = inject(GameStateService);
 
-  /** Currently selected image path for the lightbox overlay. */
-  selectedImage: string | null = null;
+  /** Currently selected lightbox data, or null if closed. */
+  selectedLightbox: LightboxData | null = null;
 
   /**
-   * Opens the image lightbox.
-   * @param imagePath Path of the image to display.
+   * Opens the lightbox with information about a building or upgrade.
+   * @param item The building or upgrade whose details should be shown.
    */
-  openImage(imagePath: string | undefined): void {
-    if (imagePath) {
-      this.selectedImage = imagePath;
-    }
+  openLightbox(item: EnergyItem | EnergyUpgrade): void {
+    this.selectedLightbox = {
+      imagePath: item.imagePath,
+      title: item.title,
+      description: item.description,
+      effectText: item.effectFn(this.getSkillLevel(item.id)),
+    };
   }
 
-  /** Closes the image lightbox. */
-  closeImage(): void {
-    this.selectedImage = null;
+  /** Closes the lightbox overlay. */
+  closeLightbox(): void {
+    this.selectedLightbox = null;
   }
 
   /** List of all energy buildings and their respective upgrades. */
@@ -82,11 +96,13 @@ export class EnergyComponent {
       imagePath: 'assets/img/infrastructure/solarkraftwerk.png',
       baseCost: { eisen: 15 },
       costMultiplier: 1.4,
+      description: 'Nutzt die Kraft der Sonne zur Stromerzeugung.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Erzeugt ${calcExponential(200, lvl)} Energie`,
       upgrades: [
-        { id: 'solar_erweiterte_panele', title: 'Erweiterte Panele', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/erweiterte-panele.png', requiredLevel: 5, baseCost: { credits: 100, eisen: 50 }, costMultiplier: 1.3 },
-        { id: 'solar_thermische_speicher', title: 'Thermische Speicher', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/thermische-speicher.png', requiredLevel: 15, baseCost: { credits: 300, silber: 100 }, costMultiplier: 1.4 },
-        { id: 'solar_orbitalspiegel', title: 'Orbitalspiegel', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/orbitalspiegel.png', requiredLevel: 30, baseCost: { credits: 1500, gold: 300 }, costMultiplier: 1.6 },
-        { id: 'solar_dyson_schwarm', title: 'Dyson-Schwarm-Prototyp', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/dyson-schwarm-prototyp.png', requiredLevel: 50, baseCost: { credits: 8000, xenonit: 200 }, costMultiplier: 1.8 },
+        { id: 'solar_erweiterte_panele', title: 'Erweiterte Panele', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/erweiterte-panele.png', requiredLevel: 5, baseCost: { credits: 100, eisen: 50 }, costMultiplier: 1.3, description: 'Verbesserte Solarzellen für höhere Energieausbeute.', effectFn: (lvl) => `+${lvl * 5}% Solarenergie` },
+        { id: 'solar_thermische_speicher', title: 'Thermische Speicher', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/thermische-speicher.png', requiredLevel: 15, baseCost: { credits: 300, silber: 100 }, costMultiplier: 1.4, description: 'Speichert überschüssige Wärme für den Nachtbetrieb.', effectFn: (lvl) => `+${lvl * 5}% Solarenergie` },
+        { id: 'solar_orbitalspiegel', title: 'Orbitalspiegel', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/orbitalspiegel.png', requiredLevel: 30, baseCost: { credits: 1500, gold: 300 }, costMultiplier: 1.6, description: 'Riesige Spiegel im Orbit bündeln Sonnenlicht auf die Panele.', effectFn: (lvl) => `+${lvl * 5}% Solarenergie` },
+        { id: 'solar_dyson_schwarm', title: 'Dyson-Schwarm-Prototyp', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/dyson-schwarm-prototyp.png', requiredLevel: 50, baseCost: { credits: 8000, xenonit: 200 }, costMultiplier: 1.8, description: 'Ein erster Prototyp einer Dyson-Sphäre umhüllt den Stern.', effectFn: (lvl) => `+${lvl * 5}% Solarenergie` },
       ],
     },
     {
@@ -96,11 +112,13 @@ export class EnergyComponent {
       baseCost: { eisen: 900, silber: 200 },
       costMultiplier: 1.7,
       requiredNode: { id: 'solarkraftwerk', level: 10 },
+      description: 'Verschmilzt Atomkerne für enorme Energiemengen.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Erzeugt ${calcExponential(800, lvl)} Energie`,
       upgrades: [
-        { id: 'fusion_plasma_eindaemmung', title: 'Plasma-Eindämmung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 5, baseCost: { credits: 500, eisen: 300, energie: 100 }, costMultiplier: 1.5 },
-        { id: 'fusion_deuterium_anreicherung', title: 'Deuterium-Anreicherung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 15, baseCost: { credits: 1500, silber: 500, energie: 200 }, costMultiplier: 1.6 },
-        { id: 'fusion_laser_katalysator', title: 'Laser-Katalysator', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 30, baseCost: { credits: 5000, gold: 1000, energie: 500 }, costMultiplier: 1.7 },
-        { id: 'fusion_kaltfusions_matrix', title: 'Kaltfusions-Matrix', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 50, baseCost: { credits: 20000, xenonit: 800, energie: 1500 }, costMultiplier: 1.9 },
+        { id: 'fusion_plasma_eindaemmung', title: 'Plasma-Eindämmung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 5, baseCost: { credits: 500, eisen: 300, energie: 100 }, costMultiplier: 1.5, description: 'Magnetfelder halten das Fusionsplasma stabil.', effectFn: (lvl) => `+${lvl * 5}% Fusionsleistung` },
+        { id: 'fusion_deuterium_anreicherung', title: 'Deuterium-Anreicherung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 15, baseCost: { credits: 1500, silber: 500, energie: 200 }, costMultiplier: 1.6, description: 'Effizientere Aufbereitung des Fusionsbrennstoffs.', effectFn: (lvl) => `+${lvl * 5}% Fusionsleistung` },
+        { id: 'fusion_laser_katalysator', title: 'Laser-Katalysator', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 30, baseCost: { credits: 5000, gold: 1000, energie: 500 }, costMultiplier: 1.7, description: 'Laser zünden die Fusionsreaktion präziser und schneller.', effectFn: (lvl) => `+${lvl * 5}% Fusionsleistung` },
+        { id: 'fusion_kaltfusions_matrix', title: 'Kaltfusions-Matrix', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 50, baseCost: { credits: 20000, xenonit: 800, energie: 1500 }, costMultiplier: 1.9, description: 'Revolutionäre Fusion bei niedrigen Temperaturen.', effectFn: (lvl) => `+${lvl * 5}% Fusionsleistung` },
       ],
     },
     {
@@ -110,11 +128,13 @@ export class EnergyComponent {
       baseCost: { eisen: 5000, xenonit: 500 },
       costMultiplier: 2.0,
       requiredNode: { id: 'fusionsreaktor', level: 10 },
+      description: 'Die ultimative Energiequelle durch Materie-Antimaterie-Annihilation.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Erzeugt ${calcExponential(3000, lvl)} Energie`,
       upgrades: [
-        { id: 'antimaterie_positronen', title: 'Positronen-Sammler', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 5, baseCost: { credits: 3000, eisen: 1000, energie: 500 }, costMultiplier: 1.6 },
-        { id: 'antimaterie_magnetfelder', title: 'Magnetfelder', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 1000 }, costMultiplier: 1.8 },
-        { id: 'antimaterie_subraumkuehlung', title: 'Subraum-Kühlung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 30, baseCost: { credits: 25000, gold: 5000, energie: 3000 }, costMultiplier: 2.0 },
-        { id: 'antimaterie_nullpunkt', title: 'Nullpunkt-Siphon', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 50, baseCost: { credits: 100000, xenonit: 5000, energie: 10000 }, costMultiplier: 2.2 },
+        { id: 'antimaterie_positronen', title: 'Positronen-Sammler', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 5, baseCost: { credits: 3000, eisen: 1000, energie: 500 }, costMultiplier: 1.6, description: 'Sammelt Positronen aus kosmischer Strahlung.', effectFn: (lvl) => `+${lvl * 5}% Antimaterieertrag` },
+        { id: 'antimaterie_magnetfelder', title: 'Magnetfelder', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 1000 }, costMultiplier: 1.8, description: 'Starke Magnetfelder für sichere Antimaterie-Eindämmung.', effectFn: (lvl) => `+${lvl * 5}% Antimaterieertrag` },
+        { id: 'antimaterie_subraumkuehlung', title: 'Subraum-Kühlung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 30, baseCost: { credits: 25000, gold: 5000, energie: 3000 }, costMultiplier: 2.0, description: 'Kühlt den Reaktorkern durch Subraum-Technologie.', effectFn: (lvl) => `+${lvl * 5}% Antimaterieertrag` },
+        { id: 'antimaterie_nullpunkt', title: 'Nullpunkt-Siphon', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 50, baseCost: { credits: 100000, xenonit: 5000, energie: 10000 }, costMultiplier: 2.2, description: 'Zapft Energie direkt aus dem Quantenvakuum.', effectFn: (lvl) => `+${lvl * 5}% Antimaterieertrag` },
       ],
     },
   ];
@@ -183,9 +203,9 @@ export class EnergyComponent {
   /**
    * Transforms a resource cost object into an array of displayable cost entries.
    * @param cost - The calculated resource cost.
-   * @returns Array of objects containing a display name, amount, and CSS color variable.
+   * @returns Array of cost entries with a display name, amount, and color variable.
    */
-  getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
+  getCostEntries(cost: Partial<GameResources>): CostEntry[] {
     return Object.entries(cost).map(([key, amount]) => ({
       name: this.resourceMeta[key].name,
       amount: amount as number,

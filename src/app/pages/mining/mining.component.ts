@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
+import { calcExponential, getMineBonus } from '../../services/game-math.utils';
+import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
+import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 
 /** A mine-specific upgrade that boosts production when the parent mine reaches a required level. */
 export interface MineUpgrade {
@@ -17,6 +20,10 @@ export interface MineUpgrade {
   baseCost: Partial<GameResources>;
   /** Multiplicative cost scaling factor per level. */
   costMultiplier: number;
+  /** Short description of what this upgrade does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level. */
+  effectFn: (level: number) => string;
 }
 
 /** A mineable resource node with its own upgrade chain. */
@@ -35,6 +42,14 @@ export interface Mine {
   upgrades: MineUpgrade[];
   /** Prerequisite node that must reach a specific level to unlock this mine. */
   requiredNode?: { id: string; level: number };
+  /** The resource type this mine produces (used for effect text). */
+  resourceName: string;
+  /** Base production rate per hour at level 1. */
+  baseRate: number;
+  /** Short description of what this mine does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level and skills. */
+  effectFn: (level: number, skills: Record<string, number>) => string;
 }
 
 /**
@@ -44,7 +59,7 @@ export interface Mine {
 @Component({
   selector: 'app-mining',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
   templateUrl: './mining.component.html',
   styleUrl: './mining.component.scss',
 })
@@ -52,22 +67,38 @@ export class MiningComponent {
   /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
 
-  /** Currently selected image path for the lightbox overlay. */
-  selectedImage: string | null = null;
+  /** Currently selected lightbox data, or null if closed. */
+  selectedLightbox: LightboxData | null = null;
 
   /**
-   * Opens the image lightbox.
-   * @param imagePath Path of the image to display.
+   * Opens the lightbox for a mine or upgrade.
+   * @param item The mine or upgrade to display.
    */
-  openImage(imagePath: string | undefined): void {
-    if (imagePath) {
-      this.selectedImage = imagePath;
-    }
+  openMineLightbox(mine: Mine): void {
+    this.selectedLightbox = {
+      imagePath: mine.imagePath,
+      title: mine.title,
+      description: mine.description,
+      effectText: mine.effectFn(this.getSkillLevel(mine.id), this.gameState.skills()),
+    };
   }
 
-  /** Closes the image lightbox. */
-  closeImage(): void {
-    this.selectedImage = null;
+  /**
+   * Opens the lightbox for a mine upgrade.
+   * @param upgrade The upgrade to display.
+   */
+  openUpgradeLightbox(upgrade: MineUpgrade): void {
+    this.selectedLightbox = {
+      imagePath: upgrade.imagePath,
+      title: upgrade.title,
+      description: upgrade.description,
+      effectText: upgrade.effectFn(this.getSkillLevel(upgrade.id)),
+    };
+  }
+
+  /** Closes the lightbox overlay. */
+  closeLightbox(): void {
+    this.selectedLightbox = null;
   }
 
   /** All available mines with their upgrade trees. */
@@ -78,6 +109,10 @@ export class MiningComponent {
       imagePath: 'assets/img/infrastructure/metallmine.png',
       baseCost: { eisen: 10, energie: 10 },
       costMultiplier: 1.5,
+      resourceName: 'Eisen',
+      baseRate: 150,
+      description: 'Baut Eisenerz in den Asteroiden ab.',
+      effectFn: (lvl, skills) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${Math.floor(calcExponential(150, lvl) * getMineBonus('eisenmine', skills))} Eisen/h`,
       upgrades: this.generateUpgrades('eisenmine'),
     },
     {
@@ -87,6 +122,10 @@ export class MiningComponent {
       baseCost: { eisen: 500, credits: 50, energie: 20 },
       costMultiplier: 1.6,
       requiredNode: { id: 'eisenmine', level: 10 },
+      resourceName: 'Silber',
+      baseRate: 80,
+      description: 'Gewinnt wertvolles Silber aus tiefen Schächten.',
+      effectFn: (lvl, skills) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${Math.floor(calcExponential(80, lvl) * getMineBonus('silbermine', skills))} Silber/h`,
       upgrades: this.generateUpgrades('silbermine'),
     },
     {
@@ -96,6 +135,10 @@ export class MiningComponent {
       baseCost: { eisen: 2000, silber: 100, energie: 50 },
       costMultiplier: 1.8,
       requiredNode: { id: 'silbermine', level: 10 },
+      resourceName: 'Gold',
+      baseRate: 30,
+      description: 'Extrahiert seltenes Gold aus den tiefsten Minen.',
+      effectFn: (lvl, skills) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${Math.floor(calcExponential(30, lvl) * getMineBonus('goldmine', skills))} Gold/h`,
       upgrades: this.generateUpgrades('goldmine'),
     },
   ];
@@ -119,10 +162,10 @@ export class MiningComponent {
    */
   generateUpgrades(mineId: string): MineUpgrade[] {
     return [
-      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/infrastructure/upgrades/mining/roboter-arbeiter.png', requiredMineLevel: 5, baseCost: { credits: 100, energie: 50 }, costMultiplier: 1.4 },
-      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/infrastructure/upgrades/mining/transportlaster.png', requiredMineLevel: 15, baseCost: { credits: 500, eisen: 200, energie: 100 }, costMultiplier: 1.5 },
-      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/infrastructure/upgrades/mining/ki-automation.png', requiredMineLevel: 30, baseCost: { credits: 2000, silber: 500, energie: 300 }, costMultiplier: 1.6 },
-      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/infrastructure/upgrades/mining/hochgeschwindigkeitszug.png', requiredMineLevel: 50, baseCost: { credits: 10000, gold: 1000, energie: 1000 }, costMultiplier: 1.8 },
+      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/infrastructure/upgrades/mining/roboter-arbeiter.png', requiredMineLevel: 5, baseCost: { credits: 100, energie: 50 }, costMultiplier: 1.4, description: 'Automatisierte Roboter erhöhen die Abbaugeschwindigkeit.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
+      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/infrastructure/upgrades/mining/transportlaster.png', requiredMineLevel: 15, baseCost: { credits: 500, eisen: 200, energie: 100 }, costMultiplier: 1.5, description: 'Schwere Transporter für schnelleren Materialtransport.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
+      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/infrastructure/upgrades/mining/ki-automation.png', requiredMineLevel: 30, baseCost: { credits: 2000, silber: 500, energie: 300 }, costMultiplier: 1.6, description: 'Künstliche Intelligenz optimiert den gesamten Abbau.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
+      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/infrastructure/upgrades/mining/hochgeschwindigkeitszug.png', requiredMineLevel: 50, baseCost: { credits: 10000, gold: 1000, energie: 1000 }, costMultiplier: 1.8, description: 'Hochgeschwindigkeitszüge für den Materialtransport.', effectFn: (lvl) => `+${lvl * 5}% Produktion` },
     ];
   }
 
@@ -157,10 +200,6 @@ export class MiningComponent {
 
   /**
    * Calculates the current cost for an upgrade at the given level.
-   * @param baseCost - The base resource cost.
-   * @param multiplier - The cost scaling factor.
-   * @param currentLevel - The current skill level.
-   * @returns The calculated resource cost for the next level.
    */
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
     const cost: Partial<GameResources> = {};
@@ -173,10 +212,8 @@ export class MiningComponent {
 
   /**
    * Converts a cost object into a display-ready array with color variables.
-   * @param cost - The resource cost to format.
-   * @returns Array of objects containing a display name, amount, and CSS color variable.
    */
-  getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
+  getCostEntries(cost: Partial<GameResources>): CostEntry[] {
     return Object.entries(cost).map(([key, amount]) => ({
       name: this.resourceMeta[key].name,
       amount: amount as number,
@@ -186,8 +223,6 @@ export class MiningComponent {
 
   /**
    * Checks whether the player can afford a given cost.
-   * @param cost - The resource cost to check.
-   * @returns True if affordable, false otherwise.
    */
   canAfford(cost: Partial<GameResources>): boolean {
     return this.gameState.canAfford(cost);
@@ -195,9 +230,6 @@ export class MiningComponent {
 
   /**
    * Upgrades a skill by one level, deducting the required resources.
-   * @param id - The skill ID to upgrade.
-   * @param cost - The resource cost for this upgrade.
-   * @returns A promise that resolves when the upgrade is processed.
    */
   async upgradeSkill(id: string, cost: Partial<GameResources>): Promise<void> {
     if (!this.canAfford(cost)) return;

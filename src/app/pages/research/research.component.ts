@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
+import { calcExponential } from '../../services/game-math.utils';
+import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
+import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 
 /**
  * Represents a single upgrade step for a research technology.
@@ -19,6 +22,10 @@ export interface ResearchUpgrade {
   baseCost: Partial<GameResources>;
   /** Multiplier for the cost per level. */
   costMultiplier: number;
+  /** Short description of what this upgrade does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level. */
+  effectFn: (level: number) => string;
 }
 
 /**
@@ -39,6 +46,10 @@ export interface ResearchItem {
   upgrades: ResearchUpgrade[];
   /** Optional prerequisite technology and its required level. */
   requiredNode?: { id: string; level: number };
+  /** Short description of what this technology does. */
+  description: string;
+  /** Dynamically computes the effect text based on the current level. */
+  effectFn: (level: number) => string;
 }
 
 /**
@@ -48,7 +59,7 @@ export interface ResearchItem {
 @Component({
   selector: 'app-research',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
   templateUrl: './research.component.html',
   styleUrl: './research.component.scss',
 })
@@ -56,22 +67,24 @@ export class ResearchComponent {
   /** Injected game state service for resource management and skill levels. */
   gameState = inject(GameStateService);
 
-  /** Currently selected image path for the lightbox overlay. */
-  selectedImage: string | null = null;
+  /** Currently selected lightbox data, or null if closed. */
+  selectedLightbox: LightboxData | null = null;
 
   /**
-   * Opens the image lightbox.
-   * @param imagePath Path of the image to display.
+   * Opens the lightbox for a research item or upgrade.
    */
-  openImage(imagePath: string | undefined): void {
-    if (imagePath) {
-      this.selectedImage = imagePath;
-    }
+  openLightbox(item: ResearchItem | ResearchUpgrade): void {
+    this.selectedLightbox = {
+      imagePath: item.imagePath,
+      title: item.title,
+      description: item.description,
+      effectText: item.effectFn(this.getSkillLevel(item.id)),
+    };
   }
 
-  /** Closes the image lightbox. */
-  closeImage(): void {
-    this.selectedImage = null;
+  /** Closes the lightbox overlay. */
+  closeLightbox(): void {
+    this.selectedLightbox = null;
   }
 
   /** List of all research technologies and their respective upgrades. */
@@ -82,11 +95,13 @@ export class ResearchComponent {
       imagePath: 'assets/img/tech/bio-forschungslabor.png',
       baseCost: { eisen: 200, nahrung: 100, energie: 100 },
       costMultiplier: 1.3,
+      description: 'Erforscht biologische Technologien und optimiert die Nahrungsproduktion.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Produziert ${calcExponential(200, lvl)} Nahrung/h`,
       upgrades: [
-        { id: 'bio_gen_sequenzierer', title: 'Gen-Sequenzierer', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 5, baseCost: { credits: 200, nahrung: 150 }, costMultiplier: 1.4 },
-        { id: 'bio_hydroponik', title: 'Hydroponik-Experimente', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 15, baseCost: { credits: 800, nahrung: 500 }, costMultiplier: 1.5 },
-        { id: 'bio_zell_regeneration', title: 'Zelluläre Regeneration', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 30, baseCost: { credits: 3000, nahrung: 2000, energie: 500 }, costMultiplier: 1.7 },
-        { id: 'bio_klon_vat', title: 'Klon-Vat-Technologie', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 50, baseCost: { credits: 15000, nahrung: 8000, xenonit: 500 }, costMultiplier: 1.9 },
+        { id: 'bio_gen_sequenzierer', title: 'Gen-Sequenzierer', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 5, baseCost: { credits: 200, nahrung: 150 }, costMultiplier: 1.4, description: 'Analysiert und optimiert genetische Codes für bessere Erträge.', effectFn: (lvl) => `+${lvl * 5}% Forschungseffizienz` },
+        { id: 'bio_hydroponik', title: 'Hydroponik-Experimente', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 15, baseCost: { credits: 800, nahrung: 500 }, costMultiplier: 1.5, description: 'Wasserkulturen für erdelosen Pflanzenanbau im All.', effectFn: (lvl) => `+${lvl * 5}% Forschungseffizienz` },
+        { id: 'bio_zell_regeneration', title: 'Zelluläre Regeneration', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 30, baseCost: { credits: 3000, nahrung: 2000, energie: 500 }, costMultiplier: 1.7, description: 'Regeneriert beschädigtes Gewebe auf zellulärer Ebene.', effectFn: (lvl) => `+${lvl * 5}% Forschungseffizienz` },
+        { id: 'bio_klon_vat', title: 'Klon-Vat-Technologie', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 50, baseCost: { credits: 15000, nahrung: 8000, xenonit: 500 }, costMultiplier: 1.9, description: 'Klont Arbeitskräfte für maximale Produktivität.', effectFn: (lvl) => `+${lvl * 5}% Forschungseffizienz` },
       ],
     },
     {
@@ -96,11 +111,13 @@ export class ResearchComponent {
       baseCost: { eisen: 1000, gold: 100, energie: 300 },
       costMultiplier: 1.5,
       requiredNode: { id: 'biolabor', level: 10 },
+      description: 'Entwickelt künstliche Intelligenz zur Automatisierung aller Bereiche.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `KI-Stufe ${lvl} – Globaler Effizienzbonus aktiv`,
       upgrades: [
-        { id: 'ki_neuronale_netze', title: 'Neuronale Netze', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 5, baseCost: { credits: 1000, silber: 300, energie: 500 }, costMultiplier: 1.5 },
-        { id: 'ki_quanten_prozessoren', title: 'Quanten-Prozessoren', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 15, baseCost: { credits: 4000, gold: 500, energie: 1500 }, costMultiplier: 1.6 },
-        { id: 'ki_selbstlernend', title: 'Selbstlernende Algorithmen', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 30, baseCost: { credits: 12000, gold: 2000, energie: 4000 }, costMultiplier: 1.8 },
-        { id: 'ki_bewusstsein', title: 'Bewusstseins-Emulation', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 50, baseCost: { credits: 50000, xenonit: 1000, energie: 15000 }, costMultiplier: 2.0 },
+        { id: 'ki_neuronale_netze', title: 'Neuronale Netze', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 5, baseCost: { credits: 1000, silber: 300, energie: 500 }, costMultiplier: 1.5, description: 'Tiefe neuronale Netze für komplexe Musterkennung.', effectFn: (lvl) => `+${lvl * 5}% KI-Effizienz` },
+        { id: 'ki_quanten_prozessoren', title: 'Quanten-Prozessoren', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 15, baseCost: { credits: 4000, gold: 500, energie: 1500 }, costMultiplier: 1.6, description: 'Quantencomputer ermöglichen exponentiell schnellere Berechnungen.', effectFn: (lvl) => `+${lvl * 5}% KI-Effizienz` },
+        { id: 'ki_selbstlernend', title: 'Selbstlernende Algorithmen', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 30, baseCost: { credits: 12000, gold: 2000, energie: 4000 }, costMultiplier: 1.8, description: 'KI verbessert sich kontinuierlich selbst.', effectFn: (lvl) => `+${lvl * 5}% KI-Effizienz` },
+        { id: 'ki_bewusstsein', title: 'Bewusstseins-Emulation', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 50, baseCost: { credits: 50000, xenonit: 1000, energie: 15000 }, costMultiplier: 2.0, description: 'Eine wahrhaft bewusste KI leitet alle Operationen.', effectFn: (lvl) => `+${lvl * 5}% KI-Effizienz` },
       ],
     },
     {
@@ -110,11 +127,13 @@ export class ResearchComponent {
       baseCost: { eisen: 2500, silber: 800, energie: 500 },
       costMultiplier: 1.6,
       requiredNode: { id: 'ki_automatisierung', level: 10 },
+      description: 'Erforscht neue Antriebstechnologien für schnellere Raumschiffe.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Antriebsstufe ${lvl} – Schiffsgeschwindigkeit erhöht`,
       upgrades: [
-        { id: 'antrieb_ionen', title: 'Ionen-Triebwerke', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 5, baseCost: { credits: 2000, eisen: 1000, energie: 1000 }, costMultiplier: 1.5 },
-        { id: 'antrieb_plasma', title: 'Plasma-Beschleuniger', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 3000 }, costMultiplier: 1.6 },
-        { id: 'antrieb_hyperraum', title: 'Hyperraum-Kern', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 30, baseCost: { credits: 25000, gold: 5000, energie: 8000 }, costMultiplier: 1.8 },
-        { id: 'antrieb_sprungtor', title: 'Sprungtor-Matrix', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 50, baseCost: { credits: 80000, xenonit: 5000, energie: 25000 }, costMultiplier: 2.1 },
+        { id: 'antrieb_ionen', title: 'Ionen-Triebwerke', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 5, baseCost: { credits: 2000, eisen: 1000, energie: 1000 }, costMultiplier: 1.5, description: 'Effiziente Ionentriebwerke für lange Reisen.', effectFn: (lvl) => `+${lvl * 5}% Antriebsleistung` },
+        { id: 'antrieb_plasma', title: 'Plasma-Beschleuniger', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 3000 }, costMultiplier: 1.6, description: 'Plasmastrahlen für enorme Schubkraft.', effectFn: (lvl) => `+${lvl * 5}% Antriebsleistung` },
+        { id: 'antrieb_hyperraum', title: 'Hyperraum-Kern', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 30, baseCost: { credits: 25000, gold: 5000, energie: 8000 }, costMultiplier: 1.8, description: 'Öffnet Tore in den Hyperraum für Überlichtgeschwindigkeit.', effectFn: (lvl) => `+${lvl * 5}% Antriebsleistung` },
+        { id: 'antrieb_sprungtor', title: 'Sprungtor-Matrix', imagePath: 'assets/img/tech/antriebstechnik.png', requiredLevel: 50, baseCost: { credits: 80000, xenonit: 5000, energie: 25000 }, costMultiplier: 2.1, description: 'Permanente Sprungtore verbinden entfernte Systeme.', effectFn: (lvl) => `+${lvl * 5}% Antriebsleistung` },
       ],
     },
   ];
@@ -131,42 +150,19 @@ export class ResearchComponent {
     personal: { name: 'Personal', colorVar: 'var(--color-personal)' },
   };
 
-  /**
-   * Retrieves the current level for a given skill or technology ID.
-   * @param id The skill or technology identifier.
-   * @returns The current level, defaulting to 0.
-   */
   getSkillLevel(id: string): number {
     return this.gameState.getSkillLevel(id);
   }
 
-  /**
-   * Checks if a main technology is unlocked based on its prerequisite.
-   * @param item The technology to check.
-   * @returns True if unlocked or no prerequisite exists.
-   */
   isUnlocked(item: ResearchItem): boolean {
     if (!item.requiredNode) return true;
     return this.getSkillLevel(item.requiredNode.id) >= item.requiredNode.level;
   }
 
-  /**
-   * Checks if an upgrade is unlocked based on its parent technology's level.
-   * @param itemId The parent technology identifier.
-   * @param upgrade The upgrade to check.
-   * @returns True if the parent technology meets the level requirement.
-   */
   isUpgradeUnlocked(itemId: string, upgrade: ResearchUpgrade): boolean {
     return this.getSkillLevel(itemId) >= upgrade.requiredLevel;
   }
 
-  /**
-   * Calculates the current cost for the next level of a technology or upgrade.
-   * @param baseCost The base cost at level 1.
-   * @param multiplier The cost scaling multiplier.
-   * @param currentLevel The current level of the technology or upgrade.
-   * @returns The calculated resource cost for the next level.
-   */
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
     const cost: Partial<GameResources> = {};
     const mult = Math.pow(multiplier, currentLevel);
@@ -176,12 +172,7 @@ export class ResearchComponent {
     return cost;
   }
 
-  /**
-   * Transforms a Partial<GameResources> object into an array of displayable cost entries.
-   * @param cost The calculated resource cost.
-   * @returns Array of objects containing name, amount, and CSS color variable.
-   */
-  getCostEntries(cost: Partial<GameResources>): { name: string; amount: number; colorVar: string }[] {
+  getCostEntries(cost: Partial<GameResources>): CostEntry[] {
     return Object.entries(cost).map(([key, amount]) => ({
       name: this.resourceMeta[key].name,
       amount: amount as number,
@@ -189,21 +180,10 @@ export class ResearchComponent {
     }));
   }
 
-  /**
-   * Determines if the player has enough resources to afford the given cost.
-   * @param cost The required resource cost.
-   * @returns True if affordable, false otherwise.
-   */
   canAfford(cost: Partial<GameResources>): boolean {
     return this.gameState.canAfford(cost);
   }
 
-  /**
-   * Processes the purchase or upgrade action for a skill.
-   * @param id The identifier of the technology or upgrade.
-   * @param cost The cost of the transaction.
-   * @returns A promise that resolves when the upgrade is processed.
-   */
   async upgradeSkill(id: string, cost: Partial<GameResources>): Promise<void> {
     if (!this.canAfford(cost)) return;
     try {
