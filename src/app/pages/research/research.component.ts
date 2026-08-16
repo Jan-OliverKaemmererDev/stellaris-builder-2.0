@@ -2,9 +2,10 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential } from '../../services/game-math.utils';
+import { calcExponential, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
+import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
 
 /**
  * Represents a single upgrade step for a research technology.
@@ -59,7 +60,7 @@ export interface ResearchItem {
 @Component({
   selector: 'app-research',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
   templateUrl: './research.component.html',
   styleUrl: './research.component.scss',
 })
@@ -121,6 +122,22 @@ export class ResearchComponent {
       ],
     },
     {
+      id: 'nano_bots',
+      title: 'Nano-Bots',
+      imagePath: 'assets/img/tech/ki-automatisierung.png',
+      baseCost: { eisen: 1500, silber: 500, energie: 400 },
+      costMultiplier: 1.5,
+      requiredNode: { id: 'ki_automatisierung', level: 5 },
+      description: 'Mikroskopische Bots reparieren und konstruieren autonom, wodurch die Kosten für Eisen und Silber sinken.',
+      effectFn: (lvl) => lvl === 0 ? 'Noch nicht gebaut.' : `Reparatur & Bau -${lvl}% Eisen & Silber Kosten`,
+      upgrades: [
+        { id: 'nano_krabbler', title: 'Nano-Krabbler', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 5, baseCost: { credits: 1500, eisen: 500, energie: 600 }, costMultiplier: 1.5, description: 'Krabbler beschleunigen das Recycling und sparen Ressourcen.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
+        { id: 'nano_schweisser', title: 'Laser-Schweißer', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 15, baseCost: { credits: 5000, silber: 1000, energie: 2000 }, costMultiplier: 1.6, description: 'Präzisions-Laser reduzieren Materialverschnitt.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
+        { id: 'nano_reparatur', title: 'Autonome Reparatur', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 30, baseCost: { credits: 15000, gold: 2000, energie: 5000 }, costMultiplier: 1.8, description: 'Ermöglicht automatische Strukturinstandsetzung.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
+        { id: 'nano_replikator', title: 'Nano-Replikator', imagePath: 'assets/img/tech/ki-automatisierung.png', requiredLevel: 50, baseCost: { credits: 60000, xenonit: 2000, energie: 20000 }, costMultiplier: 2.0, description: 'Erlaubt den Bots sich bei Bedarf selbst zu reproduzieren.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
+      ],
+    },
+    {
       id: 'antriebstechnik',
       title: 'Antriebstechnik',
       imagePath: 'assets/img/tech/antriebstechnik.png',
@@ -164,12 +181,7 @@ export class ResearchComponent {
   }
 
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
-    const cost: Partial<GameResources> = {};
-    const mult = Math.pow(multiplier, currentLevel);
-    for (const [key, val] of Object.entries(baseCost)) {
-      if (val !== undefined) (cost as any)[key] = Math.floor(val * mult);
-    }
-    return cost;
+    return calculateCost(baseCost, multiplier, currentLevel, this.gameState.skills());
   }
 
   getCostEntries(cost: Partial<GameResources>): CostEntry[] {

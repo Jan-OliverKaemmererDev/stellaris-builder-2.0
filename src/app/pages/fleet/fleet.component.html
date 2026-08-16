@@ -1,3 +1,4 @@
+<app-nano-bots-overlay></app-nano-bots-overlay>
 <main class="fleet-container" aria-label="Fleet and shipyard page">
   <h1 class="page-title">Flotte & Werft</h1>
 
@@ -73,7 +74,7 @@
             <div class="ship-cost" aria-label="Build costs">
               <span class="cost-label">Baukosten:</span>
               <ul class="cost-list" aria-label="Build cost details">
-                @for (c of getCostEntries(ship.cost); track c.name) {
+                @for (c of getCostEntries(getDiscountedCost(ship.cost)); track c.name) {
                   <li class="cost-item" [style.color]="c.colorVar">
                     {{ c.amount | number }} {{ c.name }}
                   </li>
@@ -83,7 +84,7 @@
             
             <button 
               class="build-btn" 
-              [disabled]="!canAfford(ship.cost)"
+              [disabled]="!canAfford(getDiscountedCost(ship.cost))"
               (click)="buildShip(ship)"
               [attr.aria-label]="'Build ' + ship.title"
             >

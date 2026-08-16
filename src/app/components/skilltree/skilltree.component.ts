@@ -2,6 +2,7 @@ import { Component, Input, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
+import { calculateCost } from '../../services/game-math.utils';
 
 /**
  * Definition of a single skill node in the technology tree.
@@ -83,16 +84,7 @@ export class SkilltreeComponent {
    */
   getCurrentCost(node: SkillNode): Partial<GameResources> {
     const level = this.getSkillLevel(node.id);
-    const multiplier = Math.pow(node.costMultiplier, level);
-    const cost: Partial<GameResources> = {};
-    const keys = Object.keys(node.baseCost) as (keyof GameResources)[];
-    
-    for (const key of keys) {
-      if (node.baseCost[key] !== undefined) {
-        cost[key] = Math.floor(node.baseCost[key]! * multiplier);
-      }
-    }
-    return cost;
+    return calculateCost(node.baseCost, node.costMultiplier, level, this.gameState.skills());
   }
 
   /**

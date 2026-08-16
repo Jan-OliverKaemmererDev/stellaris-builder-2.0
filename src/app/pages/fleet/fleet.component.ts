@@ -2,7 +2,9 @@ import { Component, inject, computed, OnInit, OnDestroy, signal } from '@angular
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
+import { calcExponential, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
+import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
 
 /** Definition of a purchasable ship type in the shipyard. */
 export interface ShipDef {
@@ -27,7 +29,7 @@ export interface ShipDef {
 @Component({
   selector: 'app-fleet',
   standalone: true,
-  imports: [CommonModule, DecimalPipe, LightboxComponent],
+  imports: [CommonModule, DecimalPipe, LightboxComponent, NanoBotsOverlayComponent],
   templateUrl: './fleet.component.html',
   styleUrl: './fleet.component.scss',
 })
@@ -159,12 +161,17 @@ export class FleetComponent implements OnInit, OnDestroy {
    * @returns A promise that resolves when the ship is built.
    */
   async buildShip(ship: ShipDef): Promise<void> {
-    if (!this.canAfford(ship.cost)) return;
+    const cost = this.getDiscountedCost(ship.cost);
+    if (!this.canAfford(cost)) return;
     try {
-      await this.gameState.upgradeSkill(ship.id, ship.cost);
+      await this.gameState.upgradeSkill(ship.id, cost);
     } catch (e) {
       console.error('Failed to build ship', e);
     }
+  }
+
+  getDiscountedCost(baseCost: Partial<GameResources>): Partial<GameResources> {
+    return calculateCost(baseCost, 1, 1, this.gameState.skills());
   }
 
   /**

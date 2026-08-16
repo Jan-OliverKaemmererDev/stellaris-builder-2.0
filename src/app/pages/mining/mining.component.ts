@@ -2,9 +2,10 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, getMineBonus } from '../../services/game-math.utils';
+import { calcExponential, getMineBonus, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
+import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
 
 /** A mine-specific upgrade that boosts production when the parent mine reaches a required level. */
 export interface MineUpgrade {
@@ -59,7 +60,7 @@ export interface Mine {
 @Component({
   selector: 'app-mining',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
   templateUrl: './mining.component.html',
   styleUrl: './mining.component.scss',
 })
@@ -202,12 +203,7 @@ export class MiningComponent {
    * Calculates the current cost for an upgrade at the given level.
    */
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
-    const cost: Partial<GameResources> = {};
-    const mult = Math.pow(multiplier, currentLevel);
-    for (const [key, val] of Object.entries(baseCost)) {
-      if (val !== undefined) (cost as any)[key] = Math.floor(val * mult);
-    }
-    return cost;
+    return calculateCost(baseCost, multiplier, currentLevel, this.gameState.skills());
   }
 
   /**

@@ -5,6 +5,8 @@ import { deleteUser } from 'firebase/auth';
 import { Firestore, doc, deleteDoc } from '@angular/fire/firestore';
 import { SideMenu } from '../side-menu/side-menu';
 import { OfflineProgressDialog } from '../components/offline-progress-dialog/offline-progress-dialog';
+import { SettingsService } from '../services/settings.service';
+import { GameStateService } from '../services/game-state.service';
 
 /**
  * Shell component that wraps all authenticated game pages.
@@ -26,6 +28,12 @@ export class GameLayout {
 
   /** Firestore service for deleting guest user documents on logout. */
   private firestore = inject(Firestore);
+
+  /** Settings service for toggling nanobots overlay. */
+  settings = inject(SettingsService);
+
+  /** GameState service to check if nanobots are unlocked. */
+  private gameState = inject(GameStateService);
 
   /** Signal holding the current visibility state of the user dropdown menu. */
   dropdownOpen = signal(false);
@@ -64,6 +72,11 @@ export class GameLayout {
     const user = this.auth.currentUser;
     if (!user) return 'Commander';
     return user.displayName || (user.isAnonymous ? 'Gast-Commander' : 'Commander');
+  }
+
+  /** Checks if the nanobots skill is unlocked. */
+  get hasNanobots(): boolean {
+    return this.gameState.getSkillLevel('nano_bots') > 0;
   }
 
   /**

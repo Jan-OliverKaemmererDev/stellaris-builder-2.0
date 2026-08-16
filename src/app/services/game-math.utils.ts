@@ -182,3 +182,36 @@ export function getBuyRate(resourceId: string, s: Record<string, number>): numbe
   const discount = Math.min(0.5, (s['interstellar_market'] || 0) * 0.02 + (s['galactic_exchange'] || 0) * 0.05);
   return Math.max(1, Math.floor(base * (1 - discount)));
 }
+
+/**
+ * Calculates the current cost for an upgrade at the given level, applying global discounts.
+ * Nano-Bots reduce the cost of Eisen and Silber by 1% per level (up to 50%).
+ * @param baseCost - The base resource cost at level 1.
+ * @param multiplier - The multiplicative cost scaling factor per level.
+ * @param currentLevel - The current level of the skill/building.
+ * @param skills - A record containing the current skill levels of the player.
+ * @returns A `GameResources` object representing the discounted cost.
+ */
+export function calculateCost(
+  baseCost: Partial<GameResources>,
+  multiplier: number,
+  currentLevel: number,
+  skills: Record<string, number>
+): Partial<GameResources> {
+  const cost: Partial<GameResources> = {};
+  const mult = Math.pow(multiplier, currentLevel);
+  
+  const nanoLvl = skills['nano_bots'] || 0;
+  const discount = Math.min(0.5, nanoLvl * 0.01);
+
+  for (const [key, val] of Object.entries(baseCost)) {
+    if (val !== undefined) {
+      let finalVal = val * mult;
+      if (key === 'eisen' || key === 'silber') {
+        finalVal = finalVal * (1 - discount);
+      }
+      (cost as any)[key] = Math.floor(finalVal);
+    }
+  }
+  return cost;
+}

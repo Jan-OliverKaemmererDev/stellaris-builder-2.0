@@ -2,9 +2,10 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential } from '../../services/game-math.utils';
+import { calcExponential, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
+import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
 
 /**
  * Represents a single upgrade step for an energy building.
@@ -59,7 +60,7 @@ export interface EnergyItem {
 @Component({
   selector: 'app-energy',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
   templateUrl: './energy.component.html',
   styleUrl: './energy.component.scss',
 })
@@ -188,16 +189,7 @@ export class EnergyComponent {
    * @returns The calculated resource cost for the next level.
    */
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
-    const cost: Partial<GameResources> = {};
-    const mult = Math.pow(multiplier, currentLevel);
-    const keys = Object.keys(baseCost) as (keyof GameResources)[];
-    
-    for (const key of keys) {
-      if (baseCost[key] !== undefined) {
-        cost[key] = Math.floor(baseCost[key]! * mult);
-      }
-    }
-    return cost;
+    return calculateCost(baseCost, multiplier, currentLevel, this.gameState.skills());
   }
 
   /**

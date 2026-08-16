@@ -1,0 +1,169 @@
+.nano-bots-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.nano-bot {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+}
+
+.bot-body {
+  width: 16px;
+  height: 16px;
+  background-color: #d3d3d3;
+  border: 2px solid #48e5e5;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(72, 229, 229, 0.5);
+  position: relative;
+  z-index: 2;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background-color: #48e5e5;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite alternate;
+  }
+}
+
+.bot-arm {
+  position: absolute;
+  width: 8px;
+  height: 4px;
+  background-color: #a0a0a0;
+  top: 10px;
+  z-index: 1;
+
+  &.left-arm {
+    left: -6px;
+    transform-origin: right center;
+    animation: arm-move-left 0.5s infinite alternate;
+  }
+
+  &.right-arm {
+    right: -6px;
+    transform-origin: left center;
+    animation: arm-move-right 0.5s infinite alternate;
+  }
+}
+
+.laser-beam {
+  position: absolute;
+  width: 2px;
+  height: 0px;
+  background-color: #48e5e5;
+  box-shadow: 0 0 6px #48e5e5;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; box-shadow: 0 0 2px #48e5e5; }
+  100% { opacity: 1; box-shadow: 0 0 10px #48e5e5; }
+}
+
+@keyframes arm-move-left {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(30deg); }
+}
+
+@keyframes arm-move-right {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-30deg); }
+}
+
+@keyframes laser-fire {
+  0% { height: 0; opacity: 0; }
+  10% { height: 40px; opacity: 1; }
+  20% { height: 0; opacity: 0; }
+  100% { height: 0; opacity: 0; }
+}
+
+.bot-1 {
+  animation: crawl-1 14s infinite linear;
+  .laser-beam { animation: laser-fire 3s infinite; animation-delay: 1s; }
+}
+.bot-2 {
+  animation: crawl-2 18s infinite linear;
+  .laser-beam { animation: laser-fire 4s infinite; animation-delay: 2.5s; }
+}
+.bot-3 {
+  animation: crawl-3 12s infinite linear;
+  .laser-beam { animation: laser-fire 2.5s infinite; animation-delay: 0.5s; }
+}
+.bot-4 {
+  animation: crawl-4 20s infinite linear;
+  .laser-beam { animation: laser-fire 5s infinite; animation-delay: 3s; }
+}
+.bot-5 {
+  animation: crawl-5 16s infinite linear;
+  .laser-beam { animation: laser-fire 3.5s infinite; animation-delay: 1.5s; }
+}
+.bot-6 {
+  animation: crawl-6 22s infinite linear;
+  .laser-beam { animation: laser-fire 4.5s infinite; animation-delay: 0.8s; }
+}
+
+@keyframes crawl-1 {
+  0% { top: 10%; left: -5%; transform: rotate(90deg); }
+  35% { top: 10%; left: 105%; transform: rotate(90deg); }
+  35.1% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes crawl-2 {
+  0% { opacity: 0; }
+  30% { opacity: 0; top: 105%; left: 20%; transform: rotate(-90deg); }
+  30.1% { opacity: 1; }
+  60% { top: -5%; left: 20%; transform: rotate(-90deg); }
+  60.1% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes crawl-3 {
+  0% { opacity: 0; }
+  50% { opacity: 0; top: 80%; left: 105%; transform: rotate(-180deg); }
+  50.1% { opacity: 1; }
+  90% { top: 80%; left: -5%; transform: rotate(-180deg); }
+  90.1% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes crawl-4 {
+  0% { opacity: 0; }
+  70% { opacity: 0; top: -5%; left: 80%; transform: rotate(0deg); }
+  70.1% { opacity: 1; }
+  100% { top: 105%; left: 80%; transform: rotate(0deg); }
+}
+@keyframes crawl-5 {
+  0% { opacity: 0; }
+  20% { opacity: 0; top: 40%; left: -5%; transform: rotate(90deg); }
+  20.1% { opacity: 1; }
+  55% { top: 40%; left: 105%; transform: rotate(90deg); }
+  55.1% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes crawl-6 {
+  0% { opacity: 0; }
+  10% { opacity: 0; top: 105%; left: 50%; transform: rotate(-90deg); }
+  10.1% { opacity: 1; }
+  45% { top: -5%; left: 50%; transform: rotate(-90deg); }
+  45.1% { opacity: 0; }
+  100% { opacity: 0; }
+}

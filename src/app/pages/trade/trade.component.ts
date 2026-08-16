@@ -2,9 +2,10 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential } from '../../services/game-math.utils';
+import { calcExponential, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
+import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
 
 /**
  * Represents a single upgrade step for a trade building.
@@ -59,7 +60,7 @@ export interface TradeItem {
 @Component({
   selector: 'app-trade',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent],
+  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
   templateUrl: './trade.component.html',
   styleUrl: './trade.component.scss',
 })
@@ -164,12 +165,7 @@ export class TradeComponent {
   }
 
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {
-    const cost: Partial<GameResources> = {};
-    const mult = Math.pow(multiplier, currentLevel);
-    for (const [key, val] of Object.entries(baseCost)) {
-      if (val !== undefined) (cost as any)[key] = Math.floor(val * mult);
-    }
-    return cost;
+    return calculateCost(baseCost, multiplier, currentLevel, this.gameState.skills());
   }
 
   getCostEntries(cost: Partial<GameResources>): CostEntry[] {
