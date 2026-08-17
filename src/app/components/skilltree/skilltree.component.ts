@@ -1,5 +1,6 @@
 import { Component, Input, inject } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
 import { calculateCost } from '../../services/game-math.utils';
@@ -32,7 +33,7 @@ export interface SkillNode {
 @Component({
   selector: 'app-skilltree',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule, CompactNumberPipe],
   templateUrl: './skilltree.component.html',
   styleUrl: './skilltree.component.scss',
 })

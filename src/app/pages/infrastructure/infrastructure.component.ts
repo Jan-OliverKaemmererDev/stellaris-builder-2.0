@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -104,7 +104,7 @@ export class InfrastructureComponent {
       costMultiplier: 1.4,
       requiredNode: { id: 'lager', level: 5 },
       description: 'Verarbeitet Rohstoffe zu wertvollem Xenonit.',
-      effectFn: (lvl) => `Produziert ${calcExponential(10, Math.max(1, lvl))} Xenonit/h`,
+      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(10, Math.max(1, lvl)))} Xenonit/h`,
       upgrades: this.generateRefineryUpgrades(),
     },
     {
@@ -115,7 +115,7 @@ export class InfrastructureComponent {
       costMultiplier: 1.5,
       requiredNode: { id: 'refinery', level: 10 },
       description: 'Ermöglicht den Bau fortschrittlicher Raumschiffe.',
-      effectFn: (lvl) => `Produziert ${calcExponential(2, Math.max(1, lvl))} Personal/h`,
+      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(2, Math.max(1, lvl)))} Personal/h`,
       upgrades: this.generateShipyardUpgrades(),
     },
     {
@@ -126,7 +126,7 @@ export class InfrastructureComponent {
       costMultiplier: 1.8,
       requiredNode: { id: 'orbital_shipyard', level: 10 },
       description: 'Eine massive Raumstation als Zentrum deines Imperiums.',
-      effectFn: (lvl) => `Produziert ${calcExponential(5, Math.max(1, lvl))} Personal/h`,
+      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(5, Math.max(1, lvl)))} Personal/h`,
       upgrades: this.generateStationUpgrades(),
     },
   ];

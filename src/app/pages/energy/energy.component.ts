@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -98,7 +98,7 @@ export class EnergyComponent {
       baseCost: { eisen: 15 },
       costMultiplier: 1.4,
       description: 'Nutzt die Kraft der Sonne zur Stromerzeugung.',
-      effectFn: (lvl) => `Erzeugt ${calcExponential(200, Math.max(1, lvl))} Energie`,
+      effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(200, Math.max(1, lvl)))} Energie`,
       upgrades: [
         { id: 'solar_erweiterte_panele', title: 'Erweiterte Panele', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/erweiterte-panele.png', requiredLevel: 5, baseCost: { credits: 100, eisen: 50 }, costMultiplier: 1.3, description: 'Verbesserte Solarzellen für höhere Energieausbeute.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Solarenergie` },
         { id: 'solar_thermische_speicher', title: 'Thermische Speicher', imagePath: 'assets/img/infrastructure/upgrades/energy/solarkraftwerk/thermische-speicher.png', requiredLevel: 15, baseCost: { credits: 300, silber: 100 }, costMultiplier: 1.4, description: 'Speichert überschüssige Wärme für den Nachtbetrieb.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Solarenergie` },
@@ -114,7 +114,7 @@ export class EnergyComponent {
       costMultiplier: 1.7,
       requiredNode: { id: 'solarkraftwerk', level: 10 },
       description: 'Verschmilzt Atomkerne für enorme Energiemengen.',
-      effectFn: (lvl) => `Erzeugt ${calcExponential(800, Math.max(1, lvl))} Energie`,
+      effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(800, Math.max(1, lvl)))} Energie`,
       upgrades: [
         { id: 'fusion_plasma_eindaemmung', title: 'Plasma-Eindämmung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 5, baseCost: { credits: 500, eisen: 300, energie: 100 }, costMultiplier: 1.5, description: 'Magnetfelder halten das Fusionsplasma stabil.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Fusionsleistung` },
         { id: 'fusion_deuterium_anreicherung', title: 'Deuterium-Anreicherung', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 15, baseCost: { credits: 1500, silber: 500, energie: 200 }, costMultiplier: 1.6, description: 'Effizientere Aufbereitung des Fusionsbrennstoffs.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Fusionsleistung` },
@@ -130,7 +130,7 @@ export class EnergyComponent {
       costMultiplier: 2.0,
       requiredNode: { id: 'fusionsreaktor', level: 10 },
       description: 'Die ultimative Energiequelle durch Materie-Antimaterie-Annihilation.',
-      effectFn: (lvl) => `Erzeugt ${calcExponential(3000, Math.max(1, lvl))} Energie`,
+      effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(3000, Math.max(1, lvl)))} Energie`,
       upgrades: [
         { id: 'antimaterie_positronen', title: 'Positronen-Sammler', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 5, baseCost: { credits: 3000, eisen: 1000, energie: 500 }, costMultiplier: 1.6, description: 'Sammelt Positronen aus kosmischer Strahlung.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antimaterieertrag` },
         { id: 'antimaterie_magnetfelder', title: 'Magnetfelder', imagePath: 'assets/img/tech/fusionsreaktoren.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 1000 }, costMultiplier: 1.8, description: 'Starke Magnetfelder für sichere Antimaterie-Eindämmung.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antimaterieertrag` },

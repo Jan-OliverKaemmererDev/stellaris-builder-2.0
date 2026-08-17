@@ -1,6 +1,29 @@
 import { GameResources } from './game-state.types';
 
 /**
+ * Formats a number into a compact, human-readable string using K, M, B suffixes.
+ * Numbers below 1000 are returned as-is (whole integers).
+ * Examples: 100000 → "100K", 1230500 → "1.23M", 999 → "999".
+ * @param value - The numeric value to format.
+ * @returns A compact string representation of the number.
+ */
+export function formatNumber(value: number): string {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+
+  if (abs >= 1_000_000_000) {
+    return sign + parseFloat((abs / 1_000_000_000).toFixed(2)) + 'B';
+  }
+  if (abs >= 1_000_000) {
+    return sign + parseFloat((abs / 1_000_000).toFixed(2)) + 'M';
+  }
+  if (abs >= 1_000) {
+    return sign + parseFloat((abs / 1_000).toFixed(2)) + 'K';
+  }
+  return sign + Math.floor(abs).toString();
+}
+
+/**
  * Calculates an exponential value using the formula: `base * 1.5^(level-1)`.
  * Used for building production and capacity limits.
  * @param base - The base value at level 1.

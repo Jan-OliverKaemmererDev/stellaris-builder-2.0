@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, getMineBonus, calculateCost } from '../../services/game-math.utils';
+import { calcExponential, getMineBonus, calculateCost, formatNumber } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -113,7 +113,7 @@ export class MiningComponent {
       resourceName: 'Eisen',
       baseRate: 150,
       description: 'Baut Eisenerz in den Asteroiden ab.',
-      effectFn: (lvl, skills) => `Produziert ${Math.floor(calcExponential(150, Math.max(1, lvl)) * getMineBonus('eisenmine', skills))} Eisen/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(150, Math.max(1, lvl)) * getMineBonus('eisenmine', skills)))} Eisen/h`,
       upgrades: this.generateUpgrades('eisenmine'),
     },
     {
@@ -126,7 +126,7 @@ export class MiningComponent {
       resourceName: 'Silber',
       baseRate: 80,
       description: 'Gewinnt wertvolles Silber aus tiefen Schächten.',
-      effectFn: (lvl, skills) => `Produziert ${Math.floor(calcExponential(80, Math.max(1, lvl)) * getMineBonus('silbermine', skills))} Silber/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(80, Math.max(1, lvl)) * getMineBonus('silbermine', skills)))} Silber/h`,
       upgrades: this.generateUpgrades('silbermine'),
     },
     {
@@ -139,7 +139,7 @@ export class MiningComponent {
       resourceName: 'Gold',
       baseRate: 30,
       description: 'Extrahiert seltenes Gold aus den tiefsten Minen.',
-      effectFn: (lvl, skills) => `Produziert ${Math.floor(calcExponential(30, Math.max(1, lvl)) * getMineBonus('goldmine', skills))} Gold/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(30, Math.max(1, lvl)) * getMineBonus('goldmine', skills)))} Gold/h`,
       upgrades: this.generateUpgrades('goldmine'),
     },
   ];

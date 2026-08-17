@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -97,7 +97,7 @@ export class TradeComponent {
       baseCost: { eisen: 50, nahrung: 50, energie: 50 },
       costMultiplier: 1.2,
       description: 'Ein einfacher Handelsposten für den lokalen Warenaustausch.',
-      effectFn: (lvl) => `Produziert ${calcExponential(100, Math.max(1, lvl))} Credits/h`,
+      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(100, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
         { id: 'trade_lokale_gilden', title: 'Lokale Händlergilden', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 5, baseCost: { credits: 100, nahrung: 50 }, costMultiplier: 1.3, description: 'Organisierte Gilden verbessern die Handelseffizienz.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
         { id: 'trade_frachtdrohnen', title: 'Frachtdrohnen', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 15, baseCost: { credits: 400, eisen: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen liefern Waren schneller aus.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
@@ -113,7 +113,7 @@ export class TradeComponent {
       costMultiplier: 1.4,
       requiredNode: { id: 'trading_post', level: 10 },
       description: 'Vernetzt dein Imperium mit galaktischen Handelsnetzwerken.',
-      effectFn: (lvl) => `Produziert ${calcExponential(400, Math.max(1, lvl))} Credits/h`,
+      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(400, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
         { id: 'market_kartographierung', title: 'Routen-Kartographierung', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 5, baseCost: { credits: 1000, energie: 500 }, costMultiplier: 1.4, description: 'Kartographierte Routen verkürzen Lieferzeiten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
         { id: 'market_subraum_komm', title: 'Subraum-Kommunikation', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 15, baseCost: { credits: 3000, silber: 1000 }, costMultiplier: 1.5, description: 'Sofortige Kommunikation über Lichtjahre hinweg.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
@@ -129,7 +129,7 @@ export class TradeComponent {
       costMultiplier: 1.6,
       requiredNode: { id: 'interstellar_market', level: 10 },
       description: 'Das Finanzzentrum der Galaxie für maximale Handelsgewinne.',
-      effectFn: (lvl) => `Produziert ${calcExponential(1500, Math.max(1, lvl))} Credits/h`,
+      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(1500, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
         { id: 'exchange_hft', title: 'Hochfrequenz-Trading', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 5, baseCost: { credits: 5000, energie: 2000 }, costMultiplier: 1.5, description: 'Algorithmen handeln in Nanosekunden.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
         { id: 'exchange_megakonzern', title: 'Megakonzern-Partnerschaften', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 15, baseCost: { credits: 20000, gold: 5000 }, costMultiplier: 1.6, description: 'Exklusive Partnerschaften mit galaktischen Megakonzernen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },

@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 import { GameStateService } from '../../services/game-state.service';
 
 /**
@@ -9,7 +10,7 @@ import { GameStateService } from '../../services/game-state.service';
 @Component({
   selector: 'app-offline-progress-dialog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CompactNumberPipe],
   templateUrl: './offline-progress-dialog.html',
   styleUrl: './offline-progress-dialog.scss',
 })

@@ -1,5 +1,6 @@
 import { Component, inject, computed, OnInit, OnDestroy, signal } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
 import { calcExponential, calculateCost } from '../../services/game-math.utils';
@@ -29,7 +30,7 @@ export interface ShipDef {
 @Component({
   selector: 'app-fleet',
   standalone: true,
-  imports: [CommonModule, DecimalPipe, LightboxComponent, NanoBotsOverlayComponent],
+  imports: [CommonModule, CompactNumberPipe, LightboxComponent, NanoBotsOverlayComponent],
   templateUrl: './fleet.component.html',
   styleUrl: './fleet.component.scss',
 })

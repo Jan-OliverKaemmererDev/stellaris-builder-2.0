@@ -29,7 +29,7 @@
       <ul class="cost-list" aria-label="Upgrade costs">
         @for (c of costEntries; track c.name) {
           <li class="cost-item" [style.color]="c.colorVar">
-            {{ c.amount | number }} {{ c.name }}
+            {{ c.amount | compactNumber }} {{ c.name }}
           </li>
         }
       </ul>

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 
 /**
  * Represents a single formatted cost entry for display.
@@ -21,7 +22,7 @@ export interface CostEntry {
 @Component({
   selector: 'app-skill-node',
   standalone: true,
-  imports: [CommonModule, DecimalPipe],
+  imports: [CommonModule, CompactNumberPipe],
   templateUrl: './skill-node.component.html',
   styleUrl: './skill-node.component.scss',
 })

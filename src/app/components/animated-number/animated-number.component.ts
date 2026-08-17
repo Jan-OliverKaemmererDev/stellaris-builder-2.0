@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 
 /**
  * Inline component that animates a numeric value transition using `requestAnimationFrame`.
@@ -8,8 +8,8 @@ import { DecimalPipe } from '@angular/common';
 @Component({
   selector: 'app-animated-number',
   standalone: true,
-  imports: [DecimalPipe],
-  template: '{{ displayValue() | number }}',
+  imports: [CompactNumberPipe],
+  template: '{{ displayValue() | compactNumber }}',
 })
 export class AnimatedNumberComponent implements OnChanges {
   /** The target numeric value to display and animate towards. */

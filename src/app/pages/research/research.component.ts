@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -97,7 +97,7 @@ export class ResearchComponent {
       baseCost: { eisen: 200, nahrung: 100, energie: 100 },
       costMultiplier: 1.3,
       description: 'Erforscht biologische Technologien und optimiert die Nahrungsproduktion.',
-      effectFn: (lvl) => `Produziert ${calcExponential(200, Math.max(1, lvl))} Nahrung/h`,
+      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(200, Math.max(1, lvl)))} Nahrung/h`,
       upgrades: [
         { id: 'bio_gen_sequenzierer', title: 'Gen-Sequenzierer', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 5, baseCost: { credits: 200, nahrung: 150 }, costMultiplier: 1.4, description: 'Analysiert und optimiert genetische Codes für bessere Erträge.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Forschungseffizienz` },
         { id: 'bio_hydroponik', title: 'Hydroponik-Experimente', imagePath: 'assets/img/tech/bio-forschungslabor.png', requiredLevel: 15, baseCost: { credits: 800, nahrung: 500 }, costMultiplier: 1.5, description: 'Wasserkulturen für erdelosen Pflanzenanbau im All.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Forschungseffizienz` },

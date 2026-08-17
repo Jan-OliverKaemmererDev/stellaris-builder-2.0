@@ -1,5 +1,6 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { DecimalPipe, NgClass } from '@angular/common';
+import { CompactNumberPipe } from '../pipes/compact-number.pipe';
 import { RouterLink } from '@angular/router';
 import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
 import { Auth } from '@angular/fire/auth';
@@ -35,7 +36,7 @@ interface ShipType {
 @Component({
   selector: 'app-bridge',
   standalone: true,
-  imports: [DecimalPipe, NgClass, AnimatedNumberComponent, RouterLink],
+  imports: [DecimalPipe, NgClass, AnimatedNumberComponent, RouterLink, CompactNumberPipe],
   templateUrl: './bridge.html',
   styleUrl: './bridge.scss',
 })

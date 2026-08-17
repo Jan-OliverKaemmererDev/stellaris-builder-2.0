@@ -50,11 +50,11 @@
                 <span class="resource-current">
                   <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
                 </span>
-                <span class="resource-max">/ {{ res.max | number }}</span>
+                <span class="resource-max">/ {{ res.max | compactNumber }}</span>
               </div>
             </div>
             <span class="resource-rate" [class.positive]="res.rate > 0">
-              +{{ res.rate }}/h
+              +{{ res.rate | compactNumber }}/h
             </span>
           </article>
         }
@@ -99,11 +99,11 @@
                 <span class="resource-current">
                   <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
                 </span>
-                <span class="resource-max">/ {{ res.max | number }}</span>
+                <span class="resource-max">/ {{ res.max | compactNumber }}</span>
               </div>
             </div>
             <span class="resource-rate" [class.positive]="res.rate > 0">
-              +{{ res.rate }}/h
+              +{{ res.rate | compactNumber }}/h
             </span>
           </article>
         }
@@ -133,7 +133,7 @@
         <dl class="energy-legend" aria-label="Energy breakdown">
           <div class="energy-stat highlight-top">
             <dt class="stat-label">Produziert (Kapazität)</dt>
-            <dd class="stat-value text-success">{{ energyProduced() | number }}</dd>
+            <dd class="stat-value text-success">{{ energyProduced() | compactNumber }}</dd>
           </div>
           
           <div class="legend-list">
@@ -143,7 +143,7 @@
                   <span class="legend-color-dot" [style.background-color]="item.color" aria-hidden="true"></span>
                   {{ item.label }}
                 </dt>
-                <dd class="stat-value" [class.text-success]="item.label === 'Freie Energie'">{{ item.value | number }}</dd>
+                <dd class="stat-value" [class.text-success]="item.label === 'Freie Energie'">{{ item.value | compactNumber }}</dd>
               </div>
             }
           </div>
@@ -213,7 +213,7 @@
                     <span class="name">{{ res.name }}</span>
                   </div>
                   <div class="item-action">
-                    <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | number }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+                    <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | compactNumber }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                     <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)" [attr.aria-label]="'Sell ' + res.name">
                       Verkaufen
                     </button>
@@ -241,7 +241,7 @@
                       <span class="name">{{ res.name }}</span>
                     </div>
                     <div class="item-action">
-                      <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | number }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+                      <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | compactNumber }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
                       <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)" [attr.aria-label]="'Buy ' + res.name">
                         Kaufen
                       </button>
