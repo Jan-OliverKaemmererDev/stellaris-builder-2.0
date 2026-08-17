@@ -1,6 +1,7 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
+import { PixelProgressBarComponent } from '../pixel-progress-bar/pixel-progress-bar.component';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
 import { calculateCost } from '../../services/game-math.utils';
@@ -33,7 +34,7 @@ export interface SkillNode {
 @Component({
   selector: 'app-skilltree',
   standalone: true,
-  imports: [CommonModule, CompactNumberPipe],
+  imports: [CommonModule, CompactNumberPipe, PixelProgressBarComponent],
   templateUrl: './skilltree.component.html',
   styleUrl: './skilltree.component.scss',
 })
@@ -45,7 +46,7 @@ export class SkilltreeComponent {
   @Input() title: string = 'Skilltree';
 
   /** Internal reference to the game state service. */
-  private gameState = inject(GameStateService);
+  public gameState = inject(GameStateService);
 
   /** Defines the display metadata (name and CSS color variable) for each resource type. */
   private resourceMeta: Record<string, { name: string; colorVar: string }> = {
@@ -98,16 +99,29 @@ export class SkilltreeComponent {
   }
 
   /**
-   * Attempts to upgrade a skill node by one level.
-   * @param node - The skill node to upgrade.
-   * @returns A promise that resolves when the upgrade transaction completes.
+   * Starts building a skill node by deducting the cost.
+   * @param node - The skill node to build.
    */
-  async upgrade(node: SkillNode): Promise<void> {
+  async startNodeBuild(node: SkillNode): Promise<void> {
     if (!this.isUnlocked(node) || !this.canAfford(node)) return;
+    
     try {
-      await this.gameState.upgradeSkill(node.id, this.getCurrentCost(node));
+      const durationMs = 30000 + (this.getSkillLevel(node.id) * 10000);
+      await this.gameState.startBuild(node.id, this.getCurrentCost(node), durationMs);
     } catch (e) {
-      console.error('Upgrade failed', e);
+      console.error('Failed to start building node', e);
+    }
+  }
+
+  /**
+   * Completes the building process and increases the node level.
+   * @param node - The skill node.
+   */
+  async onNodeBuildComplete(node: SkillNode): Promise<void> {
+    try {
+      await this.gameState.completeBuild(node.id);
+    } catch (e) {
+      console.error('Failed to complete node build', e);
     }
   }
 

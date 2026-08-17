@@ -215,16 +215,27 @@ export class EnergyComponent {
   }
 
   /**
-   * Processes the purchase or upgrade action for a skill.
-   * @param id The identifier of the building or upgrade.
+   * Deducts the cost of the skill to start the building process.
    * @param cost The cost of the transaction.
    */
-  async upgradeSkill(id: string, cost: Partial<GameResources>): Promise<void> {
+  async startBuild(skillId: string, cost: Partial<GameResources>, durationMs: number): Promise<void> {
     if (!this.canAfford(cost)) return;
     try {
-      await this.gameState.upgradeSkill(id, cost);
+      await this.gameState.startBuild(skillId, cost, durationMs);
     } catch (e) {
-      console.error('Upgrade failed', e);
+      console.error('Start build failed', e);
+    }
+  }
+
+  /**
+   * Completes the building process and increases the skill level.
+   * @param id The identifier of the building or upgrade.
+   */
+  async completeBuild(id: string): Promise<void> {
+    try {
+      await this.gameState.completeBuild(id);
+    } catch (e) {
+      console.error('Upgrade level failed', e);
     }
   }
 }

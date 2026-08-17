@@ -86,14 +86,23 @@
               </ul>
             </div>
             
-            <button 
-              class="build-btn" 
-              [disabled]="!canAfford(getDiscountedCost(ship.cost))"
-              (click)="buildShip(ship)"
-              [attr.aria-label]="'Build ' + ship.title"
-            >
-              Bauen
-            </button>
+            @if (gameState.activeBuilds()[ship.id]) {
+              <app-pixel-progress-bar
+                [finishTime]="gameState.activeBuilds()[ship.id].finishTime"
+                [totalDurationMs]="gameState.activeBuilds()[ship.id].totalDurationMs"
+                [color]="'var(--color-credits)'"
+                (completed)="onShipBuildComplete(ship)"
+              />
+            } @else {
+              <button 
+                class="build-btn" 
+                [disabled]="!canAfford(getDiscountedCost(ship.cost))"
+                (click)="startShipBuild(ship)"
+                [attr.aria-label]="'Build ' + ship.title"
+              >
+                Bauen
+              </button>
+            }
           </div>
         </article>
       }

@@ -35,13 +35,22 @@
       </ul>
     </div>
 
-    <button
-      class="upgrade-btn"
-      [disabled]="locked || !canAfford"
-      (click)="upgradeClicked.emit()"
-      [attr.aria-label]="buttonText + ' ' + title"
-    >
-      {{ buttonText }}
-    </button>
+    @if (activeBuild) {
+      <app-pixel-progress-bar
+        [finishTime]="activeBuild.finishTime"
+        [totalDurationMs]="activeBuild.totalDurationMs"
+        [color]="'var(--color-credits)'"
+        (completed)="onBuildComplete()"
+      />
+    } @else {
+      <button
+        class="upgrade-btn"
+        [disabled]="locked || !canAfford"
+        (click)="startBuild()"
+        [attr.aria-label]="buttonText + ' ' + title"
+      >
+        {{ buttonText }}
+      </button>
+    }
   </div>
 </article>

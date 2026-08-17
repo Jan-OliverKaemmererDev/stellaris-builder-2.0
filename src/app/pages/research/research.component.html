@@ -23,14 +23,16 @@
           [canAfford]="
             canAfford(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))
           "
-          [buttonText]="'Erforschen'"
+          [activeBuild]="gameState.activeBuilds()[item.id]"
           (imageClicked)="openLightbox(item)"
-          (upgradeClicked)="
-            upgradeSkill(
+          (buildStarted)="
+            startBuild(
               item.id,
-              getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id))
+              getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)),
+              30000 + (getSkillLevel(item.id) * 10000)
             )
           "
+          (upgradeCompleted)="completeBuild(item.id)"
         />
 
         <!-- Upgrades Section -->
@@ -75,17 +77,20 @@
               [buttonText]="'Ausbauen'"
               [showPlaceholder]="true"
               [placeholderChar]="upgrade.title.charAt(0)"
+              [activeBuild]="gameState.activeBuilds()[upgrade.id]"
               (imageClicked)="openLightbox(upgrade)"
-              (upgradeClicked)="
-                upgradeSkill(
+              (buildStarted)="
+                startBuild(
                   upgrade.id,
                   getCurrentCost(
                     upgrade.baseCost,
                     upgrade.costMultiplier,
                     getSkillLevel(upgrade.id)
-                  )
+                  ),
+                  30000 + (getSkillLevel(upgrade.id) * 10000)
                 )
               "
+              (upgradeCompleted)="completeBuild(upgrade.id)"
             />
           }
         </div>

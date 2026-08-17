@@ -17,8 +17,10 @@
           [costEntries]="getCostEntries(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
           [canAfford]="canAfford(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
           [buttonText]="'Ausbauen'"
+          [activeBuild]="gameState.activeBuilds()[building.id]"
           (imageClicked)="openLightbox(building)"
-          (upgradeClicked)="upgradeSkill(building.id, getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
+          (buildStarted)="startBuild(building.id, getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)), 30000 + (getSkillLevel(building.id) * 10000))"
+          (upgradeCompleted)="completeBuild(building.id)"
         />
 
         <!-- Upgrades Section -->
@@ -38,8 +40,10 @@
               [costEntries]="getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
               [canAfford]="canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
               [buttonText]="'Kaufen'"
+              [activeBuild]="gameState.activeBuilds()[upgrade.id]"
               (imageClicked)="openLightbox(upgrade)"
-              (upgradeClicked)="upgradeSkill(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
+              (buildStarted)="startBuild(upgrade.id, getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)), 30000 + (getSkillLevel(upgrade.id) * 10000))"
+              (upgradeCompleted)="completeBuild(upgrade.id)"
             />
 
           }

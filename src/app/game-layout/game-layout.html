@@ -14,7 +14,7 @@
     <div class="header-right">
       <!-- Nanobots Toggle Switch -->
       @if (hasNanobots) {
-        <div class="nanobots-toggle" aria-label="Toggle Nanobots Animation">
+        <div class="nanobots-toggle" [class.active]="settings.showNanobots()" aria-label="Toggle Nanobots Animation">
           <span class="toggle-label">Nano-Bots</span>
           <label class="switch">
             <input type="checkbox" [checked]="settings.showNanobots()" (change)="settings.toggleNanobots()">

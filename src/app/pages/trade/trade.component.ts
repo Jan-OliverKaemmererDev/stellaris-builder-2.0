@@ -180,12 +180,20 @@ export class TradeComponent {
     return this.gameState.canAfford(cost);
   }
 
-  async upgradeSkill(id: string, cost: Partial<GameResources>): Promise<void> {
+  async startBuild(skillId: string, cost: Partial<GameResources>, durationMs: number): Promise<void> {
     if (!this.canAfford(cost)) return;
     try {
-      await this.gameState.upgradeSkill(id, cost);
+      await this.gameState.startBuild(skillId, cost, durationMs);
     } catch (e) {
-      console.error('Upgrade failed', e);
+      console.error('Start build failed', e);
+    }
+  }
+
+  async completeBuild(id: string): Promise<void> {
+    try {
+      await this.gameState.completeBuild(id);
+    } catch (e) {
+      console.error('Upgrade level failed', e);
     }
   }
 }

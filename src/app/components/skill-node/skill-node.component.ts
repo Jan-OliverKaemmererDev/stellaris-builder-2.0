@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
+import { PixelProgressBarComponent } from '../pixel-progress-bar/pixel-progress-bar.component';
+import { ActiveBuild } from '../../services/game-state.types';
 
 /**
  * Represents a single formatted cost entry for display.
@@ -22,7 +24,7 @@ export interface CostEntry {
 @Component({
   selector: 'app-skill-node',
   standalone: true,
-  imports: [CommonModule, CompactNumberPipe],
+  imports: [CommonModule, CompactNumberPipe, PixelProgressBarComponent],
   templateUrl: './skill-node.component.html',
   styleUrl: './skill-node.component.scss',
 })
@@ -51,9 +53,23 @@ export class SkillNodeComponent {
   @Input() showPlaceholder: boolean = false;
   /** The character displayed in the placeholder icon (usually the first letter of the title). */
   @Input() placeholderChar: string = '';
+  /** If this node is currently being built, contains the active build data. */
+  @Input() activeBuild: ActiveBuild | null = null;
 
   /** Emits when the node image is clicked (to open the lightbox). */
   @Output() imageClicked = new EventEmitter<void>();
-  /** Emits when the upgrade/build button is clicked. */
-  @Output() upgradeClicked = new EventEmitter<void>();
+  /** Emits when the build process is started (button clicked). */
+  @Output() buildStarted = new EventEmitter<void>();
+  /** Emits when the build process completes (after progress bar reaches 100%). */
+  @Output() upgradeCompleted = new EventEmitter<void>();
+
+  startBuild(): void {
+    if (this.locked || !this.canAfford || this.activeBuild) return;
+    this.buildStarted.emit();
+  }
+
+  onBuildComplete(): void {
+    this.upgradeCompleted.emit();
+  }
 }
+

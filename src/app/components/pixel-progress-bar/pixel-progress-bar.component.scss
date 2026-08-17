@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  width: 100%;
+  margin-top: auto;
+}
+
+.pixel-progress-bar {
+  width: 100%;
+  height: 36px; /* Matches upgrade-btn min-height */
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background-color: var(--color-credits);
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.pixel-wave-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%; /* Wider than container for scrolling */
+  height: 100%;
+  /* Pixel-style pattern using sharp gradients */
+  background-image: 
+    radial-gradient(rgba(255,255,255,0.4) 15%, transparent 16%),
+    radial-gradient(rgba(255,255,255,0.2) 15%, transparent 16%);
+  background-size: 8px 8px; /* Size of "pixels" */
+  background-position: 0 0, 4px 4px;
+  animation: pixelWave 1.5s linear infinite;
+  mix-blend-mode: overlay;
+}
+
+@keyframes pixelWave {
+  0% {
+    background-position: 0 0, 4px 4px;
+  }
+  100% {
+    background-position: -24px 0, -20px 4px;
+  }
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  font-variant-numeric: tabular-nums; /* Keeps text width stable */
+}

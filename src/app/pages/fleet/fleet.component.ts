@@ -6,6 +6,7 @@ import { GameResources } from '../../services/game-state.types';
 import { calcExponential, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
+import { PixelProgressBarComponent } from '../../components/pixel-progress-bar/pixel-progress-bar.component';
 
 /** Definition of a purchasable ship type in the shipyard. */
 export interface ShipDef {
@@ -30,7 +31,7 @@ export interface ShipDef {
 @Component({
   selector: 'app-fleet',
   standalone: true,
-  imports: [CommonModule, CompactNumberPipe, LightboxComponent, NanoBotsOverlayComponent],
+  imports: [CommonModule, CompactNumberPipe, LightboxComponent, NanoBotsOverlayComponent, PixelProgressBarComponent],
   templateUrl: './fleet.component.html',
   styleUrl: './fleet.component.scss',
 })
@@ -153,17 +154,30 @@ export class FleetComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Builds one unit of a ship type by upgrading the corresponding skill.
+   * Starts building one unit of a ship type by deducting the cost.
    * @param ship - The ship definition to build.
-   * @returns A promise that resolves when the ship is built.
    */
-  async buildShip(ship: ShipDef): Promise<void> {
+  async startShipBuild(ship: ShipDef): Promise<void> {
     const cost = this.getDiscountedCost(ship.cost);
     if (!this.canAfford(cost)) return;
+    
     try {
-      await this.gameState.upgradeSkill(ship.id, cost);
+      const durationMs = 60000 + (this.getShipCount(ship.id) * 10000);
+      await this.gameState.startBuild(ship.id, cost, durationMs);
     } catch (e) {
-      console.error('Failed to build ship', e);
+      console.error('Failed to start building ship', e);
+    }
+  }
+
+  /**
+   * Completes the building process and increases the ship count.
+   * @param ship - The ship definition.
+   */
+  async onShipBuildComplete(ship: ShipDef): Promise<void> {
+    try {
+      await this.gameState.completeBuild(ship.id);
+    } catch (e) {
+      console.error('Failed to complete ship build', e);
     }
   }
 

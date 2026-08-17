@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { Auth, user } from '@angular/fire/auth';
 import { Firestore, doc, onSnapshot, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
-import { GameResources, MissionState, GameState, DEFAULT_STATE, SHIP_IDS, ENERGY_UPKEEP } from './game-state.types';
+import { GameResources, MissionState, GameState, DEFAULT_STATE, SHIP_IDS, ENERGY_UPKEEP, ActiveBuild } from './game-state.types';
 import * as MathUtils from './game-math.utils';
 
 /**
@@ -22,6 +22,9 @@ export class GameStateService {
 
   /** Current skill/building levels keyed by skill ID. */
   skills = signal<Record<string, number>>(DEFAULT_STATE.skills);
+
+  /** Currently active building processes. */
+  activeBuilds = signal<Record<string, ActiveBuild>>({});
 
   /** Currently running mission, or `null` if idle. */
   activeMission = signal<MissionState | null>(null);
@@ -112,6 +115,25 @@ export class GameStateService {
     this.resources.set(state.resources || DEFAULT_STATE.resources);
     this.skills.set(state.skills || {});
     this.activeMission.set(state.activeMission || null);
+    
+    // Check for offline completed builds and update state if needed
+    let builds = state.activeBuilds || {};
+    let skillsObj = { ...this.skills() };
+    let changed = false;
+    const now = Date.now();
+    for (const [id, build] of Object.entries(builds)) {
+      if (build.finishTime <= now) {
+        skillsObj[id] = (skillsObj[id] || 0) + 1;
+        delete builds[id];
+        changed = true;
+      }
+    }
+    
+    this.activeBuilds.set(builds);
+    if (changed) {
+      this.skills.set(skillsObj);
+      await updateDoc(stateRef, { skills: skillsObj, activeBuilds: builds });
+    }
   }
 
   /**
@@ -141,6 +163,7 @@ export class GameStateService {
     this.resources.set(DEFAULT_STATE.resources);
     this.skills.set({});
     this.activeMission.set(null);
+    this.activeBuilds.set({});
     this.offlineEarnings.set(null);
   }
 
@@ -206,22 +229,87 @@ export class GameStateService {
   }
 
   /**
-   * Upgrades a skill by one level, deducting the required resources.
+   * Starts a building/upgrade process, deducting resources and setting a timer.
+   * @param skillId - The skill to upgrade.
+   * @param cost - The resources to deduct.
+   * @param durationMs - The duration of the build.
+   */
+  async startBuild(skillId: string, cost: Partial<GameResources>, durationMs: number): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!this.canAfford(cost) || !user) throw new Error('Cannot afford');
+
+    const newRes = MathUtils.deductResources(this.resources(), cost);
+    this.resources.set(newRes);
+
+    const build: ActiveBuild = { finishTime: Date.now() + durationMs, totalDurationMs: durationMs };
+    const newBuilds = { ...this.activeBuilds(), [skillId]: build };
+    this.activeBuilds.set(newBuilds);
+
+    const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+    await updateDoc(stateRef, { resources: newRes, activeBuilds: newBuilds });
+  }
+
+  /**
+   * Completes a building process, upgrades the skill, and removes the active build.
+   * @param skillId - The skill that finished building.
+   */
+  async completeBuild(skillId: string): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
+    const newLevel = (this.skills()[skillId] || 0) + 1;
+    this.skills.set({ ...this.skills(), [skillId]: newLevel });
+
+    const newBuilds = { ...this.activeBuilds() };
+    delete newBuilds[skillId];
+    this.activeBuilds.set(newBuilds);
+
+    const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+    await updateDoc(stateRef, { [`skills.${skillId}`]: newLevel, activeBuilds: newBuilds });
+  }
+
+  /**
+   * Deducts the given cost from the player's resources immediately.
+   * @param cost - The resources to deduct.
+   * @throws Error if the player cannot afford the cost or is not authenticated.
+   */
+  async deductCost(cost: Partial<GameResources>): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!this.canAfford(cost) || !user) throw new Error('Cannot afford');
+
+    const newRes = MathUtils.deductResources(this.resources(), cost);
+    this.resources.set(newRes);
+
+    const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+    await updateDoc(stateRef, { resources: newRes });
+  }
+
+  /**
+   * Upgrades a skill by one level without deducting cost (should be called after deductCost).
+   * @param skillId - The skill to upgrade.
+   * @throws Error if the player is not authenticated.
+   */
+  async upgradeSkillLevel(skillId: string): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
+    const newLevel = (this.skills()[skillId] || 0) + 1;
+    this.skills.set({ ...this.skills(), [skillId]: newLevel });
+
+    const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+    await updateDoc(stateRef, { [`skills.${skillId}`]: newLevel });
+  }
+
+  /**
+   * Upgrades a skill by one level, deducting the required resources immediately.
+   * Legacy method for immediate upgrades without progress bar.
    * @param skillId - The skill to upgrade.
    * @param cost - The resources required for this upgrade.
    * @throws Error if the player cannot afford the cost or is not authenticated.
    */
   async upgradeSkill(skillId: string, cost: Partial<GameResources>): Promise<void> {
-    const user = this.auth.currentUser;
-    if (!this.canAfford(cost) || !user) throw new Error('Cannot upgrade');
-
-    const newRes = MathUtils.deductResources(this.resources(), cost);
-    const newLevel = (this.skills()[skillId] || 0) + 1;
-    this.resources.set(newRes);
-    this.skills.set({ ...this.skills(), [skillId]: newLevel });
-
-    const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
-    await updateDoc(stateRef, { resources: newRes, [`skills.${skillId}`]: newLevel });
+    await this.deductCost(cost);
+    await this.upgradeSkillLevel(skillId);
   }
 
   /**

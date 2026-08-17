@@ -42,14 +42,23 @@
               </ul>
             </div>
 
-            <button
-              class="upgrade-btn"
-              [disabled]="!isUnlocked(node) || !canAfford(node)"
-              (click)="upgrade(node)"
-              [attr.aria-label]="'Upgrade ' + node.title + ' (Level ' + getSkillLevel(node.id) + ')'"
-            >
-              Ausbauen
-            </button>
+            @if (gameState.activeBuilds()[node.id]) {
+              <app-pixel-progress-bar
+                [finishTime]="gameState.activeBuilds()[node.id].finishTime"
+                [totalDurationMs]="gameState.activeBuilds()[node.id].totalDurationMs"
+                [color]="'var(--color-credits)'"
+                (completed)="onNodeBuildComplete(node)"
+              />
+            } @else {
+              <button
+                class="upgrade-btn"
+                [disabled]="!isUnlocked(node) || !canAfford(node)"
+                (click)="startNodeBuild(node)"
+                [attr.aria-label]="'Upgrade ' + node.title + ' (Level ' + getSkillLevel(node.id) + ')'"
+              >
+                Ausbauen
+              </button>
+            }
           </div>
         </article>
       }

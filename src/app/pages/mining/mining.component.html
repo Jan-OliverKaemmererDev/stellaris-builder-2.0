@@ -23,14 +23,16 @@
           [canAfford]="
             canAfford(getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)))
           "
-          [buttonText]="'Ausbauen'"
+          [activeBuild]="gameState.activeBuilds()[mine.id]"
           (imageClicked)="openMineLightbox(mine)"
-          (upgradeClicked)="
-            upgradeSkill(
+          (buildStarted)="
+            startBuild(
               mine.id,
-              getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id))
+              getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)),
+              30000 + (getSkillLevel(mine.id) * 10000)
             )
           "
+          (upgradeCompleted)="completeBuild(mine.id)"
         />
 
         <!-- Upgrades Section -->
@@ -72,18 +74,20 @@
                   )
                 )
               "
-              [buttonText]="'Ausbauen'"
+              [activeBuild]="gameState.activeBuilds()[upgrade.id]"
               (imageClicked)="openUpgradeLightbox(upgrade)"
-              (upgradeClicked)="
-                upgradeSkill(
+              (buildStarted)="
+                startBuild(
                   upgrade.id,
                   getCurrentCost(
                     upgrade.baseCost,
                     upgrade.costMultiplier,
                     getSkillLevel(upgrade.id)
-                  )
+                  ),
+                  30000 + (getSkillLevel(upgrade.id) * 10000)
                 )
               "
+              (upgradeCompleted)="completeBuild(upgrade.id)"
             />
           }
         </div>

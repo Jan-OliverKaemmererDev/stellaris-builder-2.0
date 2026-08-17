@@ -37,6 +37,16 @@ export interface MissionState {
 }
 
 /** 
+ * Represents an ongoing build or upgrade process.
+ */
+export interface ActiveBuild {
+  /** The timestamp when the build finishes. */
+  finishTime: number;
+  /** The total duration of the build in milliseconds. */
+  totalDurationMs: number;
+}
+
+/** 
  * Represents the full, persisted game state stored in Firestore per user.
  * It contains resources, building levels, active missions, and timestamp info.
  */
@@ -45,6 +55,8 @@ export interface GameState {
   resources: GameResources;
   /** A dictionary of all unlocked skills and building levels. Keys are skill IDs, values are levels. */
   skills: Record<string, number>;
+  /** A dictionary of all currently active builds. Keys are skill IDs. */
+  activeBuilds?: Record<string, ActiveBuild>;
   /** The currently running mission, or `null` if the fleet is idle. */
   activeMission?: MissionState | null;
   /** The Unix timestamp of the last state update, used for offline progress calculation. */
