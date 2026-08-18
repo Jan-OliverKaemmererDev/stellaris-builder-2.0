@@ -12,7 +12,7 @@
           [imagePath]="building.imagePath"
           [level]="getSkillLevel(building.id)"
           [locked]="!isBuildingUnlocked(building)"
-          [lockText]="'Benötigt ' + (building.requiredNode?.id ?? '') + ' Lvl ' + (building.requiredNode?.level ?? '')"
+          [lockText]="getBuildingLockText(building)"
           [effectText]="building.effectFn(getSkillLevel(building.id))"
           [costEntries]="getCostEntries(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
           [canAfford]="canAfford(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
@@ -25,17 +25,17 @@
 
         <!-- Upgrades Section -->
         <div class="building-upgrades-section" role="list" [attr.aria-label]="'Upgrades for ' + building.title">
-          @for (upgrade of building.upgrades; track upgrade.id) {
+          @for (upgrade of building.upgrades; track upgrade.id; let idx = $index) {
             
             <!-- Connector Line -->
-            <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(building.id, upgrade)" aria-hidden="true"></span>
+            <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(building, idx)" aria-hidden="true"></span>
 
             <app-skill-node
               [title]="upgrade.title"
               [imagePath]="upgrade.imagePath"
               [level]="getSkillLevel(upgrade.id)"
-              [locked]="!isUpgradeUnlocked(building.id, upgrade)"
-              [lockText]="building.title + ' Lvl ' + upgrade.requiredBuildingLevel"
+              [locked]="!isUpgradeUnlocked(building, idx)"
+              [lockText]="getUpgradeLockText(building, idx)"
               [effectText]="upgrade.effectFn(getSkillLevel(upgrade.id))"
               [costEntries]="getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
               [canAfford]="canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"

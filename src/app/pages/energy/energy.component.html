@@ -12,7 +12,7 @@
           [imagePath]="item.imagePath"
           [level]="getSkillLevel(item.id)"
           [locked]="!isUnlocked(item)"
-          [lockText]="'Benötigt ' + (item.requiredNode?.id ?? '') + ' Lvl ' + (item.requiredNode?.level ?? '')"
+          [lockText]="getBuildingLockText(item)"
           [effectText]="item.effectFn(getSkillLevel(item.id))"
           [costEntries]="getCostEntries(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))"
           [canAfford]="canAfford(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))"
@@ -25,17 +25,17 @@
 
         <!-- Upgrades Section -->
         <div class="building-upgrades-section" role="list" [attr.aria-label]="'Upgrades for ' + item.title">
-          @for (upgrade of item.upgrades; track upgrade.id) {
+          @for (upgrade of item.upgrades; track upgrade.id; let idx = $index) {
             
             <!-- Connector Line -->
-            <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(item.id, upgrade)" aria-hidden="true"></span>
+            <span class="skill-connector" [class.unlocked]="isUpgradeUnlocked(item, idx)" aria-hidden="true"></span>
 
             <app-skill-node
               [title]="upgrade.title"
               [imagePath]="upgrade.imagePath"
               [level]="getSkillLevel(upgrade.id)"
-              [locked]="!isUpgradeUnlocked(item.id, upgrade)"
-              [lockText]="item.title + ' Lvl ' + upgrade.requiredLevel"
+              [locked]="!isUpgradeUnlocked(item, idx)"
+              [lockText]="getUpgradeLockText(item, idx)"
               [effectText]="upgrade.effectFn(getSkillLevel(upgrade.id))"
               [costEntries]="getCostEntries(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"
               [canAfford]="canAfford(getCurrentCost(upgrade.baseCost, upgrade.costMultiplier, getSkillLevel(upgrade.id)))"

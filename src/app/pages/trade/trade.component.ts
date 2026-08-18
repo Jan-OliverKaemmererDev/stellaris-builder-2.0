@@ -100,9 +100,9 @@ export class TradeComponent {
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(100, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
         { id: 'trade_lokale_gilden', title: 'Lokale Händlergilden', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 5, baseCost: { credits: 100, nahrung: 50 }, costMultiplier: 1.3, description: 'Organisierte Gilden verbessern die Handelseffizienz.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
-        { id: 'trade_frachtdrohnen', title: 'Frachtdrohnen', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 15, baseCost: { credits: 400, eisen: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen liefern Waren schneller aus.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
-        { id: 'trade_schwarzmarkt', title: 'Schwarzmarkt-Zugang', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 30, baseCost: { credits: 1500, gold: 500 }, costMultiplier: 1.5, description: 'Zugang zu illegalen, aber lukrativen Handelsrouten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
-        { id: 'trade_planetarer_zoll', title: 'Planetarer Zoll', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 50, baseCost: { credits: 5000, energie: 1000 }, costMultiplier: 1.7, description: 'Kontrollierter Zoll sichert Einnahmen bei jedem Handel.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
+        { id: 'trade_frachtdrohnen', title: 'Frachtdrohnen', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 10, baseCost: { credits: 400, eisen: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen liefern Waren schneller aus.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
+        { id: 'trade_schwarzmarkt', title: 'Schwarzmarkt-Zugang', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 15, baseCost: { credits: 1500, gold: 500 }, costMultiplier: 1.5, description: 'Zugang zu illegalen, aber lukrativen Handelsrouten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
+        { id: 'trade_planetarer_zoll', title: 'Planetarer Zoll', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 20, baseCost: { credits: 5000, energie: 1000 }, costMultiplier: 1.7, description: 'Kontrollierter Zoll sichert Einnahmen bei jedem Handel.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
       ],
     },
     {
@@ -115,10 +115,10 @@ export class TradeComponent {
       description: 'Vernetzt dein Imperium mit galaktischen Handelsnetzwerken.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(400, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
-        { id: 'market_kartographierung', title: 'Routen-Kartographierung', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 5, baseCost: { credits: 1000, energie: 500 }, costMultiplier: 1.4, description: 'Kartographierte Routen verkürzen Lieferzeiten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
-        { id: 'market_subraum_komm', title: 'Subraum-Kommunikation', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 15, baseCost: { credits: 3000, silber: 1000 }, costMultiplier: 1.5, description: 'Sofortige Kommunikation über Lichtjahre hinweg.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
-        { id: 'market_geleitschutz', title: 'Söldner-Geleitschutz', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 30, baseCost: { credits: 10000, eisen: 5000 }, costMultiplier: 1.6, description: 'Bewaffneter Schutz für Handelskonvois.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
-        { id: 'market_banken', title: 'Interstellare Banken', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 50, baseCost: { credits: 40000, gold: 8000 }, costMultiplier: 1.8, description: 'Banken ermöglichen galaktische Kredite und Investitionen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
+        { id: 'market_kartographierung', title: 'Routen-Kartographierung', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 8, baseCost: { credits: 1000, energie: 500 }, costMultiplier: 1.4, description: 'Kartographierte Routen verkürzen Lieferzeiten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
+        { id: 'market_subraum_komm', title: 'Subraum-Kommunikation', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 12, baseCost: { credits: 3000, silber: 1000 }, costMultiplier: 1.5, description: 'Sofortige Kommunikation über Lichtjahre hinweg.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
+        { id: 'market_geleitschutz', title: 'Söldner-Geleitschutz', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 18, baseCost: { credits: 10000, eisen: 5000 }, costMultiplier: 1.6, description: 'Bewaffneter Schutz für Handelskonvois.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
+        { id: 'market_banken', title: 'Interstellare Banken', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 25, baseCost: { credits: 40000, gold: 8000 }, costMultiplier: 1.8, description: 'Banken ermöglichen galaktische Kredite und Investitionen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
       ],
     },
     {
@@ -127,14 +127,14 @@ export class TradeComponent {
       imagePath: 'assets/img/infrastructure/trading-post.png',
       baseCost: { eisen: 5000, gold: 1500, xenonit: 1500, energie: 1000 },
       costMultiplier: 1.6,
-      requiredNode: { id: 'interstellar_market', level: 10 },
+      requiredNode: { id: 'interstellar_market', level: 15 },
       description: 'Das Finanzzentrum der Galaxie für maximale Handelsgewinne.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(1500, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
-        { id: 'exchange_hft', title: 'Hochfrequenz-Trading', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 5, baseCost: { credits: 5000, energie: 2000 }, costMultiplier: 1.5, description: 'Algorithmen handeln in Nanosekunden.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
+        { id: 'exchange_hft', title: 'Hochfrequenz-Trading', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 10, baseCost: { credits: 5000, energie: 2000 }, costMultiplier: 1.5, description: 'Algorithmen handeln in Nanosekunden.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
         { id: 'exchange_megakonzern', title: 'Megakonzern-Partnerschaften', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 15, baseCost: { credits: 20000, gold: 5000 }, costMultiplier: 1.6, description: 'Exklusive Partnerschaften mit galaktischen Megakonzernen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
-        { id: 'exchange_monopol', title: 'Monopol-Lizenzen', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 30, baseCost: { credits: 80000, xenonit: 3000 }, costMultiplier: 1.8, description: 'Exklusive Handelsrechte für bestimmte Sektoren.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
-        { id: 'exchange_waehrungsamt', title: 'Galaktisches Währungsamt', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 50, baseCost: { credits: 250000, xenonit: 10000 }, costMultiplier: 2.0, description: 'Kontrolliere die galaktische Währung.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
+        { id: 'exchange_monopol', title: 'Monopol-Lizenzen', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 22, baseCost: { credits: 80000, xenonit: 3000 }, costMultiplier: 1.8, description: 'Exklusive Handelsrechte für bestimmte Sektoren.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
+        { id: 'exchange_waehrungsamt', title: 'Galaktisches Währungsamt', imagePath: 'assets/img/infrastructure/trading-post.png', requiredLevel: 30, baseCost: { credits: 250000, xenonit: 10000 }, costMultiplier: 2.0, description: 'Kontrolliere die galaktische Währung.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
       ],
     },
   ];
@@ -160,8 +160,29 @@ export class TradeComponent {
     return this.getSkillLevel(item.requiredNode.id) >= item.requiredNode.level;
   }
 
-  isUpgradeUnlocked(itemId: string, upgrade: TradeUpgrade): boolean {
-    return this.getSkillLevel(itemId) >= upgrade.requiredLevel;
+  isUpgradeUnlocked(item: TradeItem, index: number): boolean {
+    const upgrade = item.upgrades[index];
+    if (index === 0) {
+      return this.getSkillLevel(item.id) >= upgrade.requiredLevel;
+    }
+    const prevUpgrade = item.upgrades[index - 1];
+    return this.getSkillLevel(prevUpgrade.id) >= upgrade.requiredLevel;
+  }
+
+  getUpgradeLockText(item: TradeItem, index: number): string {
+    const upgrade = item.upgrades[index];
+    if (index === 0) {
+      return `${item.title} Lvl ${upgrade.requiredLevel}`;
+    }
+    const prevUpgrade = item.upgrades[index - 1];
+    return `${prevUpgrade.title} Lvl ${upgrade.requiredLevel}`;
+  }
+
+  getBuildingLockText(item: TradeItem): string {
+    if (!item.requiredNode) return '';
+    const reqItem = this.items.find((i) => i.id === item.requiredNode!.id);
+    const title = reqItem ? reqItem.title : item.requiredNode.id;
+    return `${title} Lvl ${item.requiredNode.level}`;
   }
 
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {

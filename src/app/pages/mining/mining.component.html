@@ -11,9 +11,7 @@
           [imagePath]="mine.imagePath"
           [level]="getSkillLevel(mine.id)"
           [locked]="!isMineUnlocked(mine)"
-          [lockText]="
-            'Benötigt ' + (mine.requiredNode?.id ?? '') + ' Lvl ' + (mine.requiredNode?.level ?? '')
-          "
+          [lockText]="getBuildingLockText(mine)"
           [effectText]="mine.effectFn(getSkillLevel(mine.id), gameState.skills())"
           [costEntries]="
             getCostEntries(
@@ -41,11 +39,11 @@
           role="list"
           [attr.aria-label]="'Upgrades for ' + mine.title"
         >
-          @for (upgrade of mine.upgrades; track upgrade.id) {
+          @for (upgrade of mine.upgrades; track upgrade.id; let idx = $index) {
             <!-- Connector Line -->
             <span
               class="skill-connector"
-              [class.unlocked]="isUpgradeUnlocked(mine.id, upgrade)"
+              [class.unlocked]="isUpgradeUnlocked(mine, idx)"
               aria-hidden="true"
             ></span>
 
@@ -53,8 +51,8 @@
               [title]="upgrade.title"
               [imagePath]="upgrade.imagePath"
               [level]="getSkillLevel(upgrade.id)"
-              [locked]="!isUpgradeUnlocked(mine.id, upgrade)"
-              [lockText]="mine.title + ' Lvl ' + upgrade.requiredMineLevel"
+              [locked]="!isUpgradeUnlocked(mine, idx)"
+              [lockText]="getUpgradeLockText(mine, idx)"
               [effectText]="upgrade.effectFn(getSkillLevel(upgrade.id))"
               [costEntries]="
                 getCostEntries(
