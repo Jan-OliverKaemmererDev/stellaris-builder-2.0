@@ -1,6 +1,42 @@
-<div class="pixel-progress-bar">
-  <div class="progress-fill" [style.width.%]="progress" [style.background-color]="color">
-    <div class="pixel-wave-overlay"></div>
+<div class="pixel-progress-bar" [class.completed]="isCompleted" [attr.aria-valuenow]="progress" aria-valuemin="0" aria-valuemax="100" role="progressbar">
+  <!-- Animated Progress Fill Layer -->
+  <div class="progress-fill" [style.width.%]="progress" [style.--bar-color]="color">
+    <!-- Scrolling Pixel Matrix -->
+    <div class="pixel-matrix-pattern" aria-hidden="true"></div>
+    
+    <!-- Moving Cyber Energy Stripes -->
+    <div class="cyber-stripes" aria-hidden="true"></div>
+    
+    <!-- Holographic Light Shimmer Sweep -->
+    <div class="shimmer-sweep" aria-hidden="true"></div>
+    
+    <!-- Laser Welding Leading Edge & Plasma Sparks -->
+    <div class="laser-head" aria-hidden="true">
+      <div class="laser-core"></div>
+      <div class="laser-flare"></div>
+      <div class="spark s1"></div>
+      <div class="spark s2"></div>
+      <div class="spark s3"></div>
+    </div>
   </div>
-  <span class="timer-text">{{ remainingDisplay }}</span>
+
+  <!-- Sci-Fi HUD Overlay (Status & Timer) -->
+  <div class="hud-overlay">
+    <div class="hud-left">
+      <span class="pulse-beacon" [class.beacon-done]="isCompleted" aria-hidden="true"></span>
+      <span class="percent-label">{{ percentDisplay }}</span>
+    </div>
+    <div class="hud-right">
+      <span class="hud-bracket" aria-hidden="true">[</span>
+      <span class="timer-label">{{ remainingDisplay }}</span>
+      <span class="hud-bracket" aria-hidden="true">]</span>
+    </div>
+  </div>
+
+  <!-- Tech Corner Brackets -->
+  <div class="corner-bracket corner-tl" aria-hidden="true"></div>
+  <div class="corner-bracket corner-tr" aria-hidden="true"></div>
+  <div class="corner-bracket corner-bl" aria-hidden="true"></div>
+  <div class="corner-bracket corner-br" aria-hidden="true"></div>
 </div>
+

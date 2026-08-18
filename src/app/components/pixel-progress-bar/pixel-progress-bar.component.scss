@@ -4,62 +4,431 @@
   margin-top: auto;
 }
 
+/* ================================================================
+   Pixel Progress Bar – Cyber Sci-Fi Frame & Animation
+   ================================================================ */
+
 .pixel-progress-bar {
   width: 100%;
-  height: 36px; /* Matches upgrade-btn min-height */
-  background: rgba(255, 255, 255, 0.06);
-  border: 1.5px solid var(--primary);
-  border-radius: var(--radius-md);
+  height: 36px; /* Matches upgrade-btn / build-btn */
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+  background: linear-gradient(180deg, rgba(6, 12, 22, 0.92) 0%, rgba(10, 20, 36, 0.85) 100%);
+  border: 1.5px solid rgba(72, 229, 229, 0.4);
+  border-radius: var(--radius-md);
+  box-shadow: 
+    0 0 10px rgba(72, 229, 229, 0.15),
+    inset 0 0 12px rgba(0, 0, 0, 0.85);
+  animation: barBorderPulse 3s ease-in-out infinite alternate;
+  user-select: none;
 }
+
+/* ═══ Animated Progress Fill ═══ */
 
 .progress-fill {
   height: 100%;
   width: 0%;
-  background-color: var(--color-credits);
   position: absolute;
   left: 0;
   top: 0;
-  border-radius: var(--radius-md);
+  border-radius: calc(var(--radius-md) - 2px);
+  background: linear-gradient(
+    90deg,
+    rgba(30, 64, 175, 0.95) 0%,
+    rgba(37, 99, 235, 0.95) 30%,
+    var(--bar-color, #3b82f6) 70%,
+    var(--primary, #48e5e5bb) 100%
+  );
+  box-shadow: 
+    0 0 14px rgba(72, 229, 229, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  transition: width 0.05s linear;
 }
 
-.pixel-wave-overlay {
+/* ═══ Layer 1: Pixel Matrix Grid ═══ */
+
+.pixel-matrix-pattern {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%; /* Wider than container for scrolling */
-  height: 100%;
-  /* Pixel-style pattern using sharp gradients */
+  inset: 0;
+  width: 200%;
   background-image: 
-    radial-gradient(rgba(255,255,255,0.4) 15%, transparent 16%),
-    radial-gradient(rgba(255,255,255,0.2) 15%, transparent 16%);
-  background-size: 8px 8px; /* Size of "pixels" */
-  background-position: 0 0, 4px 4px;
-  animation: pixelWave 1.5s linear infinite;
+    radial-gradient(rgba(255, 255, 255, 0.6) 18%, transparent 22%),
+    radial-gradient(rgba(255, 255, 255, 0.25) 18%, transparent 22%);
+  background-size: 6px 6px;
+  background-position: 0 0, 3px 3px;
+  animation: pixelScroll 0.8s linear infinite;
   mix-blend-mode: overlay;
 }
 
-@keyframes pixelWave {
-  0% {
-    background-position: 0 0, 4px 4px;
-  }
-  100% {
-    background-position: -24px 0, -20px 4px;
-  }
+/* ═══ Layer 2: Cyber Chevrons / Energy Stream ═══ */
+
+.cyber-stripes {
+  position: absolute;
+  inset: 0;
+  width: 200%;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.16) 0px,
+    rgba(255, 255, 255, 0.16) 5px,
+    transparent 5px,
+    transparent 12px
+  );
+  background-size: 17px 17px;
+  animation: cyberStream 0.75s linear infinite;
+  mix-blend-mode: color-dodge;
 }
 
-.timer-text {
+/* ═══ Layer 3: Holographic Shimmer Sweep ═══ */
+
+.shimmer-sweep {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 70%,
+    transparent 100%
+  );
+  animation: shimmerSweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+/* ═══ Laser Welding Leading Edge ═══ */
+
+.laser-head {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  z-index: 3;
+}
+
+.laser-core {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border-radius: 1px;
+  box-shadow: 
+    0 0 6px #ffffff,
+    0 0 12px var(--primary-light),
+    0 0 20px var(--primary),
+    0 0 30px rgba(72, 229, 229, 0.9);
+  animation: laserFlicker 0.12s infinite alternate;
+}
+
+.laser-flare {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 14px;
+  height: 28px;
   transform: translate(-50%, -50%);
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5);
-  z-index: 2;
-  font-variant-numeric: tabular-nums; /* Keeps text width stable */
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0%, rgba(72, 229, 229, 0.6) 45%, transparent 70%);
+  pointer-events: none;
+  animation: flarePulse 0.4s ease-in-out infinite alternate;
 }
+
+/* ═══ Plasma Spark Particles ═══ */
+
+.spark {
+  position: absolute;
+  width: 2.5px;
+  height: 2.5px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 4px var(--primary-light);
+  pointer-events: none;
+}
+
+.s1 {
+  top: 20%;
+  animation: sparkDrift1 0.6s ease-out infinite;
+}
+
+.s2 {
+  top: 50%;
+  animation: sparkDrift2 0.8s ease-out infinite 0.2s;
+}
+
+.s3 {
+  top: 80%;
+  animation: sparkDrift3 0.65s ease-out infinite 0.35s;
+}
+
+/* ═══ Sci-Fi HUD Overlay ═══ */
+
+.hud-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  pointer-events: none;
+}
+
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pulse-beacon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  box-shadow: 0 0 6px var(--primary);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    animation: beaconWave 1.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  }
+
+  &.beacon-done {
+    background: var(--color-success);
+    box-shadow: 0 0 8px var(--color-success);
+
+    &::after {
+      border-color: var(--color-success);
+    }
+  }
+}
+
+.percent-label {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.9),
+    0 0 8px rgba(72, 229, 229, 0.7);
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-bracket {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-shadow: 0 0 6px var(--primary-glow);
+  opacity: 0.85;
+}
+
+.timer-label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.9),
+    0 0 8px rgba(72, 229, 229, 0.6);
+}
+
+/* ═══ Tech Corner Brackets ═══ */
+
+.corner-bracket {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border: 1.5px solid var(--primary-light);
+  pointer-events: none;
+  opacity: 0.65;
+  z-index: 5;
+}
+
+.corner-tl {
+  top: 2px;
+  left: 2px;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: 2px;
+}
+
+.corner-tr {
+  top: 2px;
+  right: 2px;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: 2px;
+}
+
+.corner-bl {
+  bottom: 2px;
+  left: 2px;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: 2px;
+}
+
+.corner-br {
+  bottom: 2px;
+  right: 2px;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: 2px;
+}
+
+/* ═══ Completed State Flash ═══ */
+
+.pixel-progress-bar.completed {
+  border-color: #ffffff;
+  box-shadow: 
+    0 0 24px rgba(72, 229, 229, 0.95),
+    inset 0 0 16px rgba(255, 255, 255, 0.8);
+  animation: completionBurst 0.3s ease-out forwards;
+
+  .progress-fill {
+    background: linear-gradient(90deg, #10b981 0%, #22c55e 50%, var(--primary) 100%) !important;
+    box-shadow: 0 0 22px rgba(34, 197, 94, 0.85);
+  }
+
+  .corner-bracket {
+    border-color: #ffffff;
+    opacity: 1;
+  }
+}
+
+/* ================================================================
+   Keyframe Animations
+   ================================================================ */
+
+@keyframes barBorderPulse {
+  0% {
+    border-color: rgba(72, 229, 229, 0.35);
+    box-shadow: 0 0 8px rgba(72, 229, 229, 0.1), inset 0 0 10px rgba(0, 0, 0, 0.85);
+  }
+  100% {
+    border-color: rgba(72, 229, 229, 0.65);
+    box-shadow: 0 0 14px rgba(72, 229, 229, 0.28), inset 0 0 12px rgba(0, 0, 0, 0.8);
+  }
+}
+
+@keyframes pixelScroll {
+  0% {
+    background-position: 0 0, 3px 3px;
+  }
+  100% {
+    background-position: -24px 0, -21px 3px;
+  }
+}
+
+@keyframes cyberStream {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -34px 0;
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  60%, 100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes laserFlicker {
+  0% {
+    opacity: 0.88;
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes flarePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes sparkDrift1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-14px, -8px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkDrift2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-18px, 4px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkDrift3 {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-12px, 8px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@keyframes beaconWave {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes completionBurst {
+  0% {
+    filter: brightness(1.6);
+    transform: scale(1);
+  }
+  50% {
+    filter: brightness(2);
+    transform: scale(1.02);
+  }
+  100% {
+    filter: brightness(1.2);
+    transform: scale(1);
+  }
+}
+
