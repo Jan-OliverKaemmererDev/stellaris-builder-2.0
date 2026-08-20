@@ -57,10 +57,18 @@ export interface TradeItem {
  * The TradeComponent handles the display and interaction for the trade skill tree,
  * allowing players to construct and upgrade trade-related buildings.
  */
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 @Component({
   selector: 'app-trade',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
+  imports: [
+    CommonModule,
+    LightboxComponent,
+    SkillNodeComponent,
+    NanoBotsOverlayComponent,
+    DragScrollDirective,
+  ],
   templateUrl: './trade.component.html',
   styleUrl: './trade.component.scss',
 })

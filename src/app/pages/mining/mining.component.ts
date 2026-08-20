@@ -57,10 +57,18 @@ export interface Mine {
  * Mining page component displaying resource mines (Eisen, Silber, Gold)
  * with their respective upgrade chains for production bonuses.
  */
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 @Component({
   selector: 'app-mining',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
+  imports: [
+    CommonModule,
+    LightboxComponent,
+    SkillNodeComponent,
+    NanoBotsOverlayComponent,
+    DragScrollDirective,
+  ],
   templateUrl: './mining.component.html',
   styleUrl: './mining.component.scss',
 })

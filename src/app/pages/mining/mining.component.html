@@ -4,7 +4,7 @@
 
   <div class="mines-list" role="list" aria-label="Mines list">
     @for (mine of mines; track mine.id) {
-      <div class="mine-row" role="listitem">
+      <div class="mine-row" role="listitem" appDragScroll>
         <!-- Mine Node -->
         <app-skill-node
           [title]="mine.title"

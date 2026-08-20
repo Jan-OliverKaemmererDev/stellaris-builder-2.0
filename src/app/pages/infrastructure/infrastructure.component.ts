@@ -52,10 +52,18 @@ export interface InfrastructureItem {
 /**
  * Infrastructure page displaying the main buildings and their upgrades.
  */
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 @Component({
   selector: 'app-infrastructure',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
+  imports: [
+    CommonModule,
+    LightboxComponent,
+    SkillNodeComponent,
+    NanoBotsOverlayComponent,
+    DragScrollDirective,
+  ],
   templateUrl: './infrastructure.component.html',
   styleUrl: './infrastructure.component.scss',
 })

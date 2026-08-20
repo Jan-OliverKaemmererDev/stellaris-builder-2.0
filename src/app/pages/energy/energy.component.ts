@@ -57,10 +57,18 @@ export interface EnergyItem {
  * The EnergyComponent handles the display and interaction for the energy skill tree,
  * allowing players to construct and upgrade power generation facilities.
  */
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 @Component({
   selector: 'app-energy',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
+  imports: [
+    CommonModule,
+    LightboxComponent,
+    SkillNodeComponent,
+    NanoBotsOverlayComponent,
+    DragScrollDirective,
+  ],
   templateUrl: './energy.component.html',
   styleUrl: './energy.component.scss',
 })

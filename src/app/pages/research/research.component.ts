@@ -57,10 +57,18 @@ export interface ResearchItem {
  * The ResearchComponent handles the display and interaction for the technology tree,
  * allowing players to research and upgrade scientific advancements.
  */
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 @Component({
   selector: 'app-research',
   standalone: true,
-  imports: [CommonModule, LightboxComponent, SkillNodeComponent, NanoBotsOverlayComponent],
+  imports: [
+    CommonModule,
+    LightboxComponent,
+    SkillNodeComponent,
+    NanoBotsOverlayComponent,
+    DragScrollDirective,
+  ],
   templateUrl: './research.component.html',
   styleUrl: './research.component.scss',
 })
