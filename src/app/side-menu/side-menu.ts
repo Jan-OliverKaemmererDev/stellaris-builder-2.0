@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 /** A navigation item in the side menu. */
@@ -12,8 +12,7 @@ interface MenuItem {
 }
 
 /**
- * Collapsible side navigation menu.
- * Expands on hover to reveal labels, collapses to icon-only on mouse leave.
+ * Drawer navigation menu component.
  */
 @Component({
   selector: 'app-side-menu',
@@ -23,11 +22,12 @@ interface MenuItem {
   styleUrl: './side-menu.scss',
 })
 export class SideMenu {
-  /** Whether the sidebar is currently expanded. */
-  isExpanded = signal(false);
+  /** Whether the drawer is currently open. */
+  @Input() isOpen = false;
 
-  /** All menu items displayed in the sidebar navigation. */
+  /** All menu items displayed in the drawer navigation. */
   menuItems: MenuItem[] = [
+    { icon: 'home.png', label: 'Brücke', route: '/bridge' },
     { icon: 'energy.png', label: 'Energie', route: '/bridge/energy' },
     { icon: 'mining.png', label: 'Rohstoffabbau', route: '/bridge/mining' },
     { icon: 'research.png', label: 'Forschungszentrum', route: '/bridge/research' },
@@ -35,14 +35,4 @@ export class SideMenu {
     { icon: 'trade.png', label: 'Handel & Wirtschaft', route: '/bridge/trade' },
     { icon: 'fleet.png', label: 'Flotte', route: '/bridge/fleet' },
   ];
-
-  /** Expands the sidebar on mouse enter. */
-  onMouseEnter(): void {
-    this.isExpanded.set(true);
-  }
-
-  /** Collapses the sidebar on mouse leave. */
-  onMouseLeave(): void {
-    this.isExpanded.set(false);
-  }
 }

@@ -1,30 +1,37 @@
 <nav
-  class="side-menu"
-  [class.expanded]="isExpanded()"
-  (mouseenter)="onMouseEnter()"
-  (mouseleave)="onMouseLeave()"
-  id="side-menu"
+  class="drawer-menu-wrapper"
+  [class.open]="isOpen"
+  id="drawer-side-menu"
   aria-label="Hauptnavigation"
 >
-  <!-- Logo / Home -->
-  <a class="menu-brand" routerLink="/bridge" aria-label="Zur Brücke">
-    <span class="brand-icon" aria-hidden="true">◆</span>
-    <span class="brand-text">Brücke</span>
-  </a>
+  <div class="drawer-menu-inner">
+    <div class="bridge-link-wrapper">
+      <a
+        class="drawer-item bridge-link"
+        [routerLink]="menuItems[0].route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        id="menu-bridge"
+        [attr.aria-label]="menuItems[0].label"
+      >
+        <img class="menu-icon" [src]="'assets/side-menu-icons/' + menuItems[0].icon" aria-hidden="true" alt="" />
+        <span class="menu-label">{{ menuItems[0].label }}</span>
+      </a>
+    </div>
 
-  <div class="menu-divider" role="separator"></div>
-
-  <!-- Menu Items -->
-  @for (item of menuItems; track item.route) {
-    <a
-      class="menu-item"
-      [routerLink]="item.route"
-      routerLinkActive="active"
-      [id]="'menu-' + item.route.split('/').pop()"
-      [attr.aria-label]="item.label"
-    >
-      <img class="menu-icon" [src]="'assets/side-menu-icons/' + item.icon" aria-hidden="true" alt="" />
-      <span class="menu-label">{{ item.label }}</span>
-    </a>
-  }
+    <div class="drawer-content">
+      @for (item of menuItems.slice(1); track item.route) {
+        <a
+          class="drawer-item"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [id]="'menu-' + item.route.split('/').pop()"
+          [attr.aria-label]="item.label"
+        >
+          <img class="menu-icon" [src]="'assets/side-menu-icons/' + item.icon" aria-hidden="true" alt="" />
+          <span class="menu-label">{{ item.label }}</span>
+        </a>
+      }
+    </div>
+  </div>
 </nav>

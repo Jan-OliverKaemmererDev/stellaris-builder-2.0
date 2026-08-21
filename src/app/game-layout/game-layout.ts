@@ -1,5 +1,6 @@
 import { Component, inject, signal, HostListener } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { Auth, signOut } from '@angular/fire/auth';
 import { deleteUser } from 'firebase/auth';
 import { Firestore, doc, deleteDoc } from '@angular/fire/firestore';
@@ -7,6 +8,7 @@ import { SideMenu } from '../side-menu/side-menu';
 import { OfflineProgressDialog } from '../components/offline-progress-dialog/offline-progress-dialog';
 import { SettingsService } from '../services/settings.service';
 import { GameStateService } from '../services/game-state.service';
+import { CompactNumberPipe } from '../pipes/compact-number.pipe';
 
 /**
  * Shell component that wraps all authenticated game pages.
@@ -15,7 +17,7 @@ import { GameStateService } from '../services/game-state.service';
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, CompactNumberPipe],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })
@@ -32,11 +34,32 @@ export class GameLayout {
   /** Settings service for toggling nanobots overlay. */
   settings = inject(SettingsService);
 
-  /** GameState service to check if nanobots are unlocked. */
-  private gameState = inject(GameStateService);
+  /** GameState service to check if nanobots are unlocked and fetch resources. */
+  gameState = inject(GameStateService);
 
   /** Signal holding the current visibility state of the user dropdown menu. */
   dropdownOpen = signal(false);
+
+  /** Signal holding the current visibility state of the drawer nav menu. */
+  navMenuOpen = signal(false);
+
+  /** Current page title derived from the active route. */
+  pageTitle = signal('BRÜCKE');
+
+  constructor() {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      const url = event.urlAfterRedirects;
+      if (url.includes('/mining')) this.pageTitle.set('ROHSTOFFABBAU');
+      else if (url.includes('/energy')) this.pageTitle.set('ENERGIENETZ');
+      else if (url.includes('/research')) this.pageTitle.set('FORSCHUNGSZENTRUM');
+      else if (url.includes('/infrastructure')) this.pageTitle.set('INFRASTRUKTUR');
+      else if (url.includes('/trade')) this.pageTitle.set('HANDEL & WIRTSCHAFT');
+      else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
+      else this.pageTitle.set('BRÜCKE');
+    });
+  }
 
   /**
    * Derives a two-letter initial string from the current user's profile.
@@ -87,24 +110,39 @@ export class GameLayout {
   }
 
   /**
-   * Closes the dropdown menu when a click occurs outside the user menu area.
+   * Toggles the navigation drawer menu open or closed.
+   */
+  toggleNavMenu(): void {
+    this.navMenuOpen.set(!this.navMenuOpen());
+  }
+
+  /**
+   * Closes the menus when a click occurs outside their respective areas.
    * @param event - The document click event.
    */
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
+    
+    // Dropdown close logic
     if (!target.closest('.user-menu')) {
       this.dropdownOpen.set(false);
+    }
+    
+    // Drawer Nav Menu close logic
+    if (!target.closest('.header-center') && !target.closest('.side-menu')) {
+      this.navMenuOpen.set(false);
     }
   }
 
   /**
-   * Closes the dropdown menu when the Escape key is pressed.
+   * Closes all menus when the Escape key is pressed.
    * @param _event - The global keyboard event.
    */
   @HostListener('document:keydown.escape', ['$event'])
   onEscapePress(_event: Event): void {
     this.dropdownOpen.set(false);
+    this.navMenuOpen.set(false);
   }
 
   /**

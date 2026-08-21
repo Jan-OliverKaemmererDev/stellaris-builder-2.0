@@ -30,37 +30,6 @@
   margin: 0 auto;
 }
 
-/* ═══ Commander Section ═══ */
-
-.commander-section {
-  margin-bottom: var(--space-2xl);
-}
-
-.page-title {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin: 0 0 var(--space-sm) 0;
-
-  .title-accent {
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-}
-
-.commander-greeting {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  margin: 0;
-
-  strong {
-    color: var(--text-secondary);
-  }
-}
-
 /* ═══ Dashboard Grid ═══ */
 
 .dashboard-grid {

@@ -4,78 +4,141 @@
     >Zum Hauptinhalt springen</a
   >
 
-  <!-- Side Menu -->
-  <app-side-menu />
-
   <!-- Header Bar -->
   <header class="game-header" id="game-header" aria-label="Top bar">
-    <div class="header-left"></div>
+    <!-- Left: Page Title -->
+    <div class="header-left">
+      <div class="hud-box-wrapper left-hud-wrapper">
+        <div class="hud-box-inner title-box">
+          <svg class="hud-reticle" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="12" cy="12" r="6" stroke="#38bdf8" stroke-width="1.5" opacity="0.8" />
+            <circle cx="12" cy="12" r="1.5" fill="#38bdf8" />
+            <line x1="12" y1="2" x2="12" y2="5" stroke="#38bdf8" stroke-width="1.5" />
+            <line x1="12" y1="19" x2="12" y2="22" stroke="#38bdf8" stroke-width="1.5" />
+            <line x1="2" y1="12" x2="5" y2="12" stroke="#38bdf8" stroke-width="1.5" />
+            <line x1="19" y1="12" x2="22" y2="12" stroke="#38bdf8" stroke-width="1.5" />
+          </svg>
 
-    <div class="header-right">
-      <!-- Nanobots Toggle Switch -->
-      @if (hasNanobots) {
-        <div class="nanobots-toggle" [class.active]="settings.showNanobots()" aria-label="Toggle Nanobots Animation">
-          <span class="toggle-label">Nano-Bots</span>
-          <label class="switch">
-            <input type="checkbox" [checked]="settings.showNanobots()" (change)="settings.toggleNanobots()">
-            <span class="slider round"></span>
-          </label>
+          <h1 class="header-page-title">{{ pageTitle() }}</h1>
+          @if (pageTitle() === 'BRÜCKE') {
+            <span class="header-welcome-text">Willkommen zurück, <strong class="commander-highlight">{{ commanderName }}</strong>. Alle Systeme nominal.</span>
+          }
         </div>
-      }
+      </div>
+    </div>
 
-      <!-- User Menu -->
-      <div class="user-menu">
-        <button
-          class="user-avatar"
-          (click)="toggleDropdown()"
-          id="user-avatar-btn"
-          [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
-          aria-haspopup="true"
-          aria-label="Open user menu"
+    <!-- Center: Navigation Trigger and Drawer Menu -->
+    <div class="header-center">
+      <div class="hud-box-wrapper center-hud-wrapper">
+        <button 
+          class="hud-box-inner center-hud-pod"
+          (click)="toggleNavMenu()"
+          [attr.aria-expanded]="navMenuOpen() ? 'true' : 'false'"
+          aria-controls="drawer-side-menu"
+          aria-label="Toggle Navigation Menu"
         >
-          {{ userInitials }}
+          <span class="ticker-label">NAVIGATOR</span>
+          <div class="glowing-notch"></div>
         </button>
+      </div>
 
-        @if (dropdownOpen()) {
-          <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="User menu">
-            <header class="dropdown-header">
-              <span class="dropdown-name">{{ commanderName }}</span>
-            </header>
-            <hr class="dropdown-divider" role="separator" />
-            <a
-              routerLink="/privacy-policy"
-              class="dropdown-item"
-              id="dropdown-privacy"
-              role="menuitem"
-              aria-label="Privacy Policy"
-            >
-              <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-              Privacy Policy
-            </a>
-            <a
-              routerLink="/legal-notice"
-              class="dropdown-item"
-              id="dropdown-legal"
-              role="menuitem"
-              aria-label="Legal Notice"
-            >
-              <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/legal-notice.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-              Legal Notice
-            </a>
-            <hr class="dropdown-divider" role="separator" />
+      <!-- Drawer Side Menu -->
+      <app-side-menu [isOpen]="navMenuOpen()" id="drawer-side-menu"></app-side-menu>
+    </div>
+
+    <!-- Right: Resources & User Menu -->
+    <div class="header-right">
+      <div class="hud-box-wrapper right-hud-wrapper">
+        <div class="hud-box-inner right-hud-box">
+
+          <div class="resource-badges">
+            <div class="res-badge" style="--res-accent: #fbbf24" title="Gold / Credits">
+              <img src="assets/icons/rohstoffe/gold.png" alt="Gold">
+              <span class="res-value">{{ gameState.resources().gold | compactNumber }}</span>
+            </div>
+            <div class="res-badge" style="--res-accent: #38bdf8" title="Energie">
+              <img src="assets/icons/rohstoffe/credits.png" alt="Credits">
+              <span class="res-value">{{ gameState.resources().credits | compactNumber }}</span>
+            </div>
+            <div class="res-badge" style="--res-accent: #e2e8f0" title="Silber">
+              <img src="assets/icons/rohstoffe/silver.png" alt="Silber">
+              <span class="res-value">{{ gameState.resources().silber | compactNumber }}</span>
+            </div>
+            <div class="res-badge" style="--res-accent: #94a3b8" title="Eisen">
+              <img src="assets/icons/rohstoffe/iron.png" alt="Eisen">
+              <span class="res-value">{{ gameState.resources().eisen | compactNumber }}</span>
+            </div>
+          </div>
+
+          <div class="hud-divider" aria-hidden="true"></div>
+
+          <!-- User Menu Trigger -->
+          <div class="user-menu">
             <button
-              class="dropdown-item logout"
-              (click)="logout()"
-              id="dropdown-logout"
-              role="menuitem"
-              aria-label="Log out"
+              class="user-avatar-btn"
+              (click)="toggleDropdown()"
+              id="user-avatar-btn"
+              [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
+              aria-haspopup="true"
+              aria-label="Open user menu"
             >
-              <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/logout.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-              Logout
+              <span class="avatar-label">{{ userInitials }}</span>
             </button>
           </div>
-        }
+        </div>
       </div>
+
+      @if (dropdownOpen()) {
+        <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="User menu">
+          <header class="dropdown-header">
+            <span class="dropdown-name">{{ commanderName }}</span>
+          </header>
+          
+          @if (hasNanobots) {
+            <div class="dropdown-item nanobots-dropdown-item">
+              <span class="dropdown-icon" aria-hidden="true">🦠</span>
+              <span style="flex:1">Nano-Bots</span>
+              <label class="switch">
+                <input type="checkbox" [checked]="settings.showNanobots()" (change)="settings.toggleNanobots()">
+                <span class="slider round"></span>
+              </label>
+            </div>
+          }
+
+          <hr class="dropdown-divider" role="separator" />
+          <a
+            routerLink="/privacy-policy"
+            class="dropdown-item"
+            id="dropdown-privacy"
+            role="menuitem"
+            aria-label="Privacy Policy"
+          >
+            <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+            Privacy Policy
+          </a>
+          <a
+            routerLink="/legal-notice"
+            class="dropdown-item"
+            id="dropdown-legal"
+            role="menuitem"
+            aria-label="Legal Notice"
+          >
+            <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/legal-notice.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+            Legal Notice
+          </a>
+          <hr class="dropdown-divider" role="separator" />
+          <button
+            class="dropdown-item logout"
+            (click)="logout()"
+            id="dropdown-logout"
+            role="menuitem"
+            aria-label="Log out"
+          >
+            <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/logout.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+            Logout
+          </button>
+        </div>
+      }
     </div>
   </header>
 
