@@ -90,53 +90,55 @@
 
       @if (dropdownOpen()) {
         <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="User menu">
-          <header class="dropdown-header">
-            <span class="dropdown-name">{{ commanderName }}</span>
-          </header>
-          
-          @if (hasNanobots) {
-            <div class="dropdown-item nanobots-dropdown-item">
-              <span class="dropdown-icon" aria-hidden="true">🦠</span>
-              <span style="flex:1">Nano-Bots</span>
-              <label class="switch">
-                <input type="checkbox" [checked]="settings.showNanobots()" (change)="settings.toggleNanobots()">
-                <span class="slider round"></span>
-              </label>
-            </div>
-          }
+          <div class="user-dropdown-inner">
+            <header class="dropdown-header">
+              <span class="dropdown-name">{{ commanderName }}</span>
+            </header>
+            
+            @if (hasNanobots) {
+              <div class="dropdown-item nanobots-dropdown-item">
+                <span class="dropdown-icon" aria-hidden="true">🦠</span>
+                <span style="flex:1">Nano-Bots</span>
+                <label class="switch">
+                  <input type="checkbox" [checked]="settings.showNanobots()" (change)="settings.toggleNanobots()">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            }
 
-          <hr class="dropdown-divider" role="separator" />
-          <a
-            routerLink="/privacy-policy"
-            class="dropdown-item"
-            id="dropdown-privacy"
-            role="menuitem"
-            aria-label="Privacy Policy"
-          >
-            <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-            Privacy Policy
-          </a>
-          <a
-            routerLink="/legal-notice"
-            class="dropdown-item"
-            id="dropdown-legal"
-            role="menuitem"
-            aria-label="Legal Notice"
-          >
-            <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/legal-notice.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-            Legal Notice
-          </a>
-          <hr class="dropdown-divider" role="separator" />
-          <button
-            class="dropdown-item logout"
-            (click)="logout()"
-            id="dropdown-logout"
-            role="menuitem"
-            aria-label="Log out"
-          >
-            <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/logout.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
-            Logout
-          </button>
+            <hr class="dropdown-divider" role="separator" />
+            <a
+              routerLink="/privacy-policy"
+              class="dropdown-item"
+              id="dropdown-privacy"
+              role="menuitem"
+              aria-label="Privacy Policy"
+            >
+              <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/lock.png" alt="Lock" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+              Privacy Policy
+            </a>
+            <a
+              routerLink="/legal-notice"
+              class="dropdown-item"
+              id="dropdown-legal"
+              role="menuitem"
+              aria-label="Legal Notice"
+            >
+              <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/legal-notice.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+              Legal Notice
+            </a>
+            <hr class="dropdown-divider" role="separator" />
+            <button
+              class="dropdown-item logout"
+              (click)="logout()"
+              id="dropdown-logout"
+              role="menuitem"
+              aria-label="Log out"
+            >
+              <span class="dropdown-icon" aria-hidden="true"><img src="assets/icons/logout.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+              Logout
+            </button>
+          </div>
         </div>
       }
     </div>

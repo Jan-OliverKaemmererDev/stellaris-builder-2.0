@@ -244,15 +244,22 @@
   top: calc(100% + 12px);
   right: 0;
   min-width: 220px;
-  background: rgba(12, 30, 48, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.5); /* 1px border trick color */
+  padding: 1px;
   border-radius: var(--radius-md);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-  padding: var(--space-sm) 0;
+  box-shadow: inset 0 0 20px rgba(6, 16, 26, 0.8), 0 10px 30px rgba(0, 0, 0, 0.7);
   animation: pixelReveal 0.3s step-end forwards;
   z-index: 200;
+}
+
+.user-dropdown-inner {
+  background: rgba(12, 24, 36, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: calc(var(--radius-md) - 1px);
+  padding: var(--space-sm) 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .dropdown-header {
