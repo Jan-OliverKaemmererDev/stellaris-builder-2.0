@@ -50,14 +50,14 @@
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(56, 189, 248, 0.5);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   box-shadow: var(--glass-shadow);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 
   &:hover {
-    border-color: var(--glass-border-hover);
+    border-color: rgba(56, 189, 248, 0.8);
     box-shadow: var(--glass-shadow);
   }
 }

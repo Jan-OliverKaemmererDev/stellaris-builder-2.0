@@ -58,6 +58,9 @@ export class GameLayout {
       else if (url.includes('/trade')) this.pageTitle.set('HANDEL & WIRTSCHAFT');
       else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
       else this.pageTitle.set('BRÜCKE');
+
+      // Automatisch das Side-Menu schließen
+      this.navMenuOpen.set(false);
     });
   }
 
