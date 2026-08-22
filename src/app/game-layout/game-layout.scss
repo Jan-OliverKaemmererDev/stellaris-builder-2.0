@@ -9,7 +9,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(ellipse at bottom, var(--bg-light) 0%, var(--bg-dark) 100%);
+  position: relative;
+  /* background radial-gradient removed to show 3D sun background */
 }
 
 /* ================================================================
