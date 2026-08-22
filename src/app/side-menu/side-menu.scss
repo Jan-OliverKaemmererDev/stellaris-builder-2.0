@@ -1,5 +1,5 @@
 /* ================================================================
-   Drawer Menu
+   Holographic Command Interface (Drawer Menu)
    ================================================================ */
 
 .drawer-menu-wrapper {
@@ -9,92 +9,174 @@
   width: 960px;
   margin-left: -480px;
   
-  /* 1px border trick color */
-  background: rgba(56, 189, 248, 0.5);
-  padding: 0 1px 1px 1px; /* No top border */
+  /* Holographic Outer Glowing Border */
+  background: rgba(56, 189, 248, 0.8);
+  padding: 0 2px 2px 2px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 24px) 100%, 24px 100%);
   
-  /* Match the inverted trapezoid \ / of the center pod */
-  clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 16px 100%);
+  /* Drop shadow won't work perfectly on clip-path without a wrapper, 
+     but we can simulate a glow with inner elements. */
   
-  box-shadow: inset 0 0 20px rgba(6, 16, 26, 0.8), 0 10px 30px rgba(0, 0, 0, 0.7);
-  
-  /* Animation setup */
+  /* Holographic Entry Animation Setup */
   transform-origin: top;
-  transform: scaleY(0);
+  transform: perspective(800px) rotateX(-90deg) scale(0.9);
   opacity: 0;
   visibility: hidden;
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2),
-              opacity 0.2s ease-in-out,
-              visibility 0.3s;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+              opacity 0.3s ease,
+              visibility 0.4s;
   
   &.open {
-    transform: scaleY(1);
-    opacity: 1;
     visibility: visible;
+    opacity: 1;
+    transform: perspective(800px) rotateX(0deg) scale(1);
   }
 }
 
 .drawer-menu-inner {
   display: flex;
   flex-direction: column;
-  padding: 16px 24px 24px 24px;
+  padding: 20px 28px 28px 28px;
+  position: relative;
   
-  /* Inner background exactly like header */
-  background: rgba(12, 24, 36, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 16px 100%);
+  /* Deep tech background */
+  background: rgba(8, 16, 24, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 22px 100%);
+  
+  /* Holographic Scanlines Overlay */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(56, 189, 248, 0.03) 0px,
+      rgba(56, 189, 248, 0.03) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
 }
+
+/* ================================================================
+   Menu Layout
+   ================================================================ */
 
 .bridge-link-wrapper {
   display: flex;
   justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
+  z-index: 1;
 }
 
 .drawer-content {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px 16px;
+  gap: 10px 16px;
+  z-index: 1;
 }
 
+/* ================================================================
+   Data Cards (Menu Items)
+   ================================================================ */
+
 .drawer-item {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 12px;
-  padding: 8px 16px;
+  padding: 10px 14px;
   text-decoration: none;
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  transition: all var(--transition-fast);
-  border-radius: 4px;
-  background: transparent;
-
-  &:hover {
-    color: #e2e8f0;
-    background: rgba(56, 189, 248, 0.15);
-    transform: translateY(-2px);
+  
+  color: #a0aec0; /* Will transition to white on hover */
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  
+  /* Cut-Corners HUD Style */
+  background: rgba(16, 32, 48, 0.6);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  
+  transition: all 0.3s ease;
+  overflow: hidden; /* For scanner sweep */
+  
+  /* Scanner sweep pseudo-element */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; 
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.5), transparent);
+    transform: skewX(-25deg);
+    transition: left 0.5s ease-in-out;
+    pointer-events: none;
   }
 
+  /* --- Hover State --- */
+  &:hover {
+    color: #ffffff;
+    background: rgba(24, 64, 96, 0.8);
+    
+    &::after {
+      left: 200%;
+    }
+    
+    .menu-icon {
+      filter: drop-shadow(0 0 10px #00f2fe) brightness(1.5);
+      transform: scale(1.1);
+    }
+  }
+
+  /* --- Active State --- */
   &.active {
-    color: #38bdf8;
-    background: rgba(56, 189, 248, 0.1);
-    font-weight: 600;
-    border-bottom: 3px solid #38bdf8;
+    color: #00f2fe;
+    background: rgba(56, 189, 248, 0.15);
+    font-weight: 700;
+    
+    /* Simulate Tech Brackets via inner shadow (since clip-path clips borders) */
+    box-shadow: inset 4px 0 0 0 #00f2fe, inset -4px 0 0 0 #00f2fe;
+    
+    .menu-icon {
+      filter: drop-shadow(0 0 12px #00f2fe) brightness(1.8);
+    }
   }
 }
 
+/* ================================================================
+   Specific Elements
+   ================================================================ */
+
 .bridge-link {
-  width: 240px;
+  width: 260px;
   justify-content: center;
+  background: rgba(56, 189, 248, 0.1);
+  font-size: 0.95rem;
+  padding: 12px 20px;
+  
+  /* Double Cut-Corners for the main bridge link */
+  clip-path: polygon(
+    14px 0, calc(100% - 14px) 0, 
+    100% 14px, 100% calc(100% - 14px), 
+    calc(100% - 14px) 100%, 14px 100%, 
+    0 calc(100% - 14px), 0 14px
+  );
+
+  &:hover {
+    background: rgba(56, 189, 248, 0.25);
+  }
 }
 
 .menu-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
-
