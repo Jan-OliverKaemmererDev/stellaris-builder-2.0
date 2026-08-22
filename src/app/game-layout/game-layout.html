@@ -97,7 +97,7 @@
             </header>
             
             @if (hasNanobots) {
-              <div class="dropdown-item nanobots-dropdown-item">
+              <div class="dropdown-item nanobots-dropdown-item" (click)="$event.stopPropagation()">
                 <span class="dropdown-icon" aria-hidden="true">🦠</span>
                 <span style="flex:1">Nano-Bots</span>
                 <label class="switch">

@@ -123,7 +123,7 @@ export class InfrastructureComponent {
       costMultiplier: 1.5,
       requiredNode: { id: 'refinery', level: 12 },
       description: 'Ermöglicht den Bau fortschrittlicher Raumschiffe.',
-      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(2, Math.max(1, lvl)))} Personal/h`,
+      effectFn: (lvl) => `Baukosten für Schiffe -${Math.min(75, Math.max(1, lvl) * 2)}%`,
       upgrades: this.generateShipyardUpgrades(),
     },
     {

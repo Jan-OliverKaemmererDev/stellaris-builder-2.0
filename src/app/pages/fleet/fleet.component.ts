@@ -182,7 +182,17 @@ export class FleetComponent implements OnInit, OnDestroy {
   }
 
   getDiscountedCost(baseCost: Partial<GameResources>): Partial<GameResources> {
-    return calculateCost(baseCost, 1, 1, this.gameState.skills());
+    const cost = calculateCost(baseCost, 1, 1, this.gameState.skills());
+    const shipyardLvl = this.gameState.skills()['orbital_shipyard'] || 0;
+    
+    if (shipyardLvl > 0) {
+      const discount = Math.min(0.75, shipyardLvl * 0.02); // 2% per level, max 75%
+      for (const key of Object.keys(cost)) {
+        (cost as any)[key] = Math.max(1, Math.floor((cost as any)[key] * (1 - discount)));
+      }
+    }
+    
+    return cost;
   }
 
   /**

@@ -71,7 +71,7 @@ export function buildResourceRates(s: Record<string, number>): GameResources {
     energie: 0,
     credits: calcExponential(100, s['trading_post'] || 0) + calcExponential(400, s['interstellar_market'] || 0) + calcExponential(1500, s['galactic_exchange'] || 0),
     nahrung: calcExponential(200, s['biolabor'] || 0) + (s['transportschiffe'] || 0) * 200,
-    personal: calcExponential(5, s['large_station'] || 0) + calcExponential(2, s['orbital_shipyard'] || 0) + (s['kolonisierungsschiffe'] || 0) * 10,
+    personal: calcExponential(5, s['large_station'] || 0) + (s['kolonisierungsschiffe'] || 0) * 10,
   };
 }
 
