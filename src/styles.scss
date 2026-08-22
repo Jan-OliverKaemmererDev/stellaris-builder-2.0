@@ -155,16 +155,18 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  background: var(--bg-void);
+  border-left: 1px solid var(--primary-subtle);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(79, 172, 254, 0.3);
-  border-radius: 4px;
-
+  background: rgba(72, 229, 229, 0.3); /* Brighter default state */
+  border: 1px solid rgba(72, 229, 229, 0.6);
+  border-radius: 2px;
+  
   &:hover {
-    background: rgba(79, 172, 254, 0.6);
+    background: rgba(72, 229, 229, 0.6); /* Even brighter on hover */
+    box-shadow: 0 0 10px var(--primary-glow);
   }
 }
 

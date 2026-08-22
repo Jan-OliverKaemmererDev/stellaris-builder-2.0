@@ -16,154 +16,240 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0.8;
+  opacity: 0; /* Hidden before animation starts */
 }
 
+/* Pixel art Replicator body using box-shadow */
 .bot-body {
-  width: 16px;
-  height: 16px;
-  background-color: #d3d3d3;
-  border: 2px solid #48e5e5;
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(72, 229, 229, 0.5);
+  width: 4px;
+  height: 4px;
+  background-color: #c4cbd1;
   position: relative;
   z-index: 2;
-
+  box-shadow: 
+    0 -4px 0 #9ca2a8, 0 -8px 0 #7e848a, 0 4px 0 #9ca2a8, 0 8px 0 #7e848a,
+    -4px -4px 0 #878c91, -4px 0 0 #b0b5b9, -4px 4px 0 #878c91,
+    4px -4px 0 #878c91, 4px 0 0 #b0b5b9, 4px 4px 0 #878c91;
+    
   &::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 6px;
-    height: 6px;
-    background-color: #48e5e5;
-    border-radius: 50%;
-    animation: pulse 1.5s infinite alternate;
+    width: 2px; height: 2px;
+    background-color: #ffaa00;
+    box-shadow: 0 0 4px #ffaa00;
+    animation: replicator-glow 2s infinite alternate;
   }
 }
 
+/* Legs of the replicator */
 .bot-arm {
   position: absolute;
-  width: 8px;
+  width: 4px;
   height: 4px;
-  background-color: #a0a0a0;
-  top: 10px;
+  background-color: #4a4e52;
   z-index: 1;
-
+  
   &.left-arm {
-    left: -6px;
-    transform-origin: right center;
-    animation: arm-move-left 0.5s infinite alternate;
+    left: 2px;
+    top: 4px; 
+    box-shadow: 0 12px 0 #4a4e52;
+    animation: leg-scurry-left 0.12s infinite linear alternate;
   }
-
   &.right-arm {
-    right: -6px;
-    transform-origin: left center;
-    animation: arm-move-right 0.5s infinite alternate;
+    right: 2px;
+    top: 4px;
+    box-shadow: 0 12px 0 #4a4e52;
+    animation: leg-scurry-right 0.12s infinite linear alternate;
   }
 }
 
 .laser-beam {
   position: absolute;
-  width: 2px;
-  height: 0px;
-  background-color: #48e5e5;
-  box-shadow: 0 0 6px #48e5e5;
-  top: 100%;
+  width: 4px;
+  height: 4px;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 0;
+  z-index: 3;
+  opacity: 0;
 }
 
-@keyframes pulse {
-  0% { opacity: 0.5; box-shadow: 0 0 2px #48e5e5; }
-  100% { opacity: 1; box-shadow: 0 0 10px #48e5e5; }
+@keyframes replicator-glow {
+  0% { opacity: 0.5; box-shadow: 0 0 2px #ffaa00; }
+  100% { opacity: 1; box-shadow: 0 0 6px #ffaa00; }
 }
 
-@keyframes arm-move-left {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(30deg); }
+@keyframes leg-scurry-left {
+  0% { transform: translateY(-2px); }
+  100% { transform: translateY(2px); }
 }
 
-@keyframes arm-move-right {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(-30deg); }
+@keyframes leg-scurry-right {
+  0% { transform: translateY(2px); }
+  100% { transform: translateY(-2px); }
 }
 
-@keyframes laser-fire {
-  0% { height: 0; opacity: 0; }
-  10% { height: 40px; opacity: 1; }
-  20% { height: 0; opacity: 0; }
-  100% { height: 0; opacity: 0; }
-}
+/* --- Bot Animations --- */
 
 .bot-1 {
-  animation: crawl-1 14s infinite linear;
-  .laser-beam { animation: laser-fire 3s infinite; animation-delay: 1s; }
+  animation: crawl-1 25s infinite linear both;
+  .laser-beam { animation: laser-1 25s infinite linear both; }
 }
 .bot-2 {
-  animation: crawl-2 18s infinite linear;
-  .laser-beam { animation: laser-fire 4s infinite; animation-delay: 2.5s; }
+  animation: crawl-2 28s infinite linear both 2s;
+  .laser-beam { animation: laser-2 28s infinite linear both 2s; }
 }
 .bot-3 {
-  animation: crawl-3 12s infinite linear;
-  .laser-beam { animation: laser-fire 2.5s infinite; animation-delay: 0.5s; }
+  animation: crawl-3 22s infinite linear both 5s;
+  .laser-beam { animation: laser-3 22s infinite linear both 5s; }
 }
 .bot-4 {
-  animation: crawl-4 20s infinite linear;
-  .laser-beam { animation: laser-fire 5s infinite; animation-delay: 3s; }
+  animation: crawl-4 26s infinite linear both 8s;
+  .laser-beam { animation: laser-4 26s infinite linear both 8s; }
 }
 .bot-5 {
-  animation: crawl-5 16s infinite linear;
-  .laser-beam { animation: laser-fire 3.5s infinite; animation-delay: 1.5s; }
+  animation: crawl-5 30s infinite linear both 12s;
+  .laser-beam { animation: laser-5 30s infinite linear both 12s; }
 }
 .bot-6 {
-  animation: crawl-6 22s infinite linear;
-  .laser-beam { animation: laser-fire 4.5s infinite; animation-delay: 0.8s; }
+  animation: crawl-6 24s infinite linear both 15s;
+  .laser-beam { animation: laser-6 24s infinite linear both 15s; }
 }
 
+
+/* Bot 1: Start Top, Works Middle, Exits Bottom */
 @keyframes crawl-1 {
-  0% { top: 10%; left: -5%; transform: rotate(90deg); }
-  35% { top: 10%; left: 105%; transform: rotate(90deg); }
-  35.1% { opacity: 0; }
-  100% { opacity: 0; }
+  0% { top: -5%; left: 15%; transform: rotate(180deg); opacity: 0; }
+  1% { opacity: 1; }
+  12% { top: 25%; left: 15%; transform: rotate(180deg); }
+  14% { top: 25%; left: 15%; transform: rotate(90deg); }
+  25% { top: 25%; left: 35%; transform: rotate(90deg); }
+  27% { top: 25%; left: 35%; transform: rotate(135deg); }
+  45% { top: 25%; left: 35%; transform: rotate(135deg); }
+  47% { top: 25%; left: 35%; transform: rotate(180deg); }
+  60% { top: 75%; left: 35%; transform: rotate(180deg); }
+  62% { top: 75%; left: 35%; transform: rotate(270deg); }
+  75% { top: 75%; left: 15%; transform: rotate(270deg); }
+  77% { top: 75%; left: 15%; transform: rotate(180deg); }
+  99% { top: 105%; left: 15%; transform: rotate(180deg); opacity: 1; }
+  100% { top: 105%; left: 15%; transform: rotate(180deg); opacity: 0; }
 }
+@keyframes laser-1 {
+  0%, 27% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  28%, 32%, 36%, 40%, 44% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 0 10px #ffdd44; background-color: #fff; }
+  30%, 34%, 38%, 42% { opacity: 0.8; transform: translateX(-50%) scale(0.8); box-shadow: 0 0 5px #ffaa00; background-color: #ffdd44; }
+  45%, 100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+}
+
+/* Bot 2: Start Right, Works Top Right, Exits Bottom Right */
 @keyframes crawl-2 {
-  0% { opacity: 0; }
-  30% { opacity: 0; top: 105%; left: 20%; transform: rotate(-90deg); }
-  30.1% { opacity: 1; }
-  60% { top: -5%; left: 20%; transform: rotate(-90deg); }
-  60.1% { opacity: 0; }
-  100% { opacity: 0; }
+  0% { top: 15%; left: 105%; transform: rotate(270deg); opacity: 0; }
+  1% { opacity: 1; }
+  15% { top: 15%; left: 75%; transform: rotate(270deg); }
+  17% { top: 15%; left: 75%; transform: rotate(180deg); }
+  30% { top: 50%; left: 75%; transform: rotate(180deg); }
+  32% { top: 50%; left: 75%; transform: rotate(225deg); }
+  50% { top: 50%; left: 75%; transform: rotate(225deg); }
+  52% { top: 50%; left: 75%; transform: rotate(270deg); }
+  65% { top: 50%; left: 55%; transform: rotate(270deg); }
+  67% { top: 50%; left: 55%; transform: rotate(180deg); }
+  99% { top: 105%; left: 55%; transform: rotate(180deg); opacity: 1; }
+  100% { top: 105%; left: 55%; transform: rotate(180deg); opacity: 0; }
 }
+@keyframes laser-2 {
+  0%, 32% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  33%, 37%, 41%, 45%, 49% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 0 10px #ffdd44; background-color: #fff; }
+  35%, 39%, 43%, 47% { opacity: 0.8; transform: translateX(-50%) scale(0.8); box-shadow: 0 0 5px #ffaa00; background-color: #ffdd44; }
+  50%, 100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+}
+
+/* Bot 3: Start Bottom Left, Works Middle Left, Exits Top Left */
 @keyframes crawl-3 {
-  0% { opacity: 0; }
-  50% { opacity: 0; top: 80%; left: 105%; transform: rotate(-180deg); }
-  50.1% { opacity: 1; }
-  90% { top: 80%; left: -5%; transform: rotate(-180deg); }
-  90.1% { opacity: 0; }
-  100% { opacity: 0; }
+  0% { top: 105%; left: 25%; transform: rotate(0deg); opacity: 0; }
+  1% { opacity: 1; }
+  20% { top: 60%; left: 25%; transform: rotate(0deg); }
+  22% { top: 60%; left: 25%; transform: rotate(90deg); }
+  35% { top: 60%; left: 50%; transform: rotate(90deg); }
+  37% { top: 60%; left: 50%; transform: rotate(45deg); }
+  55% { top: 60%; left: 50%; transform: rotate(45deg); }
+  57% { top: 60%; left: 50%; transform: rotate(0deg); }
+  75% { top: 20%; left: 50%; transform: rotate(0deg); }
+  77% { top: 20%; left: 50%; transform: rotate(270deg); }
+  99% { top: 20%; left: -5%; transform: rotate(270deg); opacity: 1; }
+  100% { top: 20%; left: -5%; transform: rotate(270deg); opacity: 0; }
 }
+@keyframes laser-3 {
+  0%, 37% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  38%, 42%, 46%, 50%, 54% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 0 10px #ffdd44; background-color: #fff; }
+  40%, 44%, 48%, 52% { opacity: 0.8; transform: translateX(-50%) scale(0.8); box-shadow: 0 0 5px #ffaa00; background-color: #ffdd44; }
+  55%, 100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+}
+
+/* Bot 4: Start Top Right, Works Center, Exits Left */
 @keyframes crawl-4 {
-  0% { opacity: 0; }
-  70% { opacity: 0; top: -5%; left: 80%; transform: rotate(0deg); }
-  70.1% { opacity: 1; }
-  100% { top: 105%; left: 80%; transform: rotate(0deg); }
+  0% { top: -5%; left: 85%; transform: rotate(180deg); opacity: 0; }
+  1% { opacity: 1; }
+  25% { top: 40%; left: 85%; transform: rotate(180deg); }
+  27% { top: 40%; left: 85%; transform: rotate(270deg); }
+  40% { top: 40%; left: 60%; transform: rotate(270deg); }
+  42% { top: 40%; left: 60%; transform: rotate(315deg); }
+  60% { top: 40%; left: 60%; transform: rotate(315deg); }
+  62% { top: 40%; left: 60%; transform: rotate(270deg); }
+  75% { top: 40%; left: 30%; transform: rotate(270deg); }
+  77% { top: 40%; left: 30%; transform: rotate(180deg); }
+  99% { top: 105%; left: 30%; transform: rotate(180deg); opacity: 1; }
+  100% { top: 105%; left: 30%; transform: rotate(180deg); opacity: 0; }
 }
+@keyframes laser-4 {
+  0%, 42% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  43%, 47%, 51%, 55%, 59% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 0 10px #ffdd44; background-color: #fff; }
+  45%, 49%, 53%, 57% { opacity: 0.8; transform: translateX(-50%) scale(0.8); box-shadow: 0 0 5px #ffaa00; background-color: #ffdd44; }
+  60%, 100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+}
+
+/* Bot 5: Start Left, Works Bottom Right, Exits Bottom */
 @keyframes crawl-5 {
-  0% { opacity: 0; }
-  20% { opacity: 0; top: 40%; left: -5%; transform: rotate(90deg); }
-  20.1% { opacity: 1; }
-  55% { top: 40%; left: 105%; transform: rotate(90deg); }
-  55.1% { opacity: 0; }
-  100% { opacity: 0; }
+  0% { top: 80%; left: -5%; transform: rotate(90deg); opacity: 0; }
+  1% { opacity: 1; }
+  20% { top: 80%; left: 30%; transform: rotate(90deg); }
+  22% { top: 80%; left: 30%; transform: rotate(0deg); }
+  35% { top: 50%; left: 30%; transform: rotate(0deg); }
+  37% { top: 50%; left: 30%; transform: rotate(45deg); }
+  55% { top: 50%; left: 30%; transform: rotate(45deg); }
+  57% { top: 50%; left: 30%; transform: rotate(90deg); }
+  70% { top: 50%; left: 80%; transform: rotate(90deg); }
+  72% { top: 50%; left: 80%; transform: rotate(180deg); }
+  99% { top: 105%; left: 80%; transform: rotate(180deg); opacity: 1; }
+  100% { top: 105%; left: 80%; transform: rotate(180deg); opacity: 0; }
 }
+@keyframes laser-5 {
+  0%, 37% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  38%, 42%, 46%, 50%, 54% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 0 10px #ffdd44; background-color: #fff; }
+  40%, 44%, 48%, 52% { opacity: 0.8; transform: translateX(-50%) scale(0.8); box-shadow: 0 0 5px #ffaa00; background-color: #ffdd44; }
+  55%, 100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+}
+
+/* Bot 6: Start Bottom Right, Works Top Left, Exits Top */
 @keyframes crawl-6 {
-  0% { opacity: 0; }
-  10% { opacity: 0; top: 105%; left: 50%; transform: rotate(-90deg); }
-  10.1% { opacity: 1; }
-  45% { top: -5%; left: 50%; transform: rotate(-90deg); }
-  45.1% { opacity: 0; }
-  100% { opacity: 0; }
+  0% { top: 105%; left: 90%; transform: rotate(0deg); opacity: 0; }
+  1% { opacity: 1; }
+  20% { top: 70%; left: 90%; transform: rotate(0deg); }
+  22% { top: 70%; left: 90%; transform: rotate(270deg); }
+  35% { top: 70%; left: 45%; transform: rotate(270deg); }
+  37% { top: 70%; left: 45%; transform: rotate(315deg); }
+  55% { top: 70%; left: 45%; transform: rotate(315deg); }
+  57% { top: 70%; left: 45%; transform: rotate(0deg); }
+  75% { top: 30%; left: 45%; transform: rotate(0deg); }
+  77% { top: 30%; left: 45%; transform: rotate(270deg); }
+  99% { top: 30%; left: -5%; transform: rotate(270deg); opacity: 1; }
+  100% { top: 30%; left: -5%; transform: rotate(270deg); opacity: 0; }
 }
+@keyframes laser-6 {
+  0%, 37% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  38%, 42%, 46%, 50%, 54% { opacity: 1; transform: translateX(-50%) scale(1.2); box-shadow: 0 0 10px #ffdd44; background-color: #fff; }
+  40%, 44%, 48%, 52% { opacity: 0.8; transform: translateX(-50%) scale(0.8); box-shadow: 0 0 5px #ffaa00; background-color: #ffdd44; }
+  55%, 100% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+}
+

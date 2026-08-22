@@ -27,7 +27,7 @@ export class SideMenu {
 
   /** All menu items displayed in the drawer navigation. */
   menuItems: MenuItem[] = [
-    { icon: 'home.png', label: 'Brücke', route: '/bridge' },
+    { icon: 'bridge.png', label: 'Brücke', route: '/bridge' },
     { icon: 'energy.png', label: 'Energie', route: '/bridge/energy' },
     { icon: 'mining.png', label: 'Rohstoffabbau', route: '/bridge/mining' },
     { icon: 'research.png', label: 'Forschungszentrum', route: '/bridge/research' },
