@@ -1,4 +1,4 @@
-import { Component, inject, signal, HostListener } from '@angular/core';
+import { Component, inject, signal, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Auth, signOut } from '@angular/fire/auth';
@@ -9,6 +9,31 @@ import { OfflineProgressDialog } from '../components/offline-progress-dialog/off
 import { SettingsService } from '../services/settings.service';
 import { GameStateService } from '../services/game-state.service';
 import { CompactNumberPipe } from '../pipes/compact-number.pipe';
+
+class Particle {
+  theta = Math.random() * Math.PI * 2;
+  phi = Math.acos((Math.random() * 2) - 1);
+  radius = 25; // Smaller radius for 60x60 canvas
+  x = 30;
+  y = 30;
+  size = 1.0;
+
+  update(time: number) {
+    const speed = time * 0.4;
+    const currentTheta = this.theta + speed;
+    const x3d = this.radius * Math.sin(this.phi) * Math.cos(currentTheta);
+    const y3d = this.radius * Math.cos(this.phi);
+    this.x = 30 + x3d;
+    this.y = 30 + y3d;
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = '#a5f3fc';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
 
 /**
  * Shell component that wraps all authenticated game pages.
@@ -21,7 +46,7 @@ import { CompactNumberPipe } from '../pipes/compact-number.pipe';
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })
-export class GameLayout {
+export class GameLayout implements AfterViewInit, OnDestroy {
   /** Authentication service to retrieve the current user and sign out. */
   private auth = inject(Auth);
 
@@ -46,6 +71,13 @@ export class GameLayout {
   /** Current page title derived from the active route. */
   pageTitle = signal('BRÜCKE');
 
+  /** Orb Canvas */
+  @ViewChild('orbCanvas') orbCanvas!: ElementRef<HTMLCanvasElement>;
+  
+  private ngZone = inject(NgZone);
+  private animationFrameId?: number;
+  private particles: Particle[] = [];
+
   constructor() {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -61,6 +93,44 @@ export class GameLayout {
 
       // Automatisch das Side-Menu schließen
       this.navMenuOpen.set(false);
+    });
+  }
+
+  ngAfterViewInit() {
+    this.initOrb();
+  }
+
+  ngOnDestroy() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+  }
+
+  private initOrb() {
+    if (!this.orbCanvas) return;
+    const canvas = this.orbCanvas.nativeElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    for (let i = 0; i < 300; i++) {
+      this.particles.push(new Particle());
+    }
+
+    this.ngZone.runOutsideAngular(() => {
+      const animate = (time: number) => {
+        // Clear canvas for transparency (no trails in small version)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const timeSec = time * 0.001;
+        this.particles.forEach(p => {
+          p.update(timeSec);
+          p.draw(ctx);
+        });
+
+        this.animationFrameId = requestAnimationFrame(animate);
+      };
+      
+      this.animationFrameId = requestAnimationFrame(animate);
     });
   }
 

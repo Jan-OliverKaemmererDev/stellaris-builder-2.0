@@ -21,7 +21,7 @@
   top: 4px;
   left: 0;
   right: 0;
-  height: 52px;
+  height: 72px;
   display: flex;
   align-items: stretch;
   justify-content: space-between;
@@ -104,6 +104,8 @@
   display: flex;
   min-width: 320px;
   position: relative;
+  align-self: flex-start;
+  height: 95px;
 
   .center-hud-wrapper {
     flex: 1;
@@ -139,6 +141,11 @@
       color: #e2e8f0;
       letter-spacing: 2px;
       font-weight: 600;
+    }
+
+    .orb-canvas {
+      pointer-events: none;
+      margin-bottom: 2px;
     }
 
     .glowing-notch {
@@ -378,9 +385,9 @@ hr.dropdown-divider {
 
 .game-content {
   flex: 1;
-  margin-top: 64px;
+  margin-top: 104px;
   padding: var(--space-xl) var(--space-2xl);
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 104px);
 }
 
 /* ================================================================
