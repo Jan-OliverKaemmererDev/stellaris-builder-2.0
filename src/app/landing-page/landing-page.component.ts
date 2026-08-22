@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signInAnonymously } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Router, RouterLink } from '@angular/router';
+import { BlackHoleComponent } from '../components/black-hole/black-hole.component';
 
 /**
  * Landing page with login and registration forms on a 3D rotating planet.
@@ -12,7 +13,7 @@ import { Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, BlackHoleComponent],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss'],
 })

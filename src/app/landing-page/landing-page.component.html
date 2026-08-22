@@ -1,10 +1,6 @@
 <div class="space-background">
-  <!-- Moving Starfield Background (decorative) -->
-  <div class="starfield-wrap" aria-hidden="true">
-    <div class="starfield-1"></div>
-    <div class="starfield-2"></div>
-    <div class="starfield-3"></div>
-  </div>
+  <!-- Black Hole Fullscreen Background -->
+  <app-black-hole></app-black-hole>
 
   <!-- Intro Animation Overlay -->
   <div class="intro-overlay" aria-hidden="true"></div>
@@ -13,10 +9,7 @@
   <!-- 3D Scene Wrapper -->
   <main class="scene" aria-label="Authentication area">
     <div class="planet" [class.is-flipped]="!isLoginMode()">
-      <!-- 3D Planet Visuals (decorative) -->
-      <div class="planet-sphere" aria-hidden="true">
-        <div class="planet-surface"></div>
-      </div>
+
 
       <!-- Front Face: Login -->
       <section class="planet-face front" aria-label="Login section">
