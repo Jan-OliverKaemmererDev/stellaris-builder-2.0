@@ -7,6 +7,7 @@ import { Firestore, doc, deleteDoc } from '@angular/fire/firestore';
 import { SideMenu } from '../side-menu/side-menu';
 import { OfflineProgressDialog } from '../components/offline-progress-dialog/offline-progress-dialog';
 import { SunBackgroundComponent } from '../components/sun-background/sun-background.component';
+import { GalaxyBackgroundComponent } from '../components/galaxy-background/galaxy-background.component';
 import { SettingsService } from '../services/settings.service';
 import { GameStateService } from '../services/game-state.service';
 import { CompactNumberPipe } from '../pipes/compact-number.pipe';
@@ -43,7 +44,7 @@ class Particle {
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, SunBackgroundComponent, CompactNumberPipe],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, SunBackgroundComponent, GalaxyBackgroundComponent, CompactNumberPipe],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })
