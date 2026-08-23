@@ -119,7 +119,7 @@ export class ResearchComponent {
       imagePath: 'assets/img/tech/ki-automatisierung.png',
       baseCost: { eisen: 1000, gold: 100, energie: 300 },
       costMultiplier: 1.5,
-      requiredNode: { id: 'biolabor', level: 10 },
+
       description: 'Entwickelt künstliche Intelligenz zur Automatisierung aller Bereiche.',
       effectFn: (lvl) => `KI-Stufe ${Math.max(1, lvl)} – Globaler Effizienzbonus aktiv`,
       upgrades: [
@@ -135,7 +135,7 @@ export class ResearchComponent {
       imagePath: 'assets/img/tech/ki-automatisierung.png',
       baseCost: { eisen: 1500, silber: 500, energie: 400 },
       costMultiplier: 1.5,
-      requiredNode: { id: 'ki_automatisierung', level: 12 },
+
       description: 'Mikroskopische Bots reparieren und konstruieren autonom, wodurch die Kosten für Eisen und Silber sinken.',
       effectFn: (lvl) => `Reparatur & Bau -${Math.max(1, lvl)}% Eisen & Silber Kosten`,
       upgrades: [
@@ -151,7 +151,7 @@ export class ResearchComponent {
       imagePath: 'assets/img/tech/antriebstechnik.png',
       baseCost: { eisen: 2500, silber: 800, energie: 500 },
       costMultiplier: 1.6,
-      requiredNode: { id: 'ki_automatisierung', level: 15 },
+
       description: 'Erforscht neue Antriebstechnologien für schnellere Raumschiffe.',
       effectFn: (lvl) => `Antriebsstufe ${Math.max(1, lvl)} – Schiffsgeschwindigkeit erhöht`,
       upgrades: [

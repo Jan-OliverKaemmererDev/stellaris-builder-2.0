@@ -110,7 +110,7 @@ export class InfrastructureComponent {
       imagePath: 'assets/img/infrastructure/refinery.png',
       baseCost: { eisen: 150, energie: 50 },
       costMultiplier: 1.4,
-      requiredNode: { id: 'lager', level: 8 },
+
       description: 'Verarbeitet Rohstoffe zu wertvollem Xenonit.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(10, Math.max(1, lvl)))} Xenonit/h`,
       upgrades: this.generateRefineryUpgrades(),
@@ -121,10 +121,21 @@ export class InfrastructureComponent {
       imagePath: 'assets/img/infrastructure/orbital-shipyard.png',
       baseCost: { eisen: 1200, silber: 400, energie: 200 },
       costMultiplier: 1.5,
-      requiredNode: { id: 'refinery', level: 12 },
+
       description: 'Ermöglicht den Bau fortschrittlicher Raumschiffe.',
       effectFn: (lvl) => `Baukosten für Schiffe -${Math.min(75, Math.max(1, lvl) * 2)}%`,
       upgrades: this.generateShipyardUpgrades(),
+    },
+    {
+      id: 'planetary_defense',
+      title: 'Planetare Verteidigung',
+      imagePath: 'assets/img/infrastructure/planetary-defense.jpg',
+      baseCost: { eisen: 3000, silber: 1000, energie: 300 },
+      costMultiplier: 1.6,
+
+      description: 'Ein massives Netzwerk aus Abwehrgeschützen und Schilden zum Schutz vor feindlichen Angriffen.',
+      effectFn: (lvl) => `Verteidigungsstärke: +${Math.max(1, lvl) * 100}`,
+      upgrades: this.generateDefenseUpgrades(),
     },
     {
       id: 'large_station',
@@ -132,7 +143,7 @@ export class InfrastructureComponent {
       imagePath: 'assets/img/infrastructure/large-station.png',
       baseCost: { eisen: 8000, gold: 1000, energie: 500 },
       costMultiplier: 1.8,
-      requiredNode: { id: 'orbital_shipyard', level: 15 },
+
       description: 'Eine massive Raumstation als Zentrum deines Imperiums.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(5, Math.max(1, lvl)))} Personal/h`,
       upgrades: this.generateStationUpgrades(),
@@ -187,6 +198,19 @@ export class InfrastructureComponent {
       { id: 'shipyard_modulare_werftdocks', title: 'Modulare Werftdocks', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredLevel: 15, baseCost: { credits: 2500, silber: 800, energie: 500 }, costMultiplier: 1.5, description: 'Modulare Docks für parallelen Schiffsbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
       { id: 'shipyard_ki_konstruktion', title: 'KI-gestützte Konstruktion', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredLevel: 20, baseCost: { credits: 8000, gold: 2000, energie: 1500 }, costMultiplier: 1.7, description: 'KI plant und überwacht komplexe Schiffskonstruktionen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
       { id: 'shipyard_naniten_fabrikation', title: 'Naniten-Fabrikation', imagePath: 'assets/img/infrastructure/orbital-shipyard.png', requiredLevel: 25, baseCost: { credits: 30000, xenonit: 2000, energie: 5000 }, costMultiplier: 1.9, description: 'Naniten bauen Schiffe Atom für Atom zusammen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
+    ];
+  }
+
+  /**
+   * Generates upgrades available for the Planetary Defense building.
+   * @returns Array of upgrades.
+   */
+  generateDefenseUpgrades(): InfrastructureUpgrade[] {
+    return [
+      { id: 'defense_railguns', title: 'Orbitale Railguns', imagePath: 'assets/img/infrastructure/planetary-defense.jpg', requiredLevel: 5, baseCost: { credits: 1500, eisen: 1000, energie: 300 }, costMultiplier: 1.5, description: 'Verschießt massive Projektile mit extremer Geschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Verteidigungsstärke` },
+      { id: 'defense_plasmakanonen', title: 'Plasmakanonen', imagePath: 'assets/img/infrastructure/planetary-defense.jpg', requiredLevel: 12, baseCost: { credits: 4000, silber: 1500, energie: 800 }, costMultiplier: 1.6, description: 'Hochenergetische Plasmawaffen zur Abwehr schwerer Schiffe.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Verteidigungsstärke` },
+      { id: 'defense_schildgeneratoren', title: 'Schildgeneratoren', imagePath: 'assets/img/infrastructure/planetary-defense.jpg', requiredLevel: 20, baseCost: { credits: 12000, gold: 3000, energie: 2000 }, costMultiplier: 1.8, description: 'Ein planetenweiter Energieschild fängt feindliches Feuer ab.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Verteidigungsstärke` },
+      { id: 'defense_tachyonen_lanzen', title: 'Tachyonen-Lanzen', imagePath: 'assets/img/infrastructure/planetary-defense.jpg', requiredLevel: 25, baseCost: { credits: 35000, xenonit: 3000, energie: 5000 }, costMultiplier: 2.0, description: 'Durchschlägt selbst stärkste Schilde mit Leichtigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Verteidigungsstärke` },
     ];
   }
 

@@ -3,7 +3,7 @@
 
   <div class="buildings-list" role="list" aria-label="Power plants list">
     @for (item of items; track item.id) {
-      <div class="building-row" role="listitem" appDragScroll>
+      <div class="building-row-wrapper"><div class="building-row" role="listitem" appDragScroll>
         
         <!-- Main Node -->
         <app-skill-node
@@ -48,7 +48,7 @@
           }
         </div>
 
-      </div>
+      </div></div>
     }
   </div>
 

@@ -3,7 +3,7 @@
 
   <div class="buildings-list" role="list" aria-label="Buildings list">
     @for (building of buildings; track building.id) {
-      <div class="building-row" role="listitem" appDragScroll>
+      <div class="building-row-wrapper"><div class="building-row" role="listitem" appDragScroll>
         
         <!-- Building Node -->
         <app-skill-node
@@ -48,7 +48,7 @@
           }
         </div>
 
-      </div>
+      </div></div>
     }
   </div>
 

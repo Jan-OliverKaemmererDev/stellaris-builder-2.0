@@ -119,7 +119,7 @@ export class TradeComponent {
       imagePath: 'assets/img/infrastructure/trading-post.png',
       baseCost: { eisen: 1500, gold: 200, energie: 200 },
       costMultiplier: 1.4,
-      requiredNode: { id: 'trading_post', level: 10 },
+
       description: 'Vernetzt dein Imperium mit galaktischen Handelsnetzwerken.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(400, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
@@ -135,7 +135,7 @@ export class TradeComponent {
       imagePath: 'assets/img/infrastructure/trading-post.png',
       baseCost: { eisen: 5000, gold: 1500, xenonit: 1500, energie: 1000 },
       costMultiplier: 1.6,
-      requiredNode: { id: 'interstellar_market', level: 15 },
+
       description: 'Das Finanzzentrum der Galaxie für maximale Handelsgewinne.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(1500, Math.max(1, lvl)))} Credits/h`,
       upgrades: [

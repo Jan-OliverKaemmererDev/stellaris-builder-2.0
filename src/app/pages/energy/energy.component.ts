@@ -120,7 +120,7 @@ export class EnergyComponent {
       imagePath: 'assets/img/tech/fusionsreaktoren.png',
       baseCost: { eisen: 900, silber: 200 },
       costMultiplier: 1.7,
-      requiredNode: { id: 'solarkraftwerk', level: 10 },
+
       description: 'Verschmilzt Atomkerne für enorme Energiemengen.',
       effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(800, Math.max(1, lvl)))} Energie`,
       upgrades: [
@@ -136,7 +136,7 @@ export class EnergyComponent {
       imagePath: 'assets/img/tech/fusionsreaktoren.png',
       baseCost: { eisen: 5000, xenonit: 500 },
       costMultiplier: 2.0,
-      requiredNode: { id: 'fusionsreaktor', level: 15 },
+
       description: 'Die ultimative Energiequelle durch Materie-Antimaterie-Annihilation.',
       effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(3000, Math.max(1, lvl)))} Energie`,
       upgrades: [

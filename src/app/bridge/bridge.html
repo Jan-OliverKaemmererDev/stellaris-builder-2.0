@@ -4,7 +4,8 @@
   <section class="dashboard-grid" aria-label="Dashboard overview">
 
     <!-- ═══ Resources Card ═══ -->
-    <article class="dash-card resources-card" id="card-resources" aria-label="Resources overview">
+    <article class="dash-card-wrapper resources-card" id="card-resources" aria-label="Resources overview">
+      <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title">Rohstoffe</h2>
         <span class="card-badge" aria-label="Live data indicator">Live</span>
@@ -50,10 +51,12 @@
           </article>
         }
       </div>
+      </div>
     </article>
 
     <!-- ═══ Supply Card ═══ -->
-    <article class="dash-card supply-card" id="card-supply" aria-label="Supply and personnel overview">
+    <article class="dash-card-wrapper supply-card" id="card-supply" aria-label="Supply and personnel overview">
+      <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title">Versorgung &amp; Personal</h2>
         <span class="card-badge" aria-label="Live data indicator">Live</span>
@@ -99,10 +102,12 @@
           </article>
         }
       </div>
+      </div>
     </article>
 
     <!-- ═══ Energy Card (Battery) ═══ -->
-    <article class="dash-card energy-card" id="card-energy" aria-label="Energy grid status">
+    <article class="dash-card-wrapper energy-card" id="card-energy" aria-label="Energy grid status">
+      <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title">
           <img src="assets/side-menu-icons/energy.png" alt="" aria-hidden="true" style="height: 1.2em; width: auto; vertical-align: text-bottom; margin-right: 4px;">
@@ -141,10 +146,12 @@
         </dl>
 
       </div>
+      </div>
     </article>
 
     <!-- ═══ Fleet Card ═══ -->
-    <article class="dash-card fleet-card" id="card-fleet" aria-label="Fleet composition">
+    <article class="dash-card-wrapper fleet-card" id="card-fleet" aria-label="Fleet composition">
+      <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title"><span aria-hidden="true">🚀</span> Flotte</h2>
         <span class="card-total" aria-label="Total ship count">{{ totalShips }} Schiffe</span>
@@ -166,11 +173,13 @@
           </article>
         }
       </div>
+      </div>
     </article>
 
     <!-- ═══ Trading Card ═══ -->
     @if (hasTradingPost()) {
-      <article class="dash-card trade-card" id="card-trade" [attr.aria-label]="hasInterstellarMarket() ? 'Interstellar market' : 'Trading post'">
+      <article class="dash-card-wrapper trade-card" id="card-trade" [attr.aria-label]="hasInterstellarMarket() ? 'Interstellar market' : 'Trading post'">
+        <div class="dash-card">
         <header class="card-header">
           <h2 class="card-title">
             @if (hasInterstellarMarket()) {
@@ -243,6 +252,7 @@
             </section>
           }
 
+        </div>
         </div>
       </article>
     }
