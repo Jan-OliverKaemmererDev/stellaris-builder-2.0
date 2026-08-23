@@ -60,8 +60,8 @@ export class FleetComponent implements OnInit, OnDestroy {
     this.selectedLightbox = null;
   }
 
-  /** Available ship types that can be built in the shipyard. */
-  ships: ShipDef[] = [
+  /** Available colony ships that can be built in the shipyard. */
+  colonyShips: ShipDef[] = [
     {
       id: 'kolonisierungsschiffe',
       title: 'Kolonisierungsschiff',
@@ -93,6 +93,42 @@ export class FleetComponent implements OnInit, OnDestroy {
       imagePath: 'assets/img/fleet/mining-ship.png',
       cost: { eisen: 1000, silber: 200, energie: 20 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `${count} Schiffe für Missionen verfügbar`,
+    },
+  ];
+
+  /** Available battleships that can be built in the shipyard. */
+  battleShips: ShipDef[] = [
+    {
+      id: 'leichter_jaeger',
+      title: 'Leichter Jäger',
+      description: 'Ein schnelles, wendiges Angriffsschiff. Gut für Eskorten und leichte Angriffe.',
+      imagePath: 'assets/img/fleet/light_fighter.jpg',
+      cost: { eisen: 500, energie: 10 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 10} Angriffsstärke`,
+    },
+    {
+      id: 'schwerer_jaeger',
+      title: 'Schwerer Jäger',
+      description: 'Ein schwer gepanzertes Angriffsschiff mit mehr Feuerkraft.',
+      imagePath: 'assets/img/fleet/heavy_fighter.jpg',
+      cost: { eisen: 1500, silber: 300, energie: 30 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 35} Angriffsstärke`,
+    },
+    {
+      id: 'zerstoerer',
+      title: 'Zerstörer',
+      description: 'Ein großes, furchteinflößendes Kampfschiff, das planetare Verteidigungen brechen kann.',
+      imagePath: 'assets/img/fleet/destroyer.jpg',
+      cost: { eisen: 5000, silber: 1500, gold: 200, xenonit: 50, energie: 100 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 150} Angriffsstärke`,
+    },
+    {
+      id: 'kreuzer',
+      title: 'Kreuzer',
+      description: 'Das ultimative Schlachtschiff. Massive Feuerkraft und Panzerung.',
+      imagePath: 'assets/img/fleet/cruiser.jpg',
+      cost: { eisen: 15000, silber: 5000, gold: 1000, xenonit: 300, energie: 300 },
+      effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 600} Angriffsstärke`,
     },
   ];
 

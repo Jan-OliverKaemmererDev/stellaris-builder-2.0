@@ -54,59 +54,74 @@
     </article>
   </section>
 
-  <!-- Schiffswerft -->
-  <section class="shipyard-section" aria-labelledby="shipyard-heading">
-    <h2 id="shipyard-heading">Schiffswerft</h2>
+  <!-- Schiffswerft - Kolonialschiffe -->
+  <section class="shipyard-section" aria-labelledby="colony-heading">
+    <h2 id="colony-heading">Schiffswerft - Kolonialschiffe</h2>
     
-    <div class="ships-grid" role="list" aria-label="Shipyard list">
-      @for (ship of ships; track ship.id) {
-        <article class="ship-card" role="listitem">
-          <figure class="ship-img-wrap" aria-hidden="true">
-            <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openLightbox(ship)" />
-          </figure>
-          
-          <div class="ship-details">
-            <header class="ship-header">
-              <h3 class="ship-title">{{ ship.title }}</h3>
-              <span class="ship-count" aria-label="Owned amount">Besitz: {{ getShipCount(ship.id) }}</span>
-            </header>
-            
-            <p class="ship-desc">{{ ship.description }}</p>
-            <p class="ship-effect">{{ ship.effectFn(getShipCount(ship.id)) }}</p>
-            
-            <div class="ship-cost" aria-label="Build costs">
-              <span class="cost-label">Baukosten:</span>
-              <ul class="cost-list" aria-label="Build cost details">
-                @for (c of getCostEntries(getDiscountedCost(ship.cost)); track c.name) {
-                  <li class="cost-item" [style.color]="c.colorVar">
-                    {{ c.amount | compactNumber }} {{ c.name }}
-                  </li>
-                }
-              </ul>
-            </div>
-            
-            @if (gameState.activeBuilds()[ship.id]) {
-              <app-pixel-progress-bar
-                [finishTime]="gameState.activeBuilds()[ship.id].finishTime"
-                [totalDurationMs]="gameState.activeBuilds()[ship.id].totalDurationMs"
-                [color]="'var(--color-credits)'"
-                (completed)="onShipBuildComplete(ship)"
-              />
-            } @else {
-              <button 
-                class="build-btn" 
-                [disabled]="!canAfford(getDiscountedCost(ship.cost))"
-                (click)="startShipBuild(ship)"
-                [attr.aria-label]="'Build ' + ship.title"
-              >
-                Bauen
-              </button>
-            }
-          </div>
-        </article>
+    <div class="ships-grid" role="list" aria-label="Colony Ships list">
+      @for (ship of colonyShips; track ship.id) {
+        <ng-container *ngTemplateOutlet="shipCard; context: { $implicit: ship }"></ng-container>
       }
     </div>
   </section>
+
+  <!-- Schiffswerft - Schlachtschiffe -->
+  <section class="shipyard-section" aria-labelledby="battle-heading" style="margin-top: var(--space-2xl);">
+    <h2 id="battle-heading">Schiffswerft - Schlachtschiffe</h2>
+    
+    <div class="ships-grid" role="list" aria-label="Battle Ships list">
+      @for (ship of battleShips; track ship.id) {
+        <ng-container *ngTemplateOutlet="shipCard; context: { $implicit: ship }"></ng-container>
+      }
+    </div>
+  </section>
+
+  <ng-template #shipCard let-ship>
+    <article class="ship-card" role="listitem">
+      <figure class="ship-img-wrap" aria-hidden="true">
+        <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openLightbox(ship)" />
+      </figure>
+      
+      <div class="ship-details">
+        <header class="ship-header">
+          <h3 class="ship-title">{{ ship.title }}</h3>
+          <span class="ship-count" aria-label="Owned amount">Besitz: {{ getShipCount(ship.id) }}</span>
+        </header>
+        
+        <p class="ship-desc">{{ ship.description }}</p>
+        <p class="ship-effect">{{ ship.effectFn(getShipCount(ship.id)) }}</p>
+        
+        <div class="ship-cost" aria-label="Build costs">
+          <span class="cost-label">Baukosten:</span>
+          <ul class="cost-list" aria-label="Build cost details">
+            @for (c of getCostEntries(getDiscountedCost(ship.cost)); track c.name) {
+              <li class="cost-item" [style.color]="c.colorVar">
+                {{ c.amount | compactNumber }} {{ c.name }}
+              </li>
+            }
+          </ul>
+        </div>
+        
+        @if (gameState.activeBuilds()[ship.id]) {
+          <app-pixel-progress-bar
+            [finishTime]="gameState.activeBuilds()[ship.id].finishTime"
+            [totalDurationMs]="gameState.activeBuilds()[ship.id].totalDurationMs"
+            [color]="'var(--color-credits)'"
+            (completed)="onShipBuildComplete(ship)"
+          />
+        } @else {
+          <button 
+            class="build-btn" 
+            [disabled]="!canAfford(getDiscountedCost(ship.cost))"
+            (click)="startShipBuild(ship)"
+            [attr.aria-label]="'Build ' + ship.title"
+          >
+            Bauen
+          </button>
+        }
+      </div>
+    </article>
+  </ng-template>
 
   <app-lightbox [data]="selectedLightbox" (closed)="closeLightbox()" />
 </main>
