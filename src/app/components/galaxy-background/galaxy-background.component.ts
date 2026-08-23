@@ -20,6 +20,18 @@ export class GalaxyBackgroundComponent implements AfterViewInit, OnDestroy {
   private animationId: number | null = null;
   private clock = new THREE.Clock();
 
+  private raycaster = new THREE.Raycaster();
+  private mouse = new THREE.Vector2(-999, -999);
+  private mouseLocalPos = new THREE.Vector3(0, 0, 0);
+  private targetMouseLocalPos = new THREE.Vector3(0, 0, 0);
+  private isMouseHovering = false;
+  
+  private shaderUniforms = {
+    uMouse: { value: new THREE.Vector3(0, 0, 0) },
+    uTime: { value: 0 },
+    uHoverState: { value: 0.0 }
+  };
+
   private mainGalaxy!: THREE.Points;
   private backgroundStars!: THREE.Points;
   private distantGalaxies: THREE.Points[] = [];
@@ -240,6 +252,45 @@ export class GalaxyBackgroundComponent implements AfterViewInit, OnDestroy {
       opacity: 0.95
     });
 
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms['uMouse'] = this.shaderUniforms.uMouse;
+      shader.uniforms['uTime'] = this.shaderUniforms.uTime;
+      shader.uniforms['uHoverState'] = this.shaderUniforms.uHoverState;
+
+      shader.vertexShader = `
+        uniform vec3 uMouse;
+        uniform float uTime;
+        uniform float uHoverState;
+      ` + shader.vertexShader;
+
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <begin_vertex>',
+        `
+        #include <begin_vertex>
+        
+        vec3 dir = transformed - uMouse;
+        // Calculate distance primarily on the XZ plane so depth differences don't break the effect
+        float dist = length(vec2(dir.x, dir.z));
+        float maxDist = 6.0; 
+        
+        if (dist < maxDist) {
+            float force = (maxDist - dist) / maxDist;
+            force = smoothstep(0.0, 1.0, force);
+            
+            vec3 wobble = vec3(
+                sin(uTime * 3.0 + transformed.x * 0.5) * 0.5,
+                cos(uTime * 2.5 + transformed.y * 0.5) * 0.5,
+                sin(uTime * 4.0 + transformed.z * 0.5) * 0.5
+            );
+            
+            vec3 pushDir = normalize(dir + vec3(0.0001));
+            // Reduced amplitude for a slighter, more elegant movement
+            transformed += (pushDir * force * 1.5 + wobble * force * 0.8) * uHoverState;
+        }
+        `
+      );
+    };
+
     this.mainGalaxy = new THREE.Points(geometry, material);
     // Tilt the galaxy to face the camera nicely
     this.mainGalaxy.rotation.x = 0.6;
@@ -318,6 +369,37 @@ export class GalaxyBackgroundComponent implements AfterViewInit, OnDestroy {
 
     const delta = this.clock.getDelta();
     
+    // Update shader uniforms
+    this.shaderUniforms.uTime.value += delta;
+
+    // Raycast to find mouse pos
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    
+    if (this.mainGalaxy) {
+        this.mainGalaxy.updateMatrixWorld();
+        
+        // Transform the camera ray to the galaxy's local space
+        const localRay = new THREE.Ray();
+        const inverseMatrix = this.mainGalaxy.matrixWorld.clone().invert();
+        localRay.copy(this.raycaster.ray).applyMatrix4(inverseMatrix);
+        
+        // Intersect with the local XZ plane of the galaxy
+        const localPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        const localIntersect = new THREE.Vector3();
+        
+        if (localRay.intersectPlane(localPlane, localIntersect)) {
+            this.targetMouseLocalPos.copy(localIntersect);
+        }
+
+        // Smoothly interpolate mouse local pos for a trailing effect
+        this.mouseLocalPos.lerp(this.targetMouseLocalPos, 0.1);
+        this.shaderUniforms['uMouse'].value.copy(this.mouseLocalPos);
+    }
+
+    // Update hover state for smooth entry/exit
+    const targetHoverState = this.isMouseHovering ? 1.0 : 0.0;
+    this.shaderUniforms['uHoverState'].value += (targetHoverState - this.shaderUniforms['uHoverState'].value) * 0.1;
+    
     if (this.backgroundStars) {
       this.backgroundStars.rotation.y += 0.0002 * delta; // Slowed down
     }
@@ -340,6 +422,18 @@ export class GalaxyBackgroundComponent implements AfterViewInit, OnDestroy {
 
     this.composer.render();
   };
+
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    this.isMouseHovering = true;
+  }
+
+  @HostListener('document:mouseleave', ['$event'])
+  onMouseLeave(event: MouseEvent) {
+    this.isMouseHovering = false;
+  }
 
   @HostListener('window:resize')
   onWindowResize(): void {
