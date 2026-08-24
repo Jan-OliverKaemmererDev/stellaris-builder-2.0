@@ -59,17 +59,17 @@ export class Bridge {
 
   /** Configuration array for standard resources displayed on the dashboard. */
   baseResources = [
-    { id: 'eisen', name: 'Eisen', icon: 'assets/icons/rohstoffe/iron.png', colorVar: '--color-eisen' },
-    { id: 'silber', name: 'Silber', icon: 'assets/icons/rohstoffe/silver.png', colorVar: '--color-silber' },
-    { id: 'gold', name: 'Gold', icon: 'assets/icons/rohstoffe/gold.png', colorVar: '--color-gold' },
-    { id: 'xenonit', name: 'Xenonit', icon: 'assets/icons/rohstoffe/xenonit.png', colorVar: '--color-xenonit' },
-    { id: 'credits', name: 'Credits', icon: 'assets/icons/rohstoffe/credits.png', colorVar: '--color-credits' },
+    { id: 'eisen', name: 'Eisen', icon: 'css-icon-iron', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: 'css-icon-silver', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: 'css-icon-gold', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: 'css-icon-xenonit', colorVar: '--color-xenonit' },
+    { id: 'credits', name: 'Credits', icon: 'css-icon-credits', colorVar: '--color-credits' },
   ];
 
   /** Configuration array for supply and personnel resources displayed on the dashboard. */
   baseSupplyResources = [
-    { id: 'nahrung', name: 'Nahrung', icon: 'assets/icons/rohstoffe/food.png', colorVar: '--color-nahrung' },
-    { id: 'personal', name: 'Personal', icon: 'assets/icons/rohstoffe/staff.png', colorVar: '--color-personal' },
+    { id: 'nahrung', name: 'Nahrung', icon: 'css-icon-food', colorVar: '--color-nahrung' },
+    { id: 'personal', name: 'Personal', icon: 'css-icon-staff', colorVar: '--color-personal' },
   ];
 
   /**
@@ -189,10 +189,10 @@ export class Bridge {
   colonyShips = computed<ShipType[]>(() => {
     const s = this.gameState.skills();
     return [
-      { name: 'Kolonisierungsschiff', icon: 'assets/icons/fleet/colony-ship.png', count: s['kolonisierungsschiffe'] || 0 },
-      { name: 'Logistikschiff', icon: 'assets/icons/fleet/logistics-ship.png', count: s['logistikschiff'] || 0 },
-      { name: 'Transportschiff', icon: 'assets/icons/fleet/transport-ship.png', count: s['transportschiffe'] || 0 },
-      { name: 'Miningschiff', icon: 'assets/icons/fleet/mining-ship.png', count: s['mining_ship'] || 0 }
+      { name: 'Kolonisierungsschiff', icon: 'css-icon-ship-colony', count: s['kolonisierungsschiffe'] || 0 },
+      { name: 'Logistikschiff', icon: 'css-icon-ship-logistics', count: s['logistikschiff'] || 0 },
+      { name: 'Transportschiff', icon: 'css-icon-ship-transport', count: s['transportschiffe'] || 0 },
+      { name: 'Miningschiff', icon: 'css-icon-ship-mining', count: s['mining_ship'] || 0 }
     ];
   });
 
@@ -209,10 +209,10 @@ export class Bridge {
   battleShips = computed<ShipType[]>(() => {
     const s = this.gameState.skills();
     return [
-      { name: 'Leichter Jäger', icon: 'assets/img/fleet/light_fighter.jpg', count: s['leichter_jaeger'] || 0 },
-      { name: 'Schwerer Jäger', icon: 'assets/img/fleet/heavy_fighter.jpg', count: s['schwerer_jaeger'] || 0 },
-      { name: 'Zerstörer', icon: 'assets/img/fleet/destroyer.jpg', count: s['zerstoerer'] || 0 },
-      { name: 'Kreuzer', icon: 'assets/img/fleet/cruiser.jpg', count: s['kreuzer'] || 0 }
+      { name: 'Leichter Jäger', icon: 'css-icon-ship-light-fighter', count: s['leichter_jaeger'] || 0 },
+      { name: 'Schwerer Jäger', icon: 'css-icon-ship-heavy-fighter', count: s['schwerer_jaeger'] || 0 },
+      { name: 'Zerstörer', icon: 'css-icon-ship-destroyer', count: s['zerstoerer'] || 0 },
+      { name: 'Kreuzer', icon: 'css-icon-ship-cruiser', count: s['kreuzer'] || 0 }
     ];
   });
 
@@ -251,20 +251,20 @@ export class Bridge {
 
   /** Configuration array of resources available for selling at the trading post/market. */
   sellableResources = [
-    { id: 'eisen', name: 'Eisen', icon: 'assets/icons/rohstoffe/iron.png', colorVar: '--color-eisen' },
-    { id: 'silber', name: 'Silber', icon: 'assets/icons/rohstoffe/silver.png', colorVar: '--color-silber' },
-    { id: 'gold', name: 'Gold', icon: 'assets/icons/rohstoffe/gold.png', colorVar: '--color-gold' },
-    { id: 'xenonit', name: 'Xenonit', icon: 'assets/icons/rohstoffe/xenonit.png', colorVar: '--color-xenonit' },
+    { id: 'eisen', name: 'Eisen', icon: 'css-icon-iron', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: 'css-icon-silver', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: 'css-icon-gold', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: 'css-icon-xenonit', colorVar: '--color-xenonit' },
   ] as const;
 
   /** Configuration array of resources available for buying at the interstellar market. */
   buyableResources = [
-    { id: 'eisen', name: 'Eisen', icon: 'assets/icons/rohstoffe/iron.png', colorVar: '--color-eisen' },
-    { id: 'silber', name: 'Silber', icon: 'assets/icons/rohstoffe/silver.png', colorVar: '--color-silber' },
-    { id: 'gold', name: 'Gold', icon: 'assets/icons/rohstoffe/gold.png', colorVar: '--color-gold' },
-    { id: 'xenonit', name: 'Xenonit', icon: 'assets/icons/rohstoffe/xenonit.png', colorVar: '--color-xenonit' },
-    { id: 'nahrung', name: 'Nahrung', icon: 'assets/icons/rohstoffe/food.png', colorVar: '--color-nahrung' },
-    { id: 'personal', name: 'Personal', icon: 'assets/icons/rohstoffe/staff.png', colorVar: '--color-personal' },
+    { id: 'eisen', name: 'Eisen', icon: 'css-icon-iron', colorVar: '--color-eisen' },
+    { id: 'silber', name: 'Silber', icon: 'css-icon-silver', colorVar: '--color-silber' },
+    { id: 'gold', name: 'Gold', icon: 'css-icon-gold', colorVar: '--color-gold' },
+    { id: 'xenonit', name: 'Xenonit', icon: 'css-icon-xenonit', colorVar: '--color-xenonit' },
+    { id: 'nahrung', name: 'Nahrung', icon: 'css-icon-food', colorVar: '--color-nahrung' },
+    { id: 'personal', name: 'Personal', icon: 'css-icon-staff', colorVar: '--color-personal' },
   ] as const;
 
   /**

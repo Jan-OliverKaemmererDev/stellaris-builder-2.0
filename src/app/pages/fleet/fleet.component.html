@@ -79,7 +79,11 @@
   <ng-template #shipCard let-ship>
     <article class="ship-card" role="listitem">
       <figure class="ship-img-wrap" aria-hidden="true">
-        <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openLightbox(ship)" />
+        @if (ship.imagePath.startsWith('css-icon-')) {
+          <div class="css-res-icon clickable-image" [ngClass]="ship.imagePath" style="width: 100px; height: 100px; font-size: 80px;" (click)="openLightbox(ship)"></div>
+        } @else {
+          <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openLightbox(ship)" />
+        }
       </figure>
       
       <div class="ship-details">

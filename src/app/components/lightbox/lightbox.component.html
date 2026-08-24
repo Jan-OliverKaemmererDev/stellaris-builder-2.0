@@ -8,7 +8,11 @@
         <h2 class="lightbox-title">{{ data.title }}</h2>
 
         <!-- Enlarged image -->
-        <img [src]="data.imagePath" [alt]="data.title" class="lightbox-image" />
+        @if (data.imagePath.startsWith('css-icon-')) {
+          <div class="css-res-icon" [ngClass]="data.imagePath" style="width: 200px; height: 200px; font-size: 160px; margin: 0 auto; display: block;"></div>
+        } @else {
+          <img [src]="data.imagePath" [alt]="data.title" class="lightbox-image" />
+        }
 
         <!-- Description & dynamic effect below the image -->
         <div class="lightbox-info">

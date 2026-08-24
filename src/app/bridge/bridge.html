@@ -7,7 +7,7 @@
     <article class="dash-card-wrapper resources-card" id="card-resources" aria-label="Resources overview">
       <div class="dash-card">
       <header class="card-header">
-        <h2 class="card-title">Rohstoffe</h2>
+        <h2 class="card-title"><div class="css-res-icon css-icon-title-resources" aria-hidden="true" style="margin-right: 6px;"></div> Rohstoffe</h2>
         <span class="card-badge" aria-label="Live data indicator">Live</span>
       </header>
       <div class="card-body">
@@ -15,7 +15,9 @@
           <article class="resource-row" [attr.aria-label]="res.name + ' resource status'">
             <div class="resource-info">
               <span class="resource-icon" aria-hidden="true">
-                @if (res.icon.includes('/')) {
+                @if (res.icon.startsWith('css-icon-')) {
+                  <div class="css-res-icon" [ngClass]="res.icon" aria-hidden="true"></div>
+                } @else if (res.icon.includes('/')) {
                   <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
                 } @else {
                   {{ res.icon }}
@@ -58,7 +60,7 @@
     <article class="dash-card-wrapper supply-card" id="card-supply" aria-label="Supply and personnel overview">
       <div class="dash-card">
       <header class="card-header">
-        <h2 class="card-title">Versorgung &amp; Personal</h2>
+        <h2 class="card-title"><div class="css-res-icon css-icon-title-supply" aria-hidden="true" style="margin-right: 6px;"></div> Versorgung &amp; Personal</h2>
         <span class="card-badge" aria-label="Live data indicator">Live</span>
       </header>
       <div class="card-body">
@@ -66,7 +68,9 @@
           <article class="resource-row" [attr.aria-label]="res.name + ' resource status'">
             <div class="resource-info">
               <span class="resource-icon" aria-hidden="true">
-                @if (res.icon.includes('/')) {
+                @if (res.icon.startsWith('css-icon-')) {
+                  <div class="css-res-icon" [ngClass]="res.icon" aria-hidden="true"></div>
+                } @else if (res.icon.includes('/')) {
                   <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
                 } @else {
                   {{ res.icon }}
@@ -110,7 +114,7 @@
       <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title">
-          <img src="assets/side-menu-icons/energy.png" alt="" aria-hidden="true" style="height: 1.2em; width: auto; vertical-align: text-bottom; margin-right: 4px;">
+          <div class="css-res-icon css-icon-title-energy" aria-hidden="true" style="margin-right: 6px;"></div>
           Energie-Netz
         </h2>
         <span class="card-badge" [ngClass]="energyColorClass">{{ energyPercentage() | number:'1.0-0' }}% Frei</span>
@@ -153,14 +157,16 @@
     <article class="dash-card-wrapper fleet-card" id="card-colony-ships" aria-label="Colony ships composition">
       <div class="dash-card">
       <header class="card-header">
-        <h2 class="card-title"><span aria-hidden="true">🚀</span> Kolonieschiffe</h2>
+        <h2 class="card-title"><div class="css-res-icon css-icon-title-colony" aria-hidden="true" style="margin-right: 6px;"></div> Kolonieschiffe</h2>
         <span class="card-total" aria-label="Total colony ships count">{{ totalColonyShips }} Schiffe</span>
       </header>
       <div class="card-body fleet-body">
         @for (ship of colonyShips(); track ship.name) {
           <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'" [routerLink]="['/bridge/fleet']">
             <span class="fleet-icon" aria-hidden="true">
-              @if (ship.icon.includes('/')) {
+              @if (ship.icon.startsWith('css-icon-')) {
+                <div class="css-res-icon" [ngClass]="ship.icon" aria-hidden="true"></div>
+              } @else if (ship.icon.includes('/')) {
                 <img [src]="ship.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
               } @else {
                 {{ ship.icon }}
@@ -180,14 +186,16 @@
     <article class="dash-card-wrapper fleet-card" id="card-battle-ships" aria-label="Battle ships composition">
       <div class="dash-card">
       <header class="card-header">
-        <h2 class="card-title"><span aria-hidden="true">⚔️</span> Schlachtschiffe</h2>
+        <h2 class="card-title"><div class="css-res-icon css-icon-title-battle" aria-hidden="true" style="margin-right: 6px;"></div> Schlachtschiffe</h2>
         <span class="card-total" aria-label="Total battle ships count">{{ totalBattleShips }} Schiffe</span>
       </header>
       <div class="card-body fleet-body">
         @for (ship of battleShips(); track ship.name) {
           <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'" [routerLink]="['/bridge/fleet']">
             <span class="fleet-icon" aria-hidden="true">
-              @if (ship.icon.includes('/')) {
+              @if (ship.icon.startsWith('css-icon-')) {
+                <div class="css-res-icon" [ngClass]="ship.icon" aria-hidden="true"></div>
+              } @else if (ship.icon.includes('/')) {
                 <img [src]="ship.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
               } @else {
                 {{ ship.icon }}
@@ -210,9 +218,9 @@
         <header class="card-header">
           <h2 class="card-title">
             @if (hasInterstellarMarket()) {
-              <span aria-hidden="true">🌌</span> Interstellarer Markt
+              <div class="css-res-icon css-icon-title-trade" aria-hidden="true" style="margin-right: 6px;"></div> Interstellarer Markt
             } @else {
-              <span aria-hidden="true">🏪</span> Handelsposten
+              <div class="css-res-icon css-icon-title-trade" aria-hidden="true" style="margin-right: 6px;"></div> Handelsposten
             }
           </h2>
           <div class="trade-multipliers" role="group" aria-label="Select trade quantity">
@@ -231,7 +239,9 @@
                 <li class="trade-item" [attr.aria-label]="res.name + ' trade option'">
                   <div class="item-info">
                     <span class="icon" aria-hidden="true">
-                      @if (res.icon.includes('/')) {
+                      @if (res.icon.startsWith('css-icon-')) {
+                        <div class="css-res-icon" [ngClass]="res.icon" aria-hidden="true"></div>
+                      } @else if (res.icon.includes('/')) {
                         <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
                       } @else {
                         {{ res.icon }}
@@ -240,7 +250,7 @@
                     <span class="name">{{ res.name }}</span>
                   </div>
                   <div class="item-action">
-                    <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | compactNumber }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+                    <span class="rate text-success">+{{ getSellRate(res.id) * tradeMultiplier() | compactNumber }} <div class="css-res-icon css-icon-credits" aria-hidden="true"></div></span>
                     <button class="action-btn sell-btn" [disabled]="!canSell(res.id, tradeMultiplier())" (click)="sell(res.id)" [attr.aria-label]="'Sell ' + res.name">
                       Verkaufen
                     </button>
@@ -259,7 +269,9 @@
                   <li class="trade-item" [attr.aria-label]="res.name + ' trade option'">
                     <div class="item-info">
                       <span class="icon" aria-hidden="true">
-                        @if (res.icon.includes('/')) {
+                        @if (res.icon.startsWith('css-icon-')) {
+                          <div class="css-res-icon" [ngClass]="res.icon" aria-hidden="true"></div>
+                        } @else if (res.icon.includes('/')) {
                           <img [src]="res.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
                         } @else {
                           {{ res.icon }}
@@ -268,7 +280,7 @@
                       <span class="name">{{ res.name }}</span>
                     </div>
                     <div class="item-action">
-                      <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | compactNumber }} <img src="assets/icons/rohstoffe/credits.png" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;"></span>
+                      <span class="rate text-danger">-{{ getBuyRate(res.id) * tradeMultiplier() | compactNumber }} <div class="css-res-icon css-icon-credits" aria-hidden="true"></div></span>
                       <button class="action-btn buy-btn" [disabled]="!canBuy(res.id, tradeMultiplier())" (click)="buy(res.id)" [attr.aria-label]="'Buy ' + res.name">
                         Kaufen
                       </button>
