@@ -3,8 +3,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
 /** A navigation item in the side menu. */
 interface MenuItem {
-  /** Image file name for the icon displayed in the collapsed sidebar. */
-  icon: string;
+  /** CSS class name for the icon displayed in the collapsed sidebar. */
+  iconClass: string;
   /** Text label shown when the sidebar is expanded. */
   label: string;
   /** Router path to navigate to on click. */
@@ -27,12 +27,12 @@ export class SideMenu {
 
   /** All menu items displayed in the drawer navigation. */
   menuItems: MenuItem[] = [
-    { icon: 'bridge.png', label: 'Brücke', route: '/bridge' },
-    { icon: 'energy.png', label: 'Energie', route: '/bridge/energy' },
-    { icon: 'mining.png', label: 'Rohstoffabbau', route: '/bridge/mining' },
-    { icon: 'research.png', label: 'Forschungszentrum', route: '/bridge/research' },
-    { icon: 'infrastructure.png', label: 'Infrastruktur', route: '/bridge/infrastructure' },
-    { icon: 'trade.png', label: 'Handel & Wirtschaft', route: '/bridge/trade' },
-    { icon: 'fleet.png', label: 'Flotte', route: '/bridge/fleet' },
+    { iconClass: 'icon-bridge', label: 'Brücke', route: '/bridge' },
+    { iconClass: 'icon-energy', label: 'Energie', route: '/bridge/energy' },
+    { iconClass: 'icon-mining', label: 'Rohstoffabbau', route: '/bridge/mining' },
+    { iconClass: 'icon-research', label: 'Forschungszentrum', route: '/bridge/research' },
+    { iconClass: 'icon-infrastructure', label: 'Infrastruktur', route: '/bridge/infrastructure' },
+    { iconClass: 'icon-trade', label: 'Handel & Wirtschaft', route: '/bridge/trade' },
+    { iconClass: 'icon-fleet', label: 'Flotte', route: '/bridge/fleet' },
   ];
 }

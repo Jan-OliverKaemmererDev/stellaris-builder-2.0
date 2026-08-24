@@ -85,7 +85,7 @@ export const DEFAULT_STATE: GameState = {
  * A list of string IDs that represent ships rather than static buildings.
  * Ships consume a flat amount of energy per unit rather than exponential upkeep.
  */
-export const SHIP_IDS = ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship'];
+export const SHIP_IDS = ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship', 'leichter_jaeger', 'schwerer_jaeger', 'zerstoerer', 'kreuzer'];
 
 /** 
  * The base energy upkeep cost per level for buildings or per unit for ships.
@@ -97,4 +97,5 @@ export const ENERGY_UPKEEP: Record<string, number> = {
   ki_automatisierung: 300, antriebstechnik: 500, trading_post: 50,
   interstellar_market: 200, galactic_exchange: 1000,
   kolonisierungsschiffe: 100, logistikschiff: 50, transportschiffe: 50, mining_ship: 20,
+  leichter_jaeger: 10, schwerer_jaeger: 30, zerstoerer: 100, kreuzer: 300,
 };

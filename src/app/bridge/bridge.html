@@ -149,15 +149,42 @@
       </div>
     </article>
 
-    <!-- ═══ Fleet Card ═══ -->
-    <article class="dash-card-wrapper fleet-card" id="card-fleet" aria-label="Fleet composition">
+    <!-- ═══ Colony Ships Card ═══ -->
+    <article class="dash-card-wrapper fleet-card" id="card-colony-ships" aria-label="Colony ships composition">
       <div class="dash-card">
       <header class="card-header">
-        <h2 class="card-title"><span aria-hidden="true">🚀</span> Flotte</h2>
-        <span class="card-total" aria-label="Total ship count">{{ totalShips }} Schiffe</span>
+        <h2 class="card-title"><span aria-hidden="true">🚀</span> Kolonieschiffe</h2>
+        <span class="card-total" aria-label="Total colony ships count">{{ totalColonyShips }} Schiffe</span>
       </header>
       <div class="card-body fleet-body">
-        @for (ship of fleet(); track ship.name) {
+        @for (ship of colonyShips(); track ship.name) {
+          <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'" [routerLink]="['/bridge/fleet']">
+            <span class="fleet-icon" aria-hidden="true">
+              @if (ship.icon.includes('/')) {
+                <img [src]="ship.icon" alt="" style="height: 1.2em; width: auto; vertical-align: text-bottom;">
+              } @else {
+                {{ ship.icon }}
+              }
+            </span>
+            <div class="fleet-info">
+              <span class="fleet-name">{{ ship.name }}</span>
+              <span class="fleet-count">{{ ship.count }}</span>
+            </div>
+          </article>
+        }
+      </div>
+      </div>
+    </article>
+
+    <!-- ═══ Battle Ships Card ═══ -->
+    <article class="dash-card-wrapper fleet-card" id="card-battle-ships" aria-label="Battle ships composition">
+      <div class="dash-card">
+      <header class="card-header">
+        <h2 class="card-title"><span aria-hidden="true">⚔️</span> Schlachtschiffe</h2>
+        <span class="card-total" aria-label="Total battle ships count">{{ totalBattleShips }} Schiffe</span>
+      </header>
+      <div class="card-body fleet-body">
+        @for (ship of battleShips(); track ship.name) {
           <article class="fleet-unit" [attr.aria-label]="ship.name + ' fleet unit'" [routerLink]="['/bridge/fleet']">
             <span class="fleet-icon" aria-hidden="true">
               @if (ship.icon.includes('/')) {

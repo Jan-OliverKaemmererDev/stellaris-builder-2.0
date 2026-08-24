@@ -122,7 +122,7 @@ export class Bridge {
       { label: 'Forschung & Tech', ids: ['biolabor', 'ki_automatisierung', 'antriebstechnik'], color: '#9b59b6' },
       { label: 'Wirtschaft', ids: ['trading_post', 'interstellar_market', 'galactic_exchange'], color: '#f1c40f' },
       { label: 'Schiffswerften', ids: ['orbital_shipyard', 'large_station'], color: '#e67e22' },
-      { label: 'Flotte', ids: ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship'], color: '#3498db' }
+      { label: 'Flotte', ids: ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship', 'leichter_jaeger', 'schwerer_jaeger', 'zerstoerer', 'kreuzer'], color: '#3498db' }
     ];
 
     const breakdown = groups.map(g => {
@@ -184,27 +184,43 @@ export class Bridge {
   }
 
   /**
-   * Computes the player's active fleet composition based on unlocked ship skills.
+   * Computes the player's active colony ships.
    */
-  fleet = computed<ShipType[]>(() => {
+  colonyShips = computed<ShipType[]>(() => {
     const s = this.gameState.skills();
-    const ships: ShipType[] = [];
-    if (s['kolonisierungsschiffe']) ships.push({ name: 'Kolonie-Schiffe', icon: 'assets/icons/fleet/colony-ship.png', count: s['kolonisierungsschiffe'] });
-    if (s['logistikschiff']) ships.push({ name: 'Logistikschiffe', icon: 'assets/icons/fleet/logistics-ship.png', count: s['logistikschiff'] });
-    if (s['transportschiffe']) ships.push({ name: 'Transportschiffe', icon: 'assets/icons/fleet/transport-ship.png', count: s['transportschiffe'] });
-    if (s['mining_ship']) ships.push({ name: 'Mining Ships', icon: 'assets/icons/fleet/mining-ship.png', count: s['mining_ship'] });
-    if (ships.length === 0) {
-      ships.push({ name: 'Keine Schiffe', icon: '🛸', count: 0 });
-    }
-    return ships;
+    return [
+      { name: 'Kolonisierungsschiff', icon: 'assets/icons/fleet/colony-ship.png', count: s['kolonisierungsschiffe'] || 0 },
+      { name: 'Logistikschiff', icon: 'assets/icons/fleet/logistics-ship.png', count: s['logistikschiff'] || 0 },
+      { name: 'Transportschiff', icon: 'assets/icons/fleet/transport-ship.png', count: s['transportschiffe'] || 0 },
+      { name: 'Miningschiff', icon: 'assets/icons/fleet/mining-ship.png', count: s['mining_ship'] || 0 }
+    ];
   });
 
   /**
-   * Retrieves the total number of ships owned across all ship types.
-   * @returns The total ship count.
+   * Retrieves the total number of colony ships.
    */
-  get totalShips(): number {
-    return this.fleet().reduce((sum, ship) => sum + ship.count, 0);
+  get totalColonyShips(): number {
+    return this.colonyShips().reduce((sum, ship) => sum + ship.count, 0);
+  }
+
+  /**
+   * Computes the player's active battle ships.
+   */
+  battleShips = computed<ShipType[]>(() => {
+    const s = this.gameState.skills();
+    return [
+      { name: 'Leichter Jäger', icon: 'assets/img/fleet/light_fighter.jpg', count: s['leichter_jaeger'] || 0 },
+      { name: 'Schwerer Jäger', icon: 'assets/img/fleet/heavy_fighter.jpg', count: s['schwerer_jaeger'] || 0 },
+      { name: 'Zerstörer', icon: 'assets/img/fleet/destroyer.jpg', count: s['zerstoerer'] || 0 },
+      { name: 'Kreuzer', icon: 'assets/img/fleet/cruiser.jpg', count: s['kreuzer'] || 0 }
+    ];
+  });
+
+  /**
+   * Retrieves the total number of battle ships.
+   */
+  get totalBattleShips(): number {
+    return this.battleShips().reduce((sum, ship) => sum + ship.count, 0);
   }
 
   /**

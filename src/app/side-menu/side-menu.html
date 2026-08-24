@@ -14,7 +14,7 @@
         id="menu-bridge"
         [attr.aria-label]="menuItems[0].label"
       >
-        <img class="menu-icon" [src]="'assets/side-menu-icons/' + menuItems[0].icon" aria-hidden="true" alt="" />
+        <div class="menu-icon" [class]="menuItems[0].iconClass" aria-hidden="true"></div>
         <span class="menu-label">{{ menuItems[0].label }}</span>
       </a>
     </div>
@@ -28,7 +28,7 @@
           [id]="'menu-' + item.route.split('/').pop()"
           [attr.aria-label]="item.label"
         >
-          <img class="menu-icon" [src]="'assets/side-menu-icons/' + item.icon" aria-hidden="true" alt="" />
+          <div class="menu-icon" [class]="item.iconClass" aria-hidden="true"></div>
           <span class="menu-label">{{ item.label }}</span>
         </a>
       }
