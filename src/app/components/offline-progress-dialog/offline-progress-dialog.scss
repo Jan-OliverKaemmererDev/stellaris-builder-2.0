@@ -27,11 +27,13 @@
 
 .dialog {
   background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(56, 189, 248, 0.5);
   border-radius: var(--radius-xl);
   padding: 2.5rem;
   max-width: 500px;
   width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   text-align: center;
   box-shadow: var(--glass-shadow), 0 0 60px rgba(79, 172, 254, 0.08);
   animation: pixelRevealCenter 0.4s step-end forwards, lightboxBounce 0.3s ease-out 0.4s forwards;
@@ -195,14 +197,19 @@ $lightbox-max-dist: $lightbox-c-center + $lightbox-r-center;
     }
     
     #{$percentage} {
-       -webkit-mask-image: $image-list;
-       -webkit-mask-position: $position-list;
-       -webkit-mask-size: $size-list;
-       -webkit-mask-repeat: no-repeat;
-       mask-image: $image-list;
-       mask-position: $position-list;
-       mask-size: $size-list;
-       mask-repeat: no-repeat;
+      @if $s == $lightbox-max-dist {
+        -webkit-mask-image: none;
+        mask-image: none;
+      } @else {
+        -webkit-mask-image: $image-list;
+        -webkit-mask-position: $position-list;
+        -webkit-mask-size: $size-list;
+        -webkit-mask-repeat: no-repeat;
+        mask-image: $image-list;
+        mask-position: $position-list;
+        mask-size: $size-list;
+        mask-repeat: no-repeat;
+      }
     }
   }
 }
