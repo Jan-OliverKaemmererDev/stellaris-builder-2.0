@@ -76,25 +76,45 @@ export class GameStateService {
 
   /**
    * Subscribes to the Firestore game state document for the given user.
+   * Prevents premature resets during cache misses by waiting for server sync.
    * @param uid - The authenticated user's UID.
    */
   private loadGameState(uid: string): void {
     if (this.stateSub) this.stateSub();
     const stateRef = doc(this.firestore, `users/${uid}/game/state`);
-    this.stateSub = onSnapshot(stateRef, async (docSnap) => {
-      if (!docSnap.exists()) await this.initializeDefaultState(stateRef);
-      else await this.handleExistingState(docSnap.data() as GameState, stateRef);
-    });
+    this.stateSub = onSnapshot(
+      stateRef,
+      async (docSnap) => {
+        // If snapshot is from cache and document does not exist, wait for server sync to avoid hard resets
+        if (docSnap.metadata.fromCache && !docSnap.exists()) {
+          console.warn('Game state not found in local cache, waiting for server sync...');
+          return;
+        }
+
+        if (!docSnap.exists()) {
+          await this.initializeDefaultState(stateRef);
+        } else {
+          const data = docSnap.data() as GameState;
+          if (data) {
+            await this.handleExistingState(data, stateRef);
+          }
+        }
+      },
+      (error) => {
+        console.error('Error in game state snapshot listener:', error);
+      }
+    );
   }
 
   /**
    * Creates a fresh game state document in Firestore and applies it locally.
+   * Uses merge to prevent overwriting existing partial data.
    * @param stateRef - Firestore document reference.
    * @returns Promise that resolves when initialized.
    */
   private async initializeDefaultState(stateRef: ReturnType<typeof doc>): Promise<void> {
     const initialState = { ...DEFAULT_STATE, lastUpdate: Date.now() };
-    await setDoc(stateRef, initialState);
+    await setDoc(stateRef, initialState, { merge: true });
     this.resources.set(initialState.resources);
     this.skills.set(initialState.skills);
     this.isInitialized = true;
@@ -107,6 +127,7 @@ export class GameStateService {
    * @returns Promise that resolves when handled.
    */
   private async handleExistingState(state: GameState, stateRef: ReturnType<typeof doc>): Promise<void> {
+    if (!state) return;
     if (!this.isInitialized && state.lastUpdate) {
       const offlineHours = (Date.now() - state.lastUpdate) / (1000 * 60 * 60);
       if (offlineHours > 0.01) state = await this.processOfflineProgress(state, offlineHours, Date.now(), stateRef);
@@ -117,8 +138,8 @@ export class GameStateService {
     this.activeMission.set(state.activeMission || null);
     
     // Check for offline completed builds and update state if needed
-    let builds = state.activeBuilds || {};
-    let skillsObj = { ...this.skills() };
+    let builds = { ...(state.activeBuilds || {}) };
+    let skillsObj = { ...(state.skills || {}) };
     let changed = false;
     const now = Date.now();
     for (const [id, build] of Object.entries(builds)) {

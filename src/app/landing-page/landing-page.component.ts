@@ -5,6 +5,7 @@ import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updat
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Router, RouterLink } from '@angular/router';
 import { BlackHoleComponent } from '../components/black-hole/black-hole.component';
+import { DEFAULT_STATE } from '../services/game-state.types';
 
 /**
  * Landing page with login and registration forms on a 3D rotating planet.
@@ -178,7 +179,7 @@ export class LandingPageComponent implements AfterViewInit {
   }
 
   /**
-   * Creates a Firestore user document with profile data.
+   * Creates a Firestore user document with profile data and initializes default game state.
    * @param uid - The new user's unique identifier.
    * @returns A promise that resolves when the document is created.
    */
@@ -188,7 +189,11 @@ export class LandingPageComponent implements AfterViewInit {
       uid, email: this.email(), commanderName: this.commanderName(),
       createdAt: new Date().toISOString(),
     };
-    await setDoc(userDocRef, data);
+    await setDoc(userDocRef, data, { merge: true });
+
+    const gameStateRef = doc(this.firestore, `users/${uid}/game/state`);
+    const initialGameState = { ...DEFAULT_STATE, lastUpdate: Date.now() };
+    await setDoc(gameStateRef, initialGameState, { merge: true });
   }
 
   /**
@@ -210,7 +215,7 @@ export class LandingPageComponent implements AfterViewInit {
   }
 
   /**
-   * Creates or merges a Firestore document for a guest user.
+   * Creates or merges a Firestore document for a guest user and initializes default game state.
    * @param uid - The anonymous user's unique identifier.
    * @returns A promise that resolves when the document is merged.
    */
@@ -222,6 +227,10 @@ export class LandingPageComponent implements AfterViewInit {
       createdAt: new Date().toISOString(),
     };
     await setDoc(userDocRef, data, { merge: true });
+
+    const gameStateRef = doc(this.firestore, `users/${uid}/game/state`);
+    const initialGameState = { ...DEFAULT_STATE, lastUpdate: Date.now() };
+    await setDoc(gameStateRef, initialGameState, { merge: true });
   }
 
   /**
