@@ -80,9 +80,9 @@
     <article class="ship-card" role="listitem">
       <figure class="ship-img-wrap" aria-hidden="true">
         @if (ship.imagePath.startsWith('css-icon-')) {
-          <div class="css-res-icon clickable-image" [ngClass]="ship.imagePath" style="width: 100px; height: 100px; font-size: 80px;" (click)="openLightbox(ship)"></div>
+          <div class="css-res-icon clickable-image" [ngClass]="ship.imagePath" style="width: 100px; height: 100px; font-size: 80px;" (click)="openLightbox(ship)" tabindex="0" (keyup.enter)="openLightbox(ship)" role="button" aria-label="View ship details"></div>
         } @else {
-          <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openLightbox(ship)" />
+          <img [src]="ship.imagePath" [alt]="ship.title" class="ship-img clickable-image" (click)="openLightbox(ship)" tabindex="0" (keyup.enter)="openLightbox(ship)" role="button" aria-label="View ship details" />
         }
       </figure>
       

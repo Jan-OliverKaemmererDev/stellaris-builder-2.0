@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signInAnonymously } from '@angular/fire/auth';
@@ -17,7 +17,7 @@ import { BlackHoleComponent } from '../components/black-hole/black-hole.componen
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss'],
 })
-export class LandingPageComponent {
+export class LandingPageComponent implements AfterViewInit {
   /** Authentication service to retrieve the current user and sign out. */
   private auth = inject(Auth);
   
@@ -53,6 +53,16 @@ export class LandingPageComponent {
 
   /** Whether an authentication operation is currently in progress. */
   isLoading = signal(false);
+
+  /** Reference to the email input for initial focus. */
+  @ViewChild('emailInput') emailInput!: ElementRef<HTMLInputElement>;
+
+  ngAfterViewInit(): void {
+    // Focus the email input on load to bypass browser UI when tabbing
+    if (this.emailInput && this.emailInput.nativeElement) {
+      setTimeout(() => this.emailInput.nativeElement.focus(), 0);
+    }
+  }
 
   /**
    * Toggles between login and registration mode, resetting all fields and messages.

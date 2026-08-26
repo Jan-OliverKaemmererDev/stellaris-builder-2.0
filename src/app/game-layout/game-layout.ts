@@ -75,6 +75,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
   /** Orb Canvas */
   @ViewChild('orbCanvas') orbCanvas!: ElementRef<HTMLCanvasElement>;
+
+  /** Main Content Wrapper for initial focus */
+  @ViewChild('mainContent') mainContent!: ElementRef<HTMLElement>;
   
   private ngZone = inject(NgZone);
   private animationFrameId?: number;
@@ -100,6 +103,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initOrb();
+    if (this.mainContent && this.mainContent.nativeElement) {
+      setTimeout(() => this.mainContent.nativeElement.focus(), 0);
+    }
   }
 
   ngOnDestroy() {

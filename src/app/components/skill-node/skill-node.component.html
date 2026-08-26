@@ -5,7 +5,7 @@
     @if (showPlaceholder) {
       <div class="placeholder-icon" aria-hidden="true">{{ placeholderChar }}</div>
     } @else {
-      <img [src]="imagePath" [alt]="title + ' icon'" class="node-image clickable-image" (click)="imageClicked.emit()" />
+      <img [src]="imagePath" [alt]="title + ' icon'" class="node-image clickable-image" (click)="imageClicked.emit()" tabindex="0" (keyup.enter)="imageClicked.emit()" role="button" aria-label="View node details" />
     }
 
     @if (locked) {

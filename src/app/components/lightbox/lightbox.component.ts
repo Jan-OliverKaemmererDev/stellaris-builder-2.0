@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 /**
@@ -34,4 +34,10 @@ export class LightboxComponent {
 
   /** Emits when the user requests to close the lightbox. */
   @Output() closed = new EventEmitter<void>();
+
+  /** Closes the lightbox when Escape is pressed. */
+  @HostListener('window:keydown.escape')
+  onEscapePress() {
+    this.closed.emit();
+  }
 }

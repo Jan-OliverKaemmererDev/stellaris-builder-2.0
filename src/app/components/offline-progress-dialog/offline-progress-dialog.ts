@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 import { GameStateService } from '../../services/game-state.service';
@@ -36,5 +36,13 @@ export class OfflineProgressDialog {
       this.gameState.clearOfflineEarnings();
       this.isCollecting = false;
     }, 400); // 400ms duration for the pixel hide animation
+  }
+
+  /** Closes the dialog when Escape is pressed. */
+  @HostListener('window:keydown.escape')
+  onEscapePress() {
+    if (this.earnings) {
+      this.close();
+    }
   }
 }
