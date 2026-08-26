@@ -223,3 +223,21 @@ ul.cost-list {
   padding: 2px 8px;
   border-radius: var(--radius-sm);
 }
+
+/* ================================================================
+   Mobile Responsiveness
+   ================================================================ */
+@media (max-width: 768px) {
+  .skill-node {
+    width: 280px; /* Slightly wider on mobile for better readability */
+    max-width: 85vw; /* But keep it smaller than full width so next card is visible */
+  }
+
+  .node-details {
+    padding: var(--space-md);
+  }
+
+  figure.node-image-wrap {
+    height: 120px;
+  }
+}

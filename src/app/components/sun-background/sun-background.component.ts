@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, NgZone, HostListener } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, OnInit, NgZone, HostListener } from '@angular/core';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -14,8 +14,11 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
  * Component that renders an interactive 3D sun background.
  * Uses Three.js to render a sun, planets, light waves, and a starfield.
  */
-export class SunBackgroundComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('canvasElement', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
+export class SunBackgroundComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('canvasElement', { static: false }) canvasRef?: ElementRef<HTMLCanvasElement>;
+
+  isMobile = false;
+  private readonly MOBILE_BREAKPOINT = 768;
 
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
@@ -36,14 +39,25 @@ export class SunBackgroundComponent implements AfterViewInit, OnDestroy {
 
   constructor(private ngZone: NgZone) {}
 
+  ngOnInit(): void {
+    this.checkMobile();
+  }
+
   ngAfterViewInit(): void {
-    this.initThreeJs();
-    this.ngZone.runOutsideAngular(() => {
-      this.animate();
-    });
+    if (!this.isMobile) {
+      this.initThreeJs();
+      this.ngZone.runOutsideAngular(() => {
+        this.animate();
+      });
+    }
+  }
+
+  private checkMobile(): void {
+    this.isMobile = window.innerWidth <= this.MOBILE_BREAKPOINT;
   }
 
   private initThreeJs(): void {
+    if (!this.canvasRef) return;
     const canvas = this.canvasRef.nativeElement;
 
     this.scene = new THREE.Scene();
@@ -223,7 +237,23 @@ export class SunBackgroundComponent implements AfterViewInit, OnDestroy {
 
   @HostListener('window:resize')
   onWindowResize(): void {
-    if (this.camera && this.renderer && this.composer) {
+    const wasMobile = this.isMobile;
+    this.checkMobile();
+
+    if (this.isMobile !== wasMobile) {
+      if (this.isMobile) {
+        this.destroyThreeJs();
+      } else {
+        setTimeout(() => {
+          this.initThreeJs();
+          this.ngZone.runOutsideAngular(() => {
+            this.animate();
+          });
+        }, 0);
+      }
+    }
+
+    if (!this.isMobile && this.camera && this.renderer && this.composer) {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -231,9 +261,10 @@ export class SunBackgroundComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
+  private destroyThreeJs(): void {
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);
+      this.animationId = null;
     }
     if (this.scene) {
       this.scene.traverse((object) => {
@@ -252,5 +283,9 @@ export class SunBackgroundComponent implements AfterViewInit, OnDestroy {
     if (this.renderer) {
       this.renderer.dispose();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyThreeJs();
   }
 }

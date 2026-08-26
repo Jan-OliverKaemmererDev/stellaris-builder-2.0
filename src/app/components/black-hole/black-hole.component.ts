@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, NgZone, HostListener } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, OnInit, NgZone, HostListener } from '@angular/core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
@@ -16,8 +16,11 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
  * Component that renders an interactive 3D black hole background.
  * Uses Three.js to render an accretion disk, gravitational lensing effects, and a starfield.
  */
-export class BlackHoleComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('canvasElement', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
+export class BlackHoleComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('canvasElement', { static: false }) canvasRef?: ElementRef<HTMLCanvasElement>;
+
+  isMobile = false;
+  private readonly MOBILE_BREAKPOINT = 768;
 
   private renderer!: THREE.WebGLRenderer;
   private scene!: THREE.Scene;
@@ -39,14 +42,25 @@ export class BlackHoleComponent implements AfterViewInit, OnDestroy {
 
   constructor(private ngZone: NgZone) {}
 
+  ngOnInit(): void {
+    this.checkMobile();
+  }
+
   ngAfterViewInit(): void {
-    this.initThreeJs();
-    this.ngZone.runOutsideAngular(() => {
-      this.animate();
-    });
+    if (!this.isMobile) {
+      this.initThreeJs();
+      this.ngZone.runOutsideAngular(() => {
+        this.animate();
+      });
+    }
+  }
+
+  private checkMobile(): void {
+    this.isMobile = window.innerWidth <= this.MOBILE_BREAKPOINT;
   }
 
   private initThreeJs(): void {
+    if (!this.canvasRef) return;
     const canvas = this.canvasRef.nativeElement;
     
     const BLACK_HOLE_RADIUS = 1.3;
@@ -432,19 +446,36 @@ export class BlackHoleComponent implements AfterViewInit, OnDestroy {
 
   @HostListener('window:resize')
   onResize(): void {
-    if (!this.camera || !this.renderer || !this.composer) return;
-    
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.composer.setSize(window.innerWidth, window.innerHeight);
-    this.lensingPass.uniforms['aspectRatio'].value = window.innerWidth / window.innerHeight;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    const wasMobile = this.isMobile;
+    this.checkMobile();
+
+    if (this.isMobile !== wasMobile) {
+      if (this.isMobile) {
+        this.destroyThreeJs();
+      } else {
+        setTimeout(() => {
+          this.initThreeJs();
+          this.ngZone.runOutsideAngular(() => {
+            this.animate();
+          });
+        }, 0);
+      }
+    }
+
+    if (!this.isMobile && this.camera && this.renderer && this.composer) {
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.composer.setSize(window.innerWidth, window.innerHeight);
+      this.lensingPass.uniforms['aspectRatio'].value = window.innerWidth / window.innerHeight;
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    }
   }
 
-  ngOnDestroy(): void {
+  private destroyThreeJs(): void {
     if (this.animationId !== null) {
       cancelAnimationFrame(this.animationId);
+      this.animationId = null;
     }
     
     if (this.renderer) {
@@ -455,7 +486,6 @@ export class BlackHoleComponent implements AfterViewInit, OnDestroy {
       }
     }
     
-    // Dispose resources to prevent memory leaks
     this.scene?.traverse((object: THREE.Object3D) => {
       const mesh = object as THREE.Mesh;
       if (mesh.geometry) mesh.geometry.dispose();
@@ -476,5 +506,9 @@ export class BlackHoleComponent implements AfterViewInit, OnDestroy {
     if (this.controls) {
       this.controls.dispose();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyThreeJs();
   }
 }

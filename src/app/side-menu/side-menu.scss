@@ -226,3 +226,56 @@
   mask-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3e%3cpath d='M13.13 22.19L11.5 18.36C13.07 17.78 14.54 17 15.9 16.09L13.13 22.19zM5.64 12.5l-3.83 1.63 6.1 2.77C7 15.54 7.78 14.07 8.36 12.5L5.64 12.5zM21.6 2.4c-3.13-1.63-8.44-1.29-12.79 3.06L3.92 10.34c-1.33 1.33-1.57 3.32-.61 4.93l1.82 3.04.14.22c.24.37.52.71.84 1.03l.2.2c.32.32.66.6 1.03.84l.22.14 3.04 1.82c1.61.96 3.6 .72 4.93-.61l4.88-4.89c4.35-4.35 4.69-9.66 3.06-12.79zM15 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z'/%3e%3c/svg%3e");
   -webkit-mask-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3e%3cpath d='M13.13 22.19L11.5 18.36C13.07 17.78 14.54 17 15.9 16.09L13.13 22.19zM5.64 12.5l-3.83 1.63 6.1 2.77C7 15.54 7.78 14.07 8.36 12.5L5.64 12.5zM21.6 2.4c-3.13-1.63-8.44-1.29-12.79 3.06L3.92 10.34c-1.33 1.33-1.57 3.32-.61 4.93l1.82 3.04.14.22c.24.37.52.71.84 1.03l.2.2c.32.32.66.6 1.03.84l.22.14 3.04 1.82c1.61.96 3.6 .72 4.93-.61l4.88-4.89c4.35-4.35 4.69-9.66 3.06-12.79zM15 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z'/%3e%3c/svg%3e");
 }
+
+/* ================================================================
+   Mobile Responsiveness
+   ================================================================ */
+@media (max-width: 768px) {
+  .drawer-menu-wrapper {
+    position: fixed;
+    top: 100px; /* Below the mobile header */
+    left: 0;
+    width: 100vw;
+    margin-left: 0;
+    clip-path: none;
+    padding: 0;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.5);
+    z-index: 9999; /* Force menu to top layer */
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8);
+  }
+
+  .drawer-menu-inner {
+    clip-path: none;
+    padding: 16px;
+    background: rgba(8, 16, 24, 0.95);
+  }
+
+  .drawer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bridge-link-wrapper {
+    margin-bottom: 16px;
+  }
+
+  .bridge-link {
+    width: 100%;
+    clip-path: none;
+    border-radius: var(--radius-sm);
+    font-size: 1.1rem;
+    padding: 16px;
+  }
+
+  .drawer-item {
+    clip-path: none;
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    
+    &::after {
+      display: none; /* Disable sweep animation on mobile */
+    }
+  }
+}

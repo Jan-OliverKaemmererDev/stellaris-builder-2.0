@@ -1,1 +1,7 @@
-<canvas #canvasElement aria-hidden="true"></canvas>
+<div class="black-hole-container" aria-hidden="true">
+    @if (isMobile) {
+      <div class="mobile-bg" style="background-image: url('/assets/backgrounds/black-hole-mobile.jpg');"></div>
+    } @else {
+      <canvas #canvasElement aria-hidden="true"></canvas>
+    }
+</div>

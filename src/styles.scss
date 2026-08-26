@@ -17,6 +17,10 @@
 }
 
 :root {
+  /* Breakpoints */
+  --mobile-breakpoint: 768px;
+  --tablet-breakpoint: 1024px;
+
   /* Background Palette */
   --bg-void: #060a0f;
   --bg-dark: #0a1118;

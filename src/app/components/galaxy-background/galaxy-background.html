@@ -1,5 +1,9 @@
 <div class="galaxy-background-container" aria-hidden="true">
-    <canvas #canvasElement aria-hidden="true"></canvas>
+    @if (isMobile) {
+      <div class="mobile-bg" style="background-image: url('/assets/backgrounds/galaxy-mobile.jpg');"></div>
+    } @else {
+      <canvas #canvasElement aria-hidden="true"></canvas>
+    }
     <!-- Overlay to ensure text remains readable and adds a vignette effect -->
     <div class="vignette-overlay" aria-hidden="true"></div>
 </div>

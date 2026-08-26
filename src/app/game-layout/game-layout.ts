@@ -90,11 +90,14 @@ export class GameLayout implements AfterViewInit, OnDestroy {
       const url = event.urlAfterRedirects;
       if (url.includes('/mining')) this.pageTitle.set('ROHSTOFFABBAU');
       else if (url.includes('/energy')) this.pageTitle.set('ENERGIENETZ');
-      else if (url.includes('/research')) this.pageTitle.set('FORSCHUNGSZENTRUM');
+      else if (url.includes('/research')) this.pageTitle.set('FORSCHUNGS\u00ADZENTRUM');
       else if (url.includes('/infrastructure')) this.pageTitle.set('INFRASTRUKTUR');
       else if (url.includes('/trade')) this.pageTitle.set('HANDEL & WIRTSCHAFT');
       else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
       else this.pageTitle.set('BRÜCKE');
+
+      // Force scroll to top on route change
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
       // Automatically close the side menu
       this.navMenuOpen.set(false);
@@ -104,7 +107,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.initOrb();
     if (this.mainContent && this.mainContent.nativeElement) {
-      setTimeout(() => this.mainContent.nativeElement.focus(), 0);
+      setTimeout(() => this.mainContent.nativeElement.focus({ preventScroll: true }), 0);
     }
   }
 
