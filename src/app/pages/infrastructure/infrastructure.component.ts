@@ -49,11 +49,11 @@ export interface InfrastructureItem {
   effectFn: (level: number) => string;
 }
 
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 /**
  * Infrastructure page displaying the main buildings and their upgrades.
  */
-import { DragScrollDirective } from '../../directives/drag-scroll.directive';
-
 @Component({
   selector: 'app-infrastructure',
   standalone: true,

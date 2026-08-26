@@ -1,4 +1,4 @@
-<div class="pixel-progress-bar" [class.completed]="isCompleted" [attr.aria-valuenow]="progress" aria-valuemin="0" aria-valuemax="100" role="progressbar">
+<div class="pixel-progress-bar" [class.completed]="isCompleted" [attr.aria-valuenow]="progress" aria-valuemin="0" aria-valuemax="100" role="progressbar" aria-label="Baufortschritt">
   <!-- Animated Progress Fill Layer -->
   <div class="progress-fill" [style.width.%]="progress" [style.--bar-color]="color">
     <!-- Scrolling Pixel Matrix -->
@@ -21,7 +21,7 @@
   </div>
 
   <!-- Sci-Fi HUD Overlay (Status & Timer) -->
-  <div class="hud-overlay">
+  <div class="hud-overlay" aria-hidden="true">
     <div class="hud-left">
       <span class="pulse-beacon" [class.beacon-done]="isCompleted" aria-hidden="true"></span>
       <span class="percent-label">{{ percentDisplay }}</span>

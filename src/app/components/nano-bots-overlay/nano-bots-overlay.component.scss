@@ -1,3 +1,7 @@
+/* ================================================================
+   Nano-Bots Overlay – Pixel Art Replicator Animation
+   ================================================================ */
+
 .nano-bots-container {
   position: fixed;
   top: 0;
@@ -91,7 +95,7 @@
   100% { transform: translateY(-2px); }
 }
 
-/* --- Bot Animations --- */
+/* ═══ Bot Animations ═══ */
 
 .bot-1 {
   animation: crawl-1 25s infinite linear both;

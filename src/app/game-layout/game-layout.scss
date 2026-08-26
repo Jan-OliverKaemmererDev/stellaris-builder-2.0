@@ -32,7 +32,7 @@
   gap: 0;
 }
 
-/* --- Shared HUD Box Wrapper (for 1px border trick) --- */
+/* ═══ Shared HUD Box Wrapper ═══ */
 .hud-box-wrapper {
   background: rgba(56, 189, 248, 0.5); /* 1px border color */
   padding: 1px;
@@ -50,7 +50,7 @@
   transition: all var(--transition-fast);
 }
 
-/* --- Left: Page Title Box --- */
+/* ═══ Left: Page Title Box ═══ */
 .header-left {
   display: flex;
   flex: 1;
@@ -103,7 +103,7 @@
   }
 }
 
-/* --- Center: Nav Trigger Box --- */
+/* ═══ Center: Nav Trigger Box ═══ */
 .header-center {
   display: flex;
   min-width: 320px;
@@ -166,7 +166,7 @@
   }
 }
 
-/* --- Right: Resources & User Menu --- */
+/* ═══ Right: Resources & User Menu ═══ */
 .header-right {
   display: flex;
   flex: 1;

@@ -53,12 +53,12 @@ export interface Mine {
   effectFn: (level: number, skills: Record<string, number>) => string;
 }
 
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 /**
  * Mining page component displaying resource mines (Eisen, Silber, Gold)
  * with their respective upgrade chains for production bonuses.
  */
-import { DragScrollDirective } from '../../directives/drag-scroll.directive';
-
 @Component({
   selector: 'app-mining',
   standalone: true,

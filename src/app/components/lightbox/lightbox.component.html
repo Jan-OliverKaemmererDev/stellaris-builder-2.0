@@ -1,11 +1,13 @@
 @if (data) {
   <div class="image-lightbox-overlay" (click)="closed.emit()" role="dialog" aria-modal="true" [attr.aria-label]="data.title + ' Details'">
     <div class="lightbox-wrapper" (click)="$event.stopPropagation()">
-      <div class="lightbox-content">
-        <img src="assets/icons/close.png" class="close-btn" (click)="closed.emit()" alt="Schließen" />
+      <section class="lightbox-content" aria-labelledby="lightbox-title">
+        <button class="close-btn" (click)="closed.emit()" aria-label="Dialog schließen">
+          <img src="assets/icons/close.png" alt="" aria-hidden="true" />
+        </button>
 
         <!-- Title above the image -->
-        <h2 class="lightbox-title">{{ data.title }}</h2>
+        <h2 id="lightbox-title" class="lightbox-title">{{ data.title }}</h2>
 
         <!-- Enlarged image -->
         @if (data.imagePath.startsWith('css-icon-')) {
@@ -21,7 +23,7 @@
             <p class="lightbox-effect">{{ data.effectText }}</p>
           }
         </div>
-      </div>
+      </section>
     </div>
   </div>
 }

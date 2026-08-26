@@ -12,6 +12,10 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
   templateUrl: './black-hole.html',
   styleUrls: ['./black-hole.scss']
 })
+/**
+ * Component that renders an interactive 3D black hole background.
+ * Uses Three.js to render an accretion disk, gravitational lensing effects, and a starfield.
+ */
 export class BlackHoleComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvasElement', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 

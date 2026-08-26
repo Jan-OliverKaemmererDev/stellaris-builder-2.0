@@ -119,7 +119,7 @@
     pointer-events: none;
   }
 
-  /* --- Hover State --- */
+  /* ═══ Hover State ═══ */
   &:hover {
     color: #ffffff;
     background: rgba(24, 64, 96, 0.8);
@@ -135,7 +135,7 @@
     }
   }
 
-  /* --- Active State --- */
+  /* ═══ Active State ═══ */
   &.active {
     color: #00f2fe;
     background: rgba(56, 189, 248, 0.15);

@@ -10,6 +10,10 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
   templateUrl: './sun-background.html',
   styleUrls: ['./sun-background.scss']
 })
+/**
+ * Component that renders an interactive 3D sun background.
+ * Uses Three.js to render a sun, planets, light waves, and a starfield.
+ */
 export class SunBackgroundComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvasElement', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 

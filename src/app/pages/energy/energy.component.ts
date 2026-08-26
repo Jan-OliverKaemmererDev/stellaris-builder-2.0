@@ -53,12 +53,12 @@ export interface EnergyItem {
   effectFn: (level: number) => string;
 }
 
+import { DragScrollDirective } from '../../directives/drag-scroll.directive';
+
 /**
  * The EnergyComponent handles the display and interaction for the energy skill tree,
  * allowing players to construct and upgrade power generation facilities.
  */
-import { DragScrollDirective } from '../../directives/drag-scroll.directive';
-
 @Component({
   selector: 'app-energy',
   standalone: true,

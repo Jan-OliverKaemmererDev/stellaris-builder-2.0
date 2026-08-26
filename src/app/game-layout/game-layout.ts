@@ -93,7 +93,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
       else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
       else this.pageTitle.set('BRÜCKE');
 
-      // Automatisch das Side-Menu schließen
+      // Automatically close the side menu
       this.navMenuOpen.set(false);
     });
   }

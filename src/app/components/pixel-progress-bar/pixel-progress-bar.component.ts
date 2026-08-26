@@ -8,10 +8,18 @@ import { CommonModule } from '@angular/common';
   templateUrl: './pixel-progress-bar.component.html',
   styleUrl: './pixel-progress-bar.component.scss'
 })
+/**
+ * Component that renders a pixel-art style progress bar.
+ * Animates smoothly over a given duration until it reaches 100%.
+ */
 export class PixelProgressBarComponent implements OnInit, OnDestroy {
+  /** Timestamp (in milliseconds) when the progress should reach 100%. */
   @Input() finishTime: number = 0;
+  /** Total duration of the progress animation in milliseconds. */
   @Input() totalDurationMs: number = 3000;
+  /** CSS color variable or value for the progress bar fill. */
   @Input() color: string = 'var(--color-credits)';
+  /** Event emitted when the progress bar reaches 100% and completes. */
   @Output() completed = new EventEmitter<void>();
 
   progress: number = 0;

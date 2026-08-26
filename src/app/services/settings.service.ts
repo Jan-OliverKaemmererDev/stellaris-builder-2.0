@@ -3,6 +3,10 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
+/**
+ * Service responsible for managing user settings, such as visual toggles.
+ * Persists settings to the browser's localStorage.
+ */
 export class SettingsService {
   /** Signal that controls whether the nanobot overlay animation should be shown. */
   showNanobots = signal<boolean>(true);

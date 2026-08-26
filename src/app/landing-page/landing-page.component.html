@@ -60,7 +60,7 @@
               />
             </div>
 
-            <div class="button-group">
+            <div class="button-group" role="group" aria-label="Login-Aktionen">
               <button type="submit" class="submit-btn primary-glow" [disabled]="isLoading()" aria-label="Log in">
                 <span *ngIf="!isLoading()">Einloggen</span>
                 <span *ngIf="isLoading()" class="loader" aria-label="Loading"></span>
