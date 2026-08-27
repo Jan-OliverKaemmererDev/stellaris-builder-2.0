@@ -792,26 +792,51 @@ $pixel-max-dist: ($pixel-cols - 1) + ($pixel-rows - 1);
       text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
       color: #fff;
       line-height: 1.2;
+      white-space: normal;
+      word-break: break-word;
+      hyphens: auto;
+      flex-shrink: 1;
     }
   }
 
   .header-center {
     height: 60px;
-    min-width: 60px;
+    width: auto;
+    min-width: unset;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 0;
     filter: none;
+
+    .center-hud-wrapper {
+      flex: 0 0 auto;
+      width: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .center-hud-pod {
+      flex: 0 0 auto;
+      width: 50px;
+      height: 50px;
+      min-width: unset;
       flex-direction: row;
-      gap: 6px;
-      height: 100%;
-      padding: 0 12px;
-      transition: background 0.2s;
+      gap: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(12, 24, 36, 0.6) !important;
+      border: none !important;
       border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+
       &:hover, &:active {
         background: rgba(56, 189, 248, 0.15) !important;
+        transform: scale(1.04);
       }
     }
     .orb-canvas {
