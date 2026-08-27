@@ -6,7 +6,6 @@ import { deleteUser } from 'firebase/auth';
 import { Firestore, doc, deleteDoc } from '@angular/fire/firestore';
 import { SideMenu } from '../side-menu/side-menu';
 import { OfflineProgressDialog } from '../components/offline-progress-dialog/offline-progress-dialog';
-import { SunBackgroundComponent } from '../components/sun-background/sun-background.component';
 import { GalaxyBackgroundComponent } from '../components/galaxy-background/galaxy-background.component';
 import { SettingsService } from '../services/settings.service';
 import { GameStateService } from '../services/game-state.service';
@@ -44,7 +43,7 @@ class Particle {
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, SunBackgroundComponent, GalaxyBackgroundComponent, CompactNumberPipe],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })
@@ -112,37 +111,72 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.stopOrbAnimation();
+  }
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (document.hidden) {
+      this.stopOrbAnimation();
+    } else {
+      this.startOrbAnimation();
+    }
+  }
+
+  private stopOrbAnimation(): void {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = undefined;
+    }
+  }
+
+  private startOrbAnimation(): void {
+    if (this.animationFrameId || !this.orbCanvas) return;
+    const canvas = this.orbCanvas.nativeElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    this.ngZone.runOutsideAngular(() => {
+      const animate = (time: number) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const timeSec = time * 0.001;
+        for (let i = 0; i < this.particles.length; i++) {
+          this.particles[i].update(timeSec);
+          this.particles[i].draw(ctx);
+        }
+        this.animationFrameId = requestAnimationFrame(animate);
+      };
+      this.animationFrameId = requestAnimationFrame(animate);
+    });
+  }
+
+  private get isMobileDevice(): boolean {
+    if (typeof window === 'undefined') return false;
+    const isTouchOnly = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    return window.innerWidth <= 768 || (isTouchOnly && Math.max(window.innerWidth, window.innerHeight) <= 1024);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (!this.orbCanvas) return;
+    const isMobile = this.isMobileDevice;
+    const targetCount = isMobile ? 45 : 300;
+    if (this.particles.length !== targetCount) {
+      this.initOrb();
     }
   }
 
   private initOrb() {
     if (!this.orbCanvas) return;
-    const canvas = this.orbCanvas.nativeElement;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    this.particles = [];
+    const isMobile = this.isMobileDevice;
+    const particleCount = isMobile ? 45 : 300; // Full 300 particles on Desktop, 45 on Mobile
 
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < particleCount; i++) {
       this.particles.push(new Particle());
     }
 
-    this.ngZone.runOutsideAngular(() => {
-      const animate = (time: number) => {
-        // Clear canvas for transparency (no trails in small version)
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const timeSec = time * 0.001;
-        this.particles.forEach(p => {
-          p.update(timeSec);
-          p.draw(ctx);
-        });
-
-        this.animationFrameId = requestAnimationFrame(animate);
-      };
-      
-      this.animationFrameId = requestAnimationFrame(animate);
-    });
+    this.startOrbAnimation();
   }
 
   /**

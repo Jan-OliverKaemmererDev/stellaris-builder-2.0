@@ -21,6 +21,9 @@
   justify-content: center;
   align-items: center;
   opacity: 0; /* Hidden before animation starts */
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  contain: layout style paint;
 }
 
 /* Pixel art Replicator body using box-shadow */
@@ -54,6 +57,8 @@
   height: 4px;
   background-color: #4a4e52;
   z-index: 1;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
   
   &.left-arm {
     left: 2px;
@@ -78,6 +83,7 @@
   transform: translateX(-50%);
   z-index: 3;
   opacity: 0;
+  will-change: transform, opacity;
 }
 
 @keyframes replicator-glow {
@@ -86,13 +92,23 @@
 }
 
 @keyframes leg-scurry-left {
-  0% { transform: translateY(-2px); }
-  100% { transform: translateY(2px); }
+  0% { transform: translate3d(0, -2px, 0); }
+  100% { transform: translate3d(0, 2px, 0); }
 }
 
 @keyframes leg-scurry-right {
-  0% { transform: translateY(2px); }
-  100% { transform: translateY(-2px); }
+  0% { transform: translate3d(0, 2px, 0); }
+  100% { transform: translate3d(0, -2px, 0); }
+}
+
+@media (max-width: 768px), (pointer: coarse) and (hover: none) {
+  .bot-arm.left-arm,
+  .bot-arm.right-arm {
+    animation-duration: 0.28s !important;
+  }
+  .bot-body::after {
+    animation-duration: 3.5s !important;
+  }
 }
 
 /* ═══ Bot Animations ═══ */

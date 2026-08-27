@@ -247,7 +247,9 @@
   .drawer-menu-inner {
     clip-path: none;
     padding: 16px;
-    background: rgba(8, 16, 24, 0.95);
+    background: rgba(8, 16, 24, 0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .drawer-content {

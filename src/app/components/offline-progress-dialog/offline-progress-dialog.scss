@@ -34,6 +34,16 @@
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
   text-align: center;
   box-shadow: var(--glass-shadow), 0 0 60px rgba(79, 172, 254, 0.08);
   animation: pixelRevealCenter 0.4s step-end forwards, lightboxBounce 0.3s ease-out 0.4s forwards;
@@ -139,6 +149,66 @@
 
   &:active {
     transform: translateY(0);
+  }
+}
+
+/* ═══ Mobile Layout (2 Rohstoffe nebeneinander) ═══ */
+
+@media (max-width: 600px) {
+  .overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  .dialog {
+    padding: 1.5rem 1rem;
+    width: 92%;
+    max-height: 85vh;
+
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+      margin-bottom: var(--space-lg);
+    }
+  }
+
+  .resources {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
+    margin-bottom: var(--space-lg);
+  }
+
+  .resource {
+    padding: 0.75rem 0.5rem;
+    gap: 4px;
+  }
+
+  .icon-container {
+    width: 38px;
+    height: 38px;
+
+    .css-res-icon {
+      transform: scale(0.9);
+    }
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+
+  .amount {
+    font-size: 0.95rem;
+  }
+
+  .dialog button {
+    padding: 0.65rem 2rem;
+    font-size: 0.95rem;
+    width: 100%;
+    max-width: 220px;
   }
 }
 

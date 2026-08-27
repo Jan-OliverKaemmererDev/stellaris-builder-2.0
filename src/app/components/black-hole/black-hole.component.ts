@@ -56,7 +56,9 @@ export class BlackHoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private checkMobile(): void {
-    this.isMobile = window.innerWidth <= this.MOBILE_BREAKPOINT;
+    const isTouchOnly = typeof window !== 'undefined' && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const isSmallTouchDevice = isTouchOnly && (Math.max(window.innerWidth, window.innerHeight) <= 1024 || window.innerWidth <= 1024);
+    this.isMobile = window.innerWidth <= this.MOBILE_BREAKPOINT || isSmallTouchDevice;
   }
 
   private initThreeJs(): void {
@@ -443,6 +445,24 @@ export class BlackHoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.composer.render();
   };
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (this.isMobile) return;
+    if (document.hidden) {
+      if (this.animationId !== null) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+    } else {
+      if (this.animationId === null && this.renderer) {
+        this.clock.getDelta();
+        this.ngZone.runOutsideAngular(() => {
+          this.animate();
+        });
+      }
+    }
+  }
 
   @HostListener('window:resize')
   onResize(): void {

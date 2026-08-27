@@ -159,9 +159,17 @@ export class FleetComponent implements OnInit, OnDestroy {
   /** The randomly generated reward when the mission completes. */
   generatedReward = signal<Partial<GameResources> | null>(null);
 
-  /** Starts polling the mission progress every 100ms. */
+  /** Starts polling the mission progress at 250ms when an active mission exists. */
   ngOnInit(): void {
-    this.intervalId = setInterval(() => this.updateMissionProgress(), 100);
+    this.updateMissionProgress();
+    this.intervalId = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      if (this.activeMission()) {
+        this.updateMissionProgress();
+      } else if (this.missionProgress() !== 0 || this.missionTimeLeft() !== '' || this.generatedReward() !== null) {
+        this.resetMissionProgress();
+      }
+    }, 250);
   }
 
   /** Clears the mission progress polling interval. */

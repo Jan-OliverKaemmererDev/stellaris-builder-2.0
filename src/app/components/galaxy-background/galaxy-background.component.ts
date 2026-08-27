@@ -58,7 +58,9 @@ export class GalaxyBackgroundComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   private checkMobile(): void {
-    this.isMobile = window.innerWidth <= this.MOBILE_BREAKPOINT;
+    const isTouchOnly = typeof window !== 'undefined' && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const isSmallTouchDevice = isTouchOnly && (Math.max(window.innerWidth, window.innerHeight) <= 1024 || window.innerWidth <= 1024);
+    this.isMobile = window.innerWidth <= this.MOBILE_BREAKPOINT || isSmallTouchDevice;
   }
 
   private initThreeJs(): void {
@@ -447,6 +449,24 @@ export class GalaxyBackgroundComponent implements OnInit, AfterViewInit, OnDestr
   @HostListener('document:mouseleave', ['$event'])
   onMouseLeave(event: MouseEvent) {
     this.isMouseHovering = false;
+  }
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (this.isMobile) return;
+    if (document.hidden) {
+      if (this.animationId !== null) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+    } else {
+      if (this.animationId === null && this.renderer) {
+        this.clock.getDelta(); // Reset clock delta to avoid delta jumps
+        this.ngZone.runOutsideAngular(() => {
+          this.animate();
+        });
+      }
+    }
   }
 
   @HostListener('window:resize')
