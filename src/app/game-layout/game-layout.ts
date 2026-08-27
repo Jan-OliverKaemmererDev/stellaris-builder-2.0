@@ -88,10 +88,10 @@ export class GameLayout implements AfterViewInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects;
-      if (url.includes('/mining')) this.pageTitle.set('ROHSTOFFABBAU');
+      if (url.includes('/mining')) this.pageTitle.set('ROHSTOFF\u00ADABBAU');
       else if (url.includes('/energy')) this.pageTitle.set('ENERGIENETZ');
       else if (url.includes('/research')) this.pageTitle.set('FORSCHUNGS\u00ADZENTRUM');
-      else if (url.includes('/infrastructure')) this.pageTitle.set('INFRASTRUKTUR');
+      else if (url.includes('/infrastructure')) this.pageTitle.set('INFRA\u00ADSTRUKTUR');
       else if (url.includes('/trade')) this.pageTitle.set('HANDEL & WIRTSCHAFT');
       else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
       else this.pageTitle.set('BRÜCKE');
