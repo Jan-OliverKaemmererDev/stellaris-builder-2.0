@@ -155,10 +155,10 @@ export class ResearchComponent {
       description: 'Erforscht neue Antriebstechnologien für schnellere Raumschiffe.',
       effectFn: (lvl) => `Antriebsstufe ${Math.max(1, lvl)} – Schiffsgeschwindigkeit erhöht`,
       upgrades: [
-        { id: 'antrieb_ionen', title: 'Ionen-Triebwerke', imagePath: 'assets/img/antriebstechnik.png', requiredLevel: 10, baseCost: { credits: 2000, eisen: 1000, energie: 1000 }, costMultiplier: 1.5, description: 'Effiziente Ionentriebwerke für lange Reisen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
-        { id: 'antrieb_plasma', title: 'Plasma-Beschleuniger', imagePath: 'assets/img/antriebstechnik.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 3000 }, costMultiplier: 1.6, description: 'Plasmastrahlen für enorme Schubkraft.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
-        { id: 'antrieb_hyperraum', title: 'Hyperraum-Kern', imagePath: 'assets/img/antriebstechnik.png', requiredLevel: 20, baseCost: { credits: 25000, gold: 5000, energie: 8000 }, costMultiplier: 1.8, description: 'Öffnet Tore in den Hyperraum für Überlichtgeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
-        { id: 'antrieb_sprungtor', title: 'Sprungtor-Matrix', imagePath: 'assets/img/antriebstechnik.png', requiredLevel: 30, baseCost: { credits: 80000, xenonit: 5000, energie: 25000 }, costMultiplier: 2.1, description: 'Permanente Sprungtore verbinden entfernte Systeme.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_ionen', title: 'Ionen-Triebwerke', imagePath: 'assets/img/ionen-triebwerke.png', requiredLevel: 10, baseCost: { credits: 2000, eisen: 1000, energie: 1000 }, costMultiplier: 1.5, description: 'Effiziente Ionentriebwerke für lange Reisen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_plasma', title: 'Plasma-Beschleuniger', imagePath: 'assets/img/plasma-beschleuniger.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 3000 }, costMultiplier: 1.6, description: 'Plasmastrahlen für enorme Schubkraft.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_hyperraum', title: 'Hyperraum-Kern', imagePath: 'assets/img/hyperraum-kern.png', requiredLevel: 20, baseCost: { credits: 25000, gold: 5000, energie: 8000 }, costMultiplier: 1.8, description: 'Öffnet Tore in den Hyperraum für Überlichtgeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_sprungtor', title: 'Sprungtor-Matrix', imagePath: 'assets/img/sprungtor-matrix.png', requiredLevel: 30, baseCost: { credits: 80000, xenonit: 5000, energie: 25000 }, costMultiplier: 2.1, description: 'Permanente Sprungtore verbinden entfernte Systeme.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
       ],
     },
   ];

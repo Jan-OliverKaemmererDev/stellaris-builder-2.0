@@ -181,10 +181,10 @@ export class InfrastructureComponent {
    */
   generateRefineryUpgrades(): InfrastructureUpgrade[] {
     return [
-      { id: 'refinery_thermalschmelze', title: 'Thermalschmelze', imagePath: 'assets/img/refinery.png', requiredLevel: 8, baseCost: { credits: 300, eisen: 200, energie: 100 }, costMultiplier: 1.4, description: 'Schmilzt Erze bei extremen Temperaturen ein.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
-      { id: 'refinery_katalytische_konverter', title: 'Katalytische Konverter', imagePath: 'assets/img/refinery.png', requiredLevel: 12, baseCost: { credits: 1000, silber: 400, energie: 300 }, costMultiplier: 1.5, description: 'Katalysatoren beschleunigen chemische Reaktionen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
-      { id: 'refinery_plasma_extraktion', title: 'Plasma-Extraktion', imagePath: 'assets/img/refinery.png', requiredLevel: 18, baseCost: { credits: 4000, gold: 1000, energie: 800 }, costMultiplier: 1.7, description: 'Extrahiert Xenonit mittels Plasmaströmen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
-      { id: 'refinery_antimaterie_anreicherung', title: 'Antimaterie-Anreicherung', imagePath: 'assets/img/refinery.png', requiredLevel: 25, baseCost: { credits: 20000, xenonit: 1000, energie: 3000 }, costMultiplier: 1.9, description: 'Reichert Xenonit mit Antimaterie-Partikeln an.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
+      { id: 'refinery_thermalschmelze', title: 'Thermalschmelze', imagePath: 'assets/img/thermalschmelze.png', requiredLevel: 8, baseCost: { credits: 300, eisen: 200, energie: 100 }, costMultiplier: 1.4, description: 'Schmilzt Erze bei extremen Temperaturen ein.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
+      { id: 'refinery_katalytische_konverter', title: 'Katalytische Konverter', imagePath: 'assets/img/katalytische-konverter.png', requiredLevel: 12, baseCost: { credits: 1000, silber: 400, energie: 300 }, costMultiplier: 1.5, description: 'Katalysatoren beschleunigen chemische Reaktionen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
+      { id: 'refinery_plasma_extraktion', title: 'Plasma-Extraktion', imagePath: 'assets/img/plasma-extraktion.png', requiredLevel: 18, baseCost: { credits: 4000, gold: 1000, energie: 800 }, costMultiplier: 1.7, description: 'Extrahiert Xenonit mittels Plasmaströmen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
+      { id: 'refinery_antimaterie_anreicherung', title: 'Antimaterie-Anreicherung', imagePath: 'assets/img/antimaterie-anreicherung.png', requiredLevel: 25, baseCost: { credits: 20000, xenonit: 1000, energie: 3000 }, costMultiplier: 1.9, description: 'Reichert Xenonit mit Antimaterie-Partikeln an.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Raffinerieeffizienz` },
     ];
   }
 
@@ -194,10 +194,10 @@ export class InfrastructureComponent {
    */
   generateShipyardUpgrades(): InfrastructureUpgrade[] {
     return [
-      { id: 'shipyard_montage_drohnen', title: 'Montage-Drohnen', imagePath: 'assets/img/orbital-shipyard.png', requiredLevel: 10, baseCost: { credits: 800, eisen: 500, energie: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen beschleunigen die Schiffsproduktion.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
-      { id: 'shipyard_modulare_werftdocks', title: 'Modulare Werftdocks', imagePath: 'assets/img/orbital-shipyard.png', requiredLevel: 15, baseCost: { credits: 2500, silber: 800, energie: 500 }, costMultiplier: 1.5, description: 'Modulare Docks für parallelen Schiffsbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
-      { id: 'shipyard_ki_konstruktion', title: 'KI-gestützte Konstruktion', imagePath: 'assets/img/orbital-shipyard.png', requiredLevel: 20, baseCost: { credits: 8000, gold: 2000, energie: 1500 }, costMultiplier: 1.7, description: 'KI plant und überwacht komplexe Schiffskonstruktionen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
-      { id: 'shipyard_naniten_fabrikation', title: 'Naniten-Fabrikation', imagePath: 'assets/img/orbital-shipyard.png', requiredLevel: 25, baseCost: { credits: 30000, xenonit: 2000, energie: 5000 }, costMultiplier: 1.9, description: 'Naniten bauen Schiffe Atom für Atom zusammen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
+      { id: 'shipyard_montage_drohnen', title: 'Montage-Drohnen', imagePath: 'assets/img/montage-drohnen.png', requiredLevel: 10, baseCost: { credits: 800, eisen: 500, energie: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen beschleunigen die Schiffsproduktion.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
+      { id: 'shipyard_modulare_werftdocks', title: 'Modulare Werftdocks', imagePath: 'assets/img/modulare-werftdocks.png', requiredLevel: 15, baseCost: { credits: 2500, silber: 800, energie: 500 }, costMultiplier: 1.5, description: 'Modulare Docks für parallelen Schiffsbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
+      { id: 'shipyard_ki_konstruktion', title: 'KI-gestützte Konstruktion', imagePath: 'assets/img/ki-konstruktion.png', requiredLevel: 20, baseCost: { credits: 8000, gold: 2000, energie: 1500 }, costMultiplier: 1.7, description: 'KI plant und überwacht komplexe Schiffskonstruktionen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
+      { id: 'shipyard_naniten_fabrikation', title: 'Naniten-Fabrikation', imagePath: 'assets/img/naniten-fabrikation.png', requiredLevel: 25, baseCost: { credits: 30000, xenonit: 2000, energie: 5000 }, costMultiplier: 1.9, description: 'Naniten bauen Schiffe Atom für Atom zusammen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Werft-Effizienz` },
     ];
   }
 
