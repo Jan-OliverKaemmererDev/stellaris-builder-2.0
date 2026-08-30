@@ -107,16 +107,16 @@ export class TradeComponent {
       description: 'Ein einfacher Handelsposten für den lokalen Warenaustausch.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(100, Math.max(1, lvl)))} Credits/h`,
       upgrades: [
-        { id: 'trade_lokale_gilden', title: 'Lokale Händlergilden', imagePath: 'assets/img/trading-post.png', requiredLevel: 5, baseCost: { credits: 100, nahrung: 50 }, costMultiplier: 1.3, description: 'Organisierte Gilden verbessern die Handelseffizienz.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
-        { id: 'trade_frachtdrohnen', title: 'Frachtdrohnen', imagePath: 'assets/img/trading-post.png', requiredLevel: 10, baseCost: { credits: 400, eisen: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen liefern Waren schneller aus.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
-        { id: 'trade_schwarzmarkt', title: 'Schwarzmarkt-Zugang', imagePath: 'assets/img/trading-post.png', requiredLevel: 15, baseCost: { credits: 1500, gold: 500 }, costMultiplier: 1.5, description: 'Zugang zu illegalen, aber lukrativen Handelsrouten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
-        { id: 'trade_planetarer_zoll', title: 'Planetarer Zoll', imagePath: 'assets/img/trading-post.png', requiredLevel: 20, baseCost: { credits: 5000, energie: 1000 }, costMultiplier: 1.7, description: 'Kontrollierter Zoll sichert Einnahmen bei jedem Handel.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
+        { id: 'trade_lokale_gilden', title: 'Lokale Händlergilden', imagePath: 'assets/img/lokale-haendlergilden.png', requiredLevel: 5, baseCost: { credits: 100, nahrung: 50 }, costMultiplier: 1.3, description: 'Organisierte Gilden verbessern die Handelseffizienz.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
+        { id: 'trade_frachtdrohnen', title: 'Frachtdrohnen', imagePath: 'assets/img/frachtdrohnen.png', requiredLevel: 10, baseCost: { credits: 400, eisen: 200 }, costMultiplier: 1.4, description: 'Autonome Drohnen liefern Waren schneller aus.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
+        { id: 'trade_schwarzmarkt', title: 'Schwarzmarkt-Zugang', imagePath: 'assets/img/schwarzmarkt-zugang.png', requiredLevel: 15, baseCost: { credits: 1500, gold: 500 }, costMultiplier: 1.5, description: 'Zugang zu illegalen, aber lukrativen Handelsrouten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
+        { id: 'trade_planetarer_zoll', title: 'Planetarer Zoll', imagePath: 'assets/img/planetarer-zoll.png', requiredLevel: 20, baseCost: { credits: 5000, energie: 1000 }, costMultiplier: 1.7, description: 'Kontrollierter Zoll sichert Einnahmen bei jedem Handel.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
       ],
     },
     {
       id: 'interstellar_market',
       title: 'Interstellarer Markt',
-      imagePath: 'assets/img/trading-post.png',
+      imagePath: 'assets/img/interstellar-market.png',
       baseCost: { eisen: 1500, gold: 200, energie: 200 },
       costMultiplier: 1.4,
 
