@@ -36,6 +36,61 @@ class Particle {
   }
 }
 
+interface SatelliteConfig {
+  a: number;         // semi-major axis
+  b: number;         // semi-minor axis
+  tilt: number;      // orbital inclination tilt in radians
+  speed: number;     // angular speed
+  phase: number;     // initial angle offset
+  size: number;      // satellite point size
+  glowColor?: string;// aura glow color
+  coreColor?: string;// bright center color
+}
+
+class Satellite {
+  x = 30;
+  y = 30;
+  isBehind = false;
+
+  constructor(public config: SatelliteConfig) {}
+
+  update(time: number) {
+    const theta = this.config.phase + time * this.config.speed;
+    const x0 = this.config.a * Math.cos(theta);
+    const y0 = this.config.b * Math.sin(theta);
+
+    const cosT = Math.cos(this.config.tilt);
+    const sinT = Math.sin(this.config.tilt);
+    this.x = 30 + (x0 * cosT - y0 * sinT);
+    this.y = 30 + (x0 * sinT + y0 * cosT);
+
+    // Negative sin(theta) means the satellite is moving along the far/back arc of the orbit
+    this.isBehind = Math.sin(theta) < 0;
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    const glowColor = this.config.glowColor || 'rgba(56, 189, 248, 0.85)';
+    const coreColor = this.config.coreColor || '#ffffff';
+    const size = this.config.size;
+
+    // Outer aura glow
+    const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, size * 2.8);
+    grad.addColorStop(0, glowColor);
+    grad.addColorStop(0.5, 'rgba(56, 189, 248, 0.35)');
+    grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, size * 2.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bright pinpoint core
+    ctx.fillStyle = coreColor;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, size * 0.75, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
 /**
  * Shell component that wraps all authenticated game pages.
  * Provides the top header, sidebar navigation, footer, and the user dropdown menu.
@@ -80,7 +135,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   
   private ngZone = inject(NgZone);
   private animationFrameId?: number;
+  private isMobile = false;
   private particles: Particle[] = [];
+  private satellites: Satellite[] = [];
 
   constructor() {
     this.router.events.pipe(
@@ -138,16 +195,89 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
     this.ngZone.runOutsideAngular(() => {
       const animate = (time: number) => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         const timeSec = time * 0.001;
-        for (let i = 0; i < this.particles.length; i++) {
-          this.particles[i].update(timeSec);
-          this.particles[i].draw(ctx);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (this.isMobile) {
+          this.drawMobilePlanet(ctx, timeSec);
+        } else {
+          this.drawDesktopOrb(ctx, timeSec);
         }
+
         this.animationFrameId = requestAnimationFrame(animate);
       };
       this.animationFrameId = requestAnimationFrame(animate);
     });
+  }
+
+  /**
+   * Renders the low-overhead Sci-Fi Blue Planet with orbiting satellites for mobile screens.
+   */
+  private drawMobilePlanet(ctx: CanvasRenderingContext2D, timeSec: number): void {
+    const cx = 30;
+    const cy = 30;
+    const planetRadius = 20;
+
+    // Update satellites position & 3D orbital depth
+    for (let i = 0; i < this.satellites.length; i++) {
+      this.satellites[i].update(timeSec);
+    }
+
+    // 1. Draw Satellites moving behind the planet (far arc)
+    for (let i = 0; i < this.satellites.length; i++) {
+      if (this.satellites[i].isBehind) {
+        this.satellites[i].draw(ctx);
+      }
+    }
+
+    // 2. Draw Soft Atmospheric Corona Glow
+    const atmoGrad = ctx.createRadialGradient(cx, cy, planetRadius * 0.85, cx, cy, planetRadius * 1.25);
+    atmoGrad.addColorStop(0, 'rgba(37, 99, 235, 0.35)');
+    atmoGrad.addColorStop(0.6, 'rgba(56, 189, 248, 0.12)');
+    atmoGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+    ctx.fillStyle = atmoGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, planetRadius * 1.25, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 3. Draw Solid Planet Body (Rich, matte cosmic deep blue - no cheap glossy glare)
+    const planetGrad = ctx.createRadialGradient(cx - 5, cy - 5, 2, cx, cy, planetRadius);
+    planetGrad.addColorStop(0, '#1e40af');    // Deep royal blue
+    planetGrad.addColorStop(0.35, '#1d4ed8'); // Rich sapphire blue
+    planetGrad.addColorStop(0.65, '#0f2b5c'); // Deep ocean cobalt
+    planetGrad.addColorStop(0.85, '#0b1a36'); // Midnight navy
+    planetGrad.addColorStop(1, '#050c1a');    // Deep space shadow
+    ctx.fillStyle = planetGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, planetRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Subtle atmospheric limb softness on the sphere edge
+    const limbGrad = ctx.createRadialGradient(cx, cy, planetRadius * 0.75, cx, cy, planetRadius);
+    limbGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
+    limbGrad.addColorStop(0.85, 'rgba(56, 189, 248, 0.08)');
+    limbGrad.addColorStop(1, 'rgba(56, 189, 248, 0.22)');
+    ctx.fillStyle = limbGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, planetRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4. Draw Satellites moving in front of the planet (near arc)
+    for (let i = 0; i < this.satellites.length; i++) {
+      if (!this.satellites[i].isBehind) {
+        this.satellites[i].draw(ctx);
+      }
+    }
+  }
+
+  /**
+   * Renders the 3D Particle Orb for desktop screens.
+   */
+  private drawDesktopOrb(ctx: CanvasRenderingContext2D, timeSec: number): void {
+    for (let i = 0; i < this.particles.length; i++) {
+      this.particles[i].update(timeSec);
+      this.particles[i].draw(ctx);
+    }
   }
 
   private get isMobileDevice(): boolean {
@@ -160,20 +290,31 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   onResize(): void {
     if (!this.orbCanvas) return;
     const isMobile = this.isMobileDevice;
-    const targetCount = isMobile ? 45 : 300;
-    if (this.particles.length !== targetCount) {
+    if (this.isMobile !== isMobile) {
       this.initOrb();
     }
   }
 
   private initOrb() {
     if (!this.orbCanvas) return;
+    this.isMobile = this.isMobileDevice;
     this.particles = [];
-    const isMobile = this.isMobileDevice;
-    const particleCount = isMobile ? 45 : 300; // Full 300 particles on Desktop, 45 on Mobile
+    this.satellites = [];
 
-    for (let i = 0; i < particleCount; i++) {
-      this.particles.push(new Particle());
+    if (this.isMobile) {
+      // Create lightweight orbital satellites for mobile
+      this.satellites = [
+        new Satellite({ a: 25.5, b: 9.5, tilt: -0.3, speed: 0.48, phase: 0, size: 1.4, glowColor: 'rgba(125, 211, 252, 0.9)' }),
+        new Satellite({ a: 25.5, b: 9.5, tilt: -0.3, speed: 0.48, phase: Math.PI, size: 1.1, glowColor: 'rgba(56, 189, 248, 0.75)' }),
+        new Satellite({ a: 24.5, b: 11.0, tilt: 0.55, speed: -0.38, phase: 1.2, size: 1.3, glowColor: 'rgba(56, 189, 248, 0.85)' }),
+        new Satellite({ a: 24.5, b: 11.0, tilt: 0.55, speed: -0.38, phase: 1.2 + Math.PI, size: 1.0, glowColor: 'rgba(147, 197, 253, 0.75)' }),
+        new Satellite({ a: 26.0, b: 7.0, tilt: 0.1, speed: 0.54, phase: 2.5, size: 1.2, glowColor: 'rgba(56, 189, 248, 0.8)' })
+      ];
+    } else {
+      // 300 3D particle sphere for desktop
+      for (let i = 0; i < 300; i++) {
+        this.particles.push(new Particle());
+      }
     }
 
     this.startOrbAnimation();
