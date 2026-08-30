@@ -115,7 +115,7 @@ export class MiningComponent {
     {
       id: 'eisenmine',
       title: 'Eisenmine',
-      imagePath: 'assets/img/metallmine.png',
+      imagePath: 'assets/img/mining/metallmine.png',
       baseCost: { eisen: 10, energie: 10 },
       costMultiplier: 1.5,
       resourceName: 'Eisen',
@@ -127,7 +127,7 @@ export class MiningComponent {
     {
       id: 'silbermine',
       title: 'Silbermine',
-      imagePath: 'assets/img/metallmine.png',
+      imagePath: 'assets/img/mining/metallmine.png',
       baseCost: { eisen: 500, credits: 50, energie: 20 },
       costMultiplier: 1.6,
       resourceName: 'Silber',
@@ -139,7 +139,7 @@ export class MiningComponent {
     {
       id: 'goldmine',
       title: 'Goldmine',
-      imagePath: 'assets/img/metallmine.png',
+      imagePath: 'assets/img/mining/metallmine.png',
       baseCost: { eisen: 2000, silber: 100, energie: 50 },
       costMultiplier: 1.8,
       resourceName: 'Gold',
@@ -170,10 +170,10 @@ export class MiningComponent {
    */
   generateUpgrades(mineId: string, levels: number[] = [5, 10, 15, 20]): MineUpgrade[] {
     return [
-      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/roboter-arbeiter.png', requiredLevel: levels[0], baseCost: { credits: 100, energie: 50 }, costMultiplier: 1.4, description: 'Automatisierte Roboter erhöhen die Abbaugeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
-      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/transportlaster.png', requiredLevel: levels[1], baseCost: { credits: 500, eisen: 200, energie: 100 }, costMultiplier: 1.5, description: 'Schwere Transporter für schnelleren Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
-      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/ki-automation.png', requiredLevel: levels[2], baseCost: { credits: 2000, silber: 500, energie: 300 }, costMultiplier: 1.6, description: 'Künstliche Intelligenz optimiert den gesamten Abbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
-      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/hochgeschwindigkeitszug.png', requiredLevel: levels[3], baseCost: { credits: 10000, gold: 1000, energie: 1000 }, costMultiplier: 1.8, description: 'Hochgeschwindigkeitszüge für den Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/mining/roboter-arbeiter.png', requiredLevel: levels[0], baseCost: { credits: 100, energie: 50 }, costMultiplier: 1.4, description: 'Automatisierte Roboter erhöhen die Abbaugeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/mining/transportlaster.png', requiredLevel: levels[1], baseCost: { credits: 500, eisen: 200, energie: 100 }, costMultiplier: 1.5, description: 'Schwere Transporter für schnelleren Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/mining/ki-automation.png', requiredLevel: levels[2], baseCost: { credits: 2000, silber: 500, energie: 300 }, costMultiplier: 1.6, description: 'Künstliche Intelligenz optimiert den gesamten Abbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/mining/hochgeschwindigkeitszug.png', requiredLevel: levels[3], baseCost: { credits: 10000, gold: 1000, energie: 1000 }, costMultiplier: 1.8, description: 'Hochgeschwindigkeitszüge für den Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
     ];
   }
 
