@@ -12,7 +12,7 @@
           [level]="getSkillLevel(item.id)"
           [locked]="!isUnlocked(item)"
           [lockText]="getBuildingLockText(item)"
-          [effectText]="item.effectFn(getSkillLevel(item.id))"
+          [effectText]="item.effectFn(getSkillLevel(item.id), gameState.skills())"
           [costEntries]="getCostEntries(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))"
           [canAfford]="canAfford(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))"
           [buttonText]="'Ausbauen'"

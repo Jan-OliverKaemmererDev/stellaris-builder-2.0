@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber, getSolarBonus, getFusionBonus, getAntimaterieBonus } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -49,8 +49,8 @@ export interface EnergyItem {
   requiredNode?: { id: string; level: number };
   /** Short description of what this building does. */
   description: string;
-  /** Dynamically computes the effect text based on the current level. */
-  effectFn: (level: number) => string;
+  /** Dynamically computes the effect text based on the current level and player skills. */
+  effectFn: (level: number, skills: Record<string, number>) => string;
 }
 
 import { DragScrollDirective } from '../../directives/drag-scroll.directive';
@@ -84,11 +84,14 @@ export class EnergyComponent {
    * @param item The building or upgrade whose details should be shown.
    */
   openLightbox(item: EnergyItem | EnergyUpgrade): void {
+    const isMain = 'upgrades' in item;
     this.selectedLightbox = {
       imagePath: item.imagePath,
       title: item.title,
       description: item.description,
-      effectText: item.effectFn(this.getSkillLevel(item.id)),
+      effectText: isMain
+        ? (item as EnergyItem).effectFn(this.getSkillLevel(item.id), this.gameState.skills())
+        : (item as EnergyUpgrade).effectFn(this.getSkillLevel(item.id)),
     };
   }
 
@@ -106,7 +109,7 @@ export class EnergyComponent {
       baseCost: { eisen: 25 },
       costMultiplier: 1.4,
       description: 'Nutzt die Kraft der Sonne zur Stromerzeugung.',
-      effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(200, Math.max(1, lvl)))} Energie`,
+      effectFn: (lvl, skills) => `Erzeugt ${formatNumber(Math.floor(calcExponential(200, Math.max(1, lvl)) * getSolarBonus(skills)))} Energie`,
       upgrades: [
         { id: 'solar_erweiterte_panele', title: 'Erweiterte Panele', imagePath: 'assets/img/energy/erweiterte-panele.png', requiredLevel: 5, baseCost: { credits: 100, eisen: 50 }, costMultiplier: 1.3, description: 'Verbesserte Solarzellen für höhere Energieausbeute.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Solarenergie` },
         { id: 'solar_thermische_speicher', title: 'Thermische Speicher', imagePath: 'assets/img/energy/thermische-speicher.png', requiredLevel: 10, baseCost: { credits: 300, silber: 100 }, costMultiplier: 1.35, description: 'Speichert überschüssige Wärme für den Nachtbetrieb.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Solarenergie` },
@@ -122,7 +125,7 @@ export class EnergyComponent {
       costMultiplier: 1.5,
       requiredNode: { id: 'solarkraftwerk', level: 5 },
       description: 'Verschmilzt Atomkerne für enorme Energiemengen.',
-      effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(800, Math.max(1, lvl)))} Energie`,
+      effectFn: (lvl, skills) => `Erzeugt ${formatNumber(Math.floor(calcExponential(800, Math.max(1, lvl)) * getFusionBonus(skills)))} Energie`,
       upgrades: [
         { id: 'fusion_plasma_eindaemmung', title: 'Plasma-Eindämmung', imagePath: 'assets/img/energy/plasma-eindaemmung.png', requiredLevel: 5, baseCost: { credits: 500, eisen: 300 }, costMultiplier: 1.35, description: 'Magnetfelder halten das Fusionsplasma stabil.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Fusionsleistung` },
         { id: 'fusion_deuterium_anreicherung', title: 'Deuterium-Anreicherung', imagePath: 'assets/img/energy/deuterium-anreicherung.png', requiredLevel: 10, baseCost: { credits: 1500, silber: 500 }, costMultiplier: 1.4, description: 'Effizientere Aufbereitung des Fusionsbrennstoffs.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Fusionsleistung` },
@@ -138,7 +141,7 @@ export class EnergyComponent {
       costMultiplier: 1.6,
       requiredNode: { id: 'fusionsreaktor', level: 5 },
       description: 'Die ultimative Energiequelle durch Materie-Antimaterie-Annihilation.',
-      effectFn: (lvl) => `Erzeugt ${formatNumber(calcExponential(3000, Math.max(1, lvl)))} Energie`,
+      effectFn: (lvl, skills) => `Erzeugt ${formatNumber(Math.floor(calcExponential(3000, Math.max(1, lvl)) * getAntimaterieBonus(skills)))} Energie`,
       upgrades: [
         { id: 'antimaterie_positronen', title: 'Positronen-Sammler', imagePath: 'assets/img/energy/positronen-sammler.png', requiredLevel: 5, baseCost: { credits: 3000, eisen: 1000 }, costMultiplier: 1.4, description: 'Sammelt Positronen aus kosmischer Strahlung.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antimaterieertrag` },
         { id: 'antimaterie_magnetfelder', title: 'Magnetfelder', imagePath: 'assets/img/energy/antimaterie-magnetfelder.png', requiredLevel: 10, baseCost: { credits: 8000, silber: 2000 }, costMultiplier: 1.45, description: 'Starke Magnetfelder für sichere Antimaterie-Eindämmung.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antimaterieertrag` },

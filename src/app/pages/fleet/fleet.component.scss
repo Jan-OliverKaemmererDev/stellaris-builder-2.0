@@ -325,15 +325,29 @@ ul.reward-list {
   }
 
   .diplomacy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background: rgba(56, 189, 248, 0.12);
     border-color: rgba(56, 189, 248, 0.4);
     color: #bae6fd;
+
+    .css-res-icon {
+      width: 1.2em;
+      height: 1.2em;
+      transition: transform var(--transition-fast);
+    }
 
     &:hover:not(:disabled) {
       background: rgba(56, 189, 248, 0.25);
       border-color: var(--primary);
       transform: translateY(-2px);
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
+
+      .css-res-icon {
+        transform: scale(1.15);
+      }
     }
   }
 }

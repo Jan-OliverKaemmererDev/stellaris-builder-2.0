@@ -57,19 +57,27 @@ export function getMineBonus(mineId: string, s: Record<string, number>): number 
   return 1 + sum * 0.05;
 }
 
+export function getSolarBonus(s: Record<string, number>): number {
+  return 1 + ((s['solar_erweiterte_panele'] || 0) + (s['solar_thermische_speicher'] || 0) + (s['solar_orbitalspiegel'] || 0) + (s['solar_dyson_schwarm'] || 0)) * 0.05;
+}
+
+export function getFusionBonus(s: Record<string, number>): number {
+  return 1 + ((s['fusion_plasma_eindaemmung'] || 0) + (s['fusion_deuterium_anreicherung'] || 0) + (s['fusion_laser_katalysator'] || 0) + (s['fusion_kaltfusions_matrix'] || 0)) * 0.05;
+}
+
+export function getAntimaterieBonus(s: Record<string, number>): number {
+  return 1 + ((s['antimaterie_positronen'] || 0) + (s['antimaterie_magnetfelder'] || 0) + (s['antimaterie_subraumkuehlung'] || 0) + (s['antimaterie_nullpunkt'] || 0)) * 0.05;
+}
+
 /**
  * Calculates total energy produced by all power plants including their sub-upgrades.
  * @param s - A record containing the current skill levels of the player.
  * @returns Total energy production capacity.
  */
 export function calcTotalEnergyProduced(s: Record<string, number>): number {
-  const solarBonus = 1 + ((s['solar_erweiterte_panele'] || 0) + (s['solar_thermische_speicher'] || 0) + (s['solar_orbitalspiegel'] || 0) + (s['solar_dyson_schwarm'] || 0)) * 0.05;
-  const fusionBonus = 1 + ((s['fusion_plasma_eindaemmung'] || 0) + (s['fusion_deuterium_anreicherung'] || 0) + (s['fusion_laser_katalysator'] || 0) + (s['fusion_kaltfusions_matrix'] || 0)) * 0.05;
-  const antimaterieBonus = 1 + ((s['antimaterie_positronen'] || 0) + (s['antimaterie_magnetfelder'] || 0) + (s['antimaterie_subraumkuehlung'] || 0) + (s['antimaterie_nullpunkt'] || 0)) * 0.05;
-
-  return Math.floor(calcExponential(200, s['solarkraftwerk'] || 0) * solarBonus) +
-         Math.floor(calcExponential(800, s['fusionsreaktor'] || 0) * fusionBonus) +
-         Math.floor(calcExponential(3000, s['antimaterie'] || 0) * antimaterieBonus);
+  return Math.floor(calcExponential(200, s['solarkraftwerk'] || 0) * getSolarBonus(s)) +
+         Math.floor(calcExponential(800, s['fusionsreaktor'] || 0) * getFusionBonus(s)) +
+         Math.floor(calcExponential(3000, s['antimaterie'] || 0) * getAntimaterieBonus(s));
 }
 
 /**
@@ -93,6 +101,35 @@ export function calcAvailableEnergy(s: Record<string, number>): number {
   return calcTotalEnergyProduced(s) - calcTotalEnergyConsumed(s);
 }
 
+export function getKiGlobalBonus(s: Record<string, number>): number {
+  return 1 + ((s['ki_automatisierung'] || 0) * 0.02) +
+    ((s['ki_neuronale_netze'] || 0) + (s['ki_quanten_prozessoren'] || 0) + (s['ki_selbstlernend'] || 0) + (s['ki_bewusstsein'] || 0)) * 0.01;
+}
+
+export function getRefineryBonus(s: Record<string, number>): number {
+  return 1 + ((s['refinery_thermalschmelze'] || 0) + (s['refinery_katalytische_konverter'] || 0) + (s['refinery_plasma_extraktion'] || 0) + (s['refinery_antimaterie_anreicherung'] || 0)) * 0.05;
+}
+
+export function getTradePostBonus(s: Record<string, number>): number {
+  return 1 + ((s['trade_lokale_gilden'] || 0) + (s['trade_frachtdrohnen'] || 0) + (s['trade_schwarzmarkt'] || 0) + (s['trade_planetarer_zoll'] || 0)) * 0.05;
+}
+
+export function getMarketBonus(s: Record<string, number>): number {
+  return 1 + ((s['market_kartographierung'] || 0) + (s['market_subraum_komm'] || 0) + (s['market_geleitschutz'] || 0) + (s['market_banken'] || 0)) * 0.05;
+}
+
+export function getExchangeBonus(s: Record<string, number>): number {
+  return 1 + ((s['exchange_hft'] || 0) + (s['exchange_megakonzern'] || 0) + (s['exchange_monopol'] || 0) + (s['exchange_waehrungsamt'] || 0)) * 0.05;
+}
+
+export function getBioBonus(s: Record<string, number>): number {
+  return 1 + ((s['bio_gen_sequenzierer'] || 0) + (s['bio_hydroponik'] || 0) + (s['bio_zell_regeneration'] || 0) + (s['bio_klon_vat'] || 0)) * 0.05;
+}
+
+export function getStationBonus(s: Record<string, number>): number {
+  return 1 + ((s['station_verstaerkte_huelle'] || 0) + (s['station_hydroponische_gaerten'] || 0) + (s['station_kommerz_hub'] || 0) + (s['station_orbitaler_verteidigungsring'] || 0)) * 0.05;
+}
+
 /**
  * Builds the full resource production rates per hour based on current skill and building levels.
  * When energy is depleted (availableEnergy <= 0), mines shut down and produce 0.
@@ -103,18 +140,13 @@ export function calcAvailableEnergy(s: Record<string, number>): number {
 export function buildResourceRates(s: Record<string, number>, availableEnergy?: number): GameResources {
   const hasPower = (availableEnergy !== undefined ? availableEnergy : calcAvailableEnergy(s)) > 0;
 
-  const kiGlobalBonus = 1 + ((s['ki_automatisierung'] || 0) * 0.02) +
-    ((s['ki_neuronale_netze'] || 0) + (s['ki_quanten_prozessoren'] || 0) + (s['ki_selbstlernend'] || 0) + (s['ki_bewusstsein'] || 0)) * 0.01;
-
-  const refineryBonus = 1 + ((s['refinery_thermalschmelze'] || 0) + (s['refinery_katalytische_konverter'] || 0) + (s['refinery_plasma_extraktion'] || 0) + (s['refinery_antimaterie_anreicherung'] || 0)) * 0.05;
-
-  const tradePostBonus = 1 + ((s['trade_lokale_gilden'] || 0) + (s['trade_frachtdrohnen'] || 0) + (s['trade_schwarzmarkt'] || 0) + (s['trade_planetarer_zoll'] || 0)) * 0.05;
-  const marketBonus = 1 + ((s['market_kartographierung'] || 0) + (s['market_subraum_komm'] || 0) + (s['market_geleitschutz'] || 0) + (s['market_banken'] || 0)) * 0.05;
-  const exchangeBonus = 1 + ((s['exchange_hft'] || 0) + (s['exchange_megakonzern'] || 0) + (s['exchange_monopol'] || 0) + (s['exchange_waehrungsamt'] || 0)) * 0.05;
-
-  const bioBonus = 1 + ((s['bio_gen_sequenzierer'] || 0) + (s['bio_hydroponik'] || 0) + (s['bio_zell_regeneration'] || 0) + (s['bio_klon_vat'] || 0)) * 0.05;
-
-  const stationBonus = 1 + ((s['station_verstaerkte_huelle'] || 0) + (s['station_hydroponische_gaerten'] || 0) + (s['station_kommerz_hub'] || 0) + (s['station_orbitaler_verteidigungsring'] || 0)) * 0.05;
+  const kiGlobalBonus = getKiGlobalBonus(s);
+  const refineryBonus = getRefineryBonus(s);
+  const tradePostBonus = getTradePostBonus(s);
+  const marketBonus = getMarketBonus(s);
+  const exchangeBonus = getExchangeBonus(s);
+  const bioBonus = getBioBonus(s);
+  const stationBonus = getStationBonus(s);
 
   // Mines produce only if empire has positive available energy
   const eisenHourly = hasPower ? Math.floor((calcExponential(150, s['eisenmine'] || 0) * getMineBonus('eisenmine', s) + (s['transportschiffe'] || 0) * 150) * kiGlobalBonus) : 0;
@@ -148,14 +180,21 @@ export function buildResourceRates(s: Record<string, number>, availableEnergy?: 
   };
 }
 
+export function getLagerSubBonus(s: Record<string, number>): number {
+  return 1 + ((s['lager_erweiterte_ladebucht'] || 0) + (s['lager_automatisierte_logistik'] || 0) + (s['lager_quantenspeicher'] || 0) + (s['lager_subraum_kompression'] || 0)) * 0.05;
+}
+
+export function getLagerTotalMult(s: Record<string, number>): number {
+  return Math.pow(1.5, s['lager'] || 0) * getLagerSubBonus(s) * Math.pow(1.1, s['logistikschiff'] || 0);
+}
+
 /**
  * Builds the maximum storage capacity for all resources based on storage buildings and logistics.
  * @param s - A record containing the current skill levels of the player.
  * @returns A `GameResources` object containing the maximum limits for each resource.
  */
 export function buildMaxStorage(s: Record<string, number>): GameResources {
-  const lagerSubBonus = 1 + ((s['lager_erweiterte_ladebucht'] || 0) + (s['lager_automatisierte_logistik'] || 0) + (s['lager_quantenspeicher'] || 0) + (s['lager_subraum_kompression'] || 0)) * 0.05;
-  const mult = Math.pow(1.5, s['lager'] || 0) * lagerSubBonus * Math.pow(1.1, s['logistikschiff'] || 0);
+  const mult = getLagerTotalMult(s);
   const kol = (s['kolonisierungsschiffe'] || 0) * 1000;
   return {
     eisen: Math.floor(10000 * mult), silber: Math.floor(5000 * mult),
@@ -280,6 +319,31 @@ export function getBuyRate(resourceId: string, s: Record<string, number>): numbe
   return Math.max(1, Math.floor(base * (1 - discount)));
 }
 
+export function getNanoDiscount(skills: Record<string, number>): number {
+  const nanoLvl = skills['nano_bots'] || 0;
+  const nanoSubBonus = ((skills['nano_krabbler'] || 0) + (skills['nano_schweisser'] || 0) + (skills['nano_reparatur'] || 0) + (skills['nano_replikator'] || 0)) * 0.005;
+  return Math.min(0.5, nanoLvl * 0.01 + nanoSubBonus);
+}
+
+export function getEngineSpeedMultiplier(s: Record<string, number>): number {
+  const antriebLvl = s['antriebstechnik'] || 0;
+  const antriebSub = ((s['antrieb_ionen'] || 0) + (s['antrieb_plasma'] || 0) + (s['antrieb_hyperraum'] || 0) + (s['antrieb_sprungtor'] || 0)) * 0.05;
+  return 1 + antriebLvl * 0.05 + antriebSub;
+}
+
+export function getShipyardDiscount(s: Record<string, number>): number {
+  const shipyardLvl = s['orbital_shipyard'] || 0;
+  if (shipyardLvl <= 0) return 0;
+  const subBonus = ((s['shipyard_montage_drohnen'] || 0) + (s['shipyard_modulare_werftdocks'] || 0) + (s['shipyard_ki_konstruktion'] || 0) + (s['shipyard_naniten_fabrikation'] || 0)) * 0.025;
+  return Math.min(0.75, shipyardLvl * 0.02 + subBonus);
+}
+
+export function getShipyardSpeedMultiplier(s: Record<string, number>): number {
+  const shipyardLvl = s['orbital_shipyard'] || 0;
+  const subBonus = ((s['shipyard_montage_drohnen'] || 0) + (s['shipyard_modulare_werftdocks'] || 0) + (s['shipyard_ki_konstruktion'] || 0) + (s['shipyard_naniten_fabrikation'] || 0)) * 0.05;
+  return 1 + shipyardLvl * 0.05 + subBonus;
+}
+
 /**
  * Calculates the current cost for an upgrade at the given level, applying global discounts.
  * Nano-Bots reduce the cost of Eisen and Silber by 1% per level (up to 50%).
@@ -298,9 +362,7 @@ export function calculateCost(
   const cost: Partial<GameResources> = {};
   const mult = Math.pow(multiplier, currentLevel);
   
-  const nanoLvl = skills['nano_bots'] || 0;
-  const nanoSubBonus = ((skills['nano_krabbler'] || 0) + (skills['nano_schweisser'] || 0) + (skills['nano_reparatur'] || 0) + (skills['nano_replikator'] || 0)) * 0.005;
-  const discount = Math.min(0.5, nanoLvl * 0.01 + nanoSubBonus);
+  const discount = getNanoDiscount(skills);
 
   for (const [key, val] of Object.entries(baseCost)) {
     if (val !== undefined) {

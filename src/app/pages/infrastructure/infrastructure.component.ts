@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber, getLagerTotalMult, getRefineryBonus, getKiGlobalBonus, getShipyardDiscount, calcPlanetaryDefenseStrength, getStationBonus } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -45,8 +45,8 @@ export interface InfrastructureItem {
   requiredNode?: { id: string; level: number };
   /** Short description of what this building does. */
   description: string;
-  /** Dynamically computes the effect text based on the current level. */
-  effectFn: (level: number) => string;
+  /** Dynamically computes the effect text based on current level and skills. */
+  effectFn: (level: number, skills: Record<string, number>) => string;
 }
 
 import { DragScrollDirective } from '../../directives/drag-scroll.directive';
@@ -79,11 +79,14 @@ export class InfrastructureComponent {
    * @param item The building or upgrade to display.
    */
   openLightbox(item: InfrastructureItem | InfrastructureUpgrade): void {
+    const isMain = 'upgrades' in item;
     this.selectedLightbox = {
       imagePath: item.imagePath,
       title: item.title,
       description: item.description,
-      effectText: item.effectFn(this.getSkillLevel(item.id)),
+      effectText: isMain
+        ? (item as InfrastructureItem).effectFn(this.getSkillLevel(item.id), this.gameState.skills())
+        : (item as InfrastructureUpgrade).effectFn(this.getSkillLevel(item.id)),
     };
   }
 
@@ -101,7 +104,7 @@ export class InfrastructureComponent {
       baseCost: { eisen: 50, silber: 50 },
       costMultiplier: 1.35,
       description: 'Erweitert die Lagerkapazität aller Rohstoffe.',
-      effectFn: (lvl) => `Lagermultiplikator: ×${Math.pow(1.5, Math.max(1, lvl)).toFixed(1)}`,
+      effectFn: (lvl, skills) => `Lagermultiplikator: ×${getLagerTotalMult(skills).toFixed(2)}`,
       upgrades: this.generateLagerUpgrades(),
     },
     {
@@ -111,7 +114,7 @@ export class InfrastructureComponent {
       baseCost: { eisen: 150 },
       costMultiplier: 1.4,
       description: 'Verarbeitet Rohstoffe zu wertvollem Xenonit.',
-      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(10, Math.max(1, lvl)))} Xenonit/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(10, Math.max(1, lvl)) * getRefineryBonus(skills) * getKiGlobalBonus(skills)))} Xenonit/h`,
       upgrades: this.generateRefineryUpgrades(),
     },
     {
@@ -122,7 +125,7 @@ export class InfrastructureComponent {
       costMultiplier: 1.45,
       requiredNode: { id: 'refinery', level: 3 },
       description: 'Ermöglicht den Bau fortschrittlicher Raumschiffe.',
-      effectFn: (lvl) => `Baukosten für Schiffe -${Math.min(75, Math.max(1, lvl) * 2)}%`,
+      effectFn: (lvl, skills) => `Baukosten für Schiffe: -${(getShipyardDiscount(skills) * 100).toFixed(1)}%`,
       upgrades: this.generateShipyardUpgrades(),
     },
     {
@@ -133,7 +136,7 @@ export class InfrastructureComponent {
       costMultiplier: 1.5,
       requiredNode: { id: 'orbital_shipyard', level: 3 },
       description: 'Ein massives Netzwerk aus Abwehrgeschützen und Schilden zum Schutz vor feindlichen Angriffen.',
-      effectFn: (lvl) => `Verteidigungsstärke: +${Math.max(1, lvl) * 100}`,
+      effectFn: (lvl, skills) => `Verteidigungsstärke: +${formatNumber(calcPlanetaryDefenseStrength(skills))}`,
       upgrades: this.generateDefenseUpgrades(),
     },
     {
@@ -144,7 +147,7 @@ export class InfrastructureComponent {
       costMultiplier: 1.55,
       requiredNode: { id: 'planetary_defense', level: 3 },
       description: 'Eine massive Raumstation als Zentrum deines Imperiums.',
-      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(5, Math.max(1, lvl)))} Personal/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(5, Math.max(1, lvl)) * getStationBonus(skills) * getKiGlobalBonus(skills)))} Personal/h`,
       upgrades: this.generateStationUpgrades(),
     },
   ];

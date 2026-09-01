@@ -237,7 +237,9 @@ export class FleetComponent implements OnInit, OnDestroy {
     if (!this.canAfford(cost)) return;
     
     try {
-      const durationMs = 60000 + (this.getShipCount(ship.id) * 10000);
+      const baseDurationMs = 60000 + (this.getShipCount(ship.id) * 10000);
+      const speedMult = MathUtils.getShipyardSpeedMultiplier(this.gameState.skills());
+      const durationMs = Math.max(10000, Math.round(baseDurationMs / speedMult));
       await this.gameState.startBuild(ship.id, cost, durationMs);
     } catch (e) {
       console.error('Failed to start building ship', e);
@@ -258,10 +260,9 @@ export class FleetComponent implements OnInit, OnDestroy {
 
   getDiscountedCost(baseCost: Partial<GameResources>): Partial<GameResources> {
     const cost = calculateCost(baseCost, 1, 1, this.gameState.skills());
-    const shipyardLvl = this.gameState.skills()['orbital_shipyard'] || 0;
+    const discount = MathUtils.getShipyardDiscount(this.gameState.skills());
     
-    if (shipyardLvl > 0) {
-      const discount = Math.min(0.75, shipyardLvl * 0.02); // 2% per level, max 75%
+    if (discount > 0) {
       for (const key of Object.keys(cost)) {
         (cost as any)[key] = Math.max(1, Math.floor((cost as any)[key] * (1 - discount)));
       }
@@ -301,7 +302,9 @@ export class FleetComponent implements OnInit, OnDestroy {
   async startMission(): Promise<void> {
     const available = this.availableMiningShips;
     if (available <= 0) return;
-    await this.gameState.startMission('asteroid_mining', available, 60000);
+    const speedMult = MathUtils.getEngineSpeedMultiplier(this.gameState.skills());
+    const durationMs = Math.max(10000, Math.round(60000 / speedMult));
+    await this.gameState.startMission('asteroid_mining', available, durationMs);
     this.updateMissionProgress();
   }
 
@@ -407,7 +410,9 @@ export class FleetComponent implements OnInit, OnDestroy {
   async startBattle(): Promise<void> {
     const available = this.availableBattleShips;
     if (!this.isBattleUnlocked || available <= 0) return;
-    await this.gameState.startBattle(available, 60000);
+    const speedMult = MathUtils.getEngineSpeedMultiplier(this.gameState.skills());
+    const durationMs = Math.max(10000, Math.round(60000 / speedMult));
+    await this.gameState.startBattle(available, durationMs);
     this.updateBattleProgress();
   }
 

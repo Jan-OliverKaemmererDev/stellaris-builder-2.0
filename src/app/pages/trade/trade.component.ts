@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber, getTradePostBonus, getMarketBonus, getExchangeBonus, getKiGlobalBonus } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -49,8 +49,8 @@ export interface TradeItem {
   requiredNode?: { id: string; level: number };
   /** Short description of what this building does. */
   description: string;
-  /** Dynamically computes the effect text based on the current level. */
-  effectFn: (level: number) => string;
+  /** Dynamically computes the effect text based on current level and skills. */
+  effectFn: (level: number, skills: Record<string, number>) => string;
 }
 
 /**
@@ -83,11 +83,14 @@ export class TradeComponent {
    * Opens the lightbox for a trade building or upgrade.
    */
   openLightbox(item: TradeItem | TradeUpgrade): void {
+    const isMain = 'upgrades' in item;
     this.selectedLightbox = {
       imagePath: item.imagePath,
       title: item.title,
       description: item.description,
-      effectText: item.effectFn(this.getSkillLevel(item.id)),
+      effectText: isMain
+        ? (item as TradeItem).effectFn(this.getSkillLevel(item.id), this.gameState.skills())
+        : (item as TradeUpgrade).effectFn(this.getSkillLevel(item.id)),
     };
   }
 
@@ -97,7 +100,6 @@ export class TradeComponent {
   }
 
   /** List of all trade buildings and their respective upgrades. */
-  /** List of all trade buildings and their respective upgrades. */
   items: TradeItem[] = [
     {
       id: 'trading_post',
@@ -106,7 +108,7 @@ export class TradeComponent {
       baseCost: { eisen: 50, nahrung: 50 },
       costMultiplier: 1.3,
       description: 'Ein einfacher Handelsposten für den lokalen Warenaustausch.',
-      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(100, Math.max(1, lvl)))} Credits/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(100, Math.max(1, lvl)) * getTradePostBonus(skills) * getKiGlobalBonus(skills)))} Credits/h`,
       upgrades: [
         { id: 'trade_lokale_gilden', title: 'Lokale Händlergilden', imagePath: 'assets/img/trade/lokale-haendlergilden.png', requiredLevel: 5, baseCost: { credits: 100, nahrung: 50 }, costMultiplier: 1.3, description: 'Organisierte Gilden verbessern die Handelseffizienz.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
         { id: 'trade_frachtdrohnen', title: 'Frachtdrohnen', imagePath: 'assets/img/trade/frachtdrohnen.png', requiredLevel: 10, baseCost: { credits: 400, eisen: 200 }, costMultiplier: 1.35, description: 'Autonome Drohnen liefern Waren schneller aus.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Handelseffizienz` },
@@ -122,7 +124,7 @@ export class TradeComponent {
       costMultiplier: 1.4,
       requiredNode: { id: 'trading_post', level: 5 },
       description: 'Vernetzt dein Imperium mit galaktischen Handelsnetzwerken.',
-      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(400, Math.max(1, lvl)))} Credits/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(400, Math.max(1, lvl)) * getMarketBonus(skills) * getKiGlobalBonus(skills)))} Credits/h`,
       upgrades: [
         { id: 'market_kartographierung', title: 'Routen-Kartographierung', imagePath: 'assets/img/trade/routen-kartographierung.png', requiredLevel: 5, baseCost: { credits: 1000, eisen: 500 }, costMultiplier: 1.35, description: 'Kartographierte Routen verkürzen Lieferzeiten.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
         { id: 'market_subraum_komm', title: 'Subraum-Kommunikation', imagePath: 'assets/img/trade/subraum-kommunikation.png', requiredLevel: 10, baseCost: { credits: 3000, silber: 1000 }, costMultiplier: 1.4, description: 'Sofortige Kommunikation über Lichtjahre hinweg.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Markt-Effizienz` },
@@ -138,7 +140,7 @@ export class TradeComponent {
       costMultiplier: 1.5,
       requiredNode: { id: 'interstellar_market', level: 5 },
       description: 'Das Finanzzentrum der Galaxie für maximale Handelsgewinne.',
-      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(1500, Math.max(1, lvl)))} Credits/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(1500, Math.max(1, lvl)) * getExchangeBonus(skills) * getKiGlobalBonus(skills)))} Credits/h`,
       upgrades: [
         { id: 'exchange_hft', title: 'Hochfrequenz-Trading', imagePath: 'assets/img/trade/hochfrequenz-trading.png', requiredLevel: 5, baseCost: { credits: 5000, silber: 2000 }, costMultiplier: 1.4, description: 'Algorithmen handeln in Nanosekunden.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },
         { id: 'exchange_megakonzern', title: 'Megakonzern-Partnerschaften', imagePath: 'assets/img/trade/megakonzern-partnerschaften.png', requiredLevel: 10, baseCost: { credits: 20000, gold: 5000 }, costMultiplier: 1.45, description: 'Exklusive Partnerschaften mit galaktischen Megakonzernen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Börsen-Effizienz` },

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost, formatNumber } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber, getBioBonus, getKiGlobalBonus, getNanoDiscount, getEngineSpeedMultiplier } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -49,8 +49,8 @@ export interface ResearchItem {
   requiredNode?: { id: string; level: number };
   /** Short description of what this technology does. */
   description: string;
-  /** Dynamically computes the effect text based on the current level. */
-  effectFn: (level: number) => string;
+  /** Dynamically computes the effect text based on current level and skills. */
+  effectFn: (level: number, skills: Record<string, number>) => string;
 }
 
 /**
@@ -83,11 +83,14 @@ export class ResearchComponent {
    * Opens the lightbox for a research item or upgrade.
    */
   openLightbox(item: ResearchItem | ResearchUpgrade): void {
+    const isMain = 'upgrades' in item;
     this.selectedLightbox = {
       imagePath: item.imagePath,
       title: item.title,
       description: item.description,
-      effectText: item.effectFn(this.getSkillLevel(item.id)),
+      effectText: isMain
+        ? (item as ResearchItem).effectFn(this.getSkillLevel(item.id), this.gameState.skills())
+        : (item as ResearchUpgrade).effectFn(this.getSkillLevel(item.id)),
     };
   }
 
@@ -105,7 +108,7 @@ export class ResearchComponent {
       baseCost: { eisen: 200, nahrung: 100 },
       costMultiplier: 1.3,
       description: 'Erforscht biologische Technologien und optimiert die Nahrungsproduktion.',
-      effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(200, Math.max(1, lvl)))} Nahrung/h`,
+      effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(200, Math.max(1, lvl)) * getBioBonus(skills) * getKiGlobalBonus(skills)))} Nahrung/h`,
       upgrades: [
         { id: 'bio_gen_sequenzierer', title: 'Gen-Sequenzierer', imagePath: 'assets/img/research/gen-sequenzierer.png', requiredLevel: 5, baseCost: { credits: 200, nahrung: 150 }, costMultiplier: 1.35, description: 'Analysiert und optimiert genetische Codes für bessere Erträge.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Nahrungsproduktion` },
         { id: 'bio_hydroponik', title: 'Hydroponik-Experimente', imagePath: 'assets/img/research/hydroponik-experimente.png', requiredLevel: 10, baseCost: { credits: 800, nahrung: 500 }, costMultiplier: 1.4, description: 'Wasserkulturen für erdelosen Pflanzenanbau im All.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Nahrungsproduktion` },
@@ -121,7 +124,7 @@ export class ResearchComponent {
       costMultiplier: 1.45,
       requiredNode: { id: 'biolabor', level: 5 },
       description: 'Entwickelt künstliche Intelligenz zur Automatisierung aller Bereiche.',
-      effectFn: (lvl) => `KI-Stufe ${Math.max(1, lvl)} – Globaler Effizienzbonus +${Math.max(1, lvl) * 2}% auf alle Ressourcen`,
+      effectFn: (lvl, skills) => `Globaler Effizienzbonus: +${Math.round((getKiGlobalBonus(skills) - 1) * 100)}% auf alle Ressourcen`,
       upgrades: [
         { id: 'ki_neuronale_netze', title: 'Neuronale Netze', imagePath: 'assets/img/research/neuronale-netze.png', requiredLevel: 5, baseCost: { credits: 1000, silber: 300 }, costMultiplier: 1.35, description: 'Tiefe neuronale Netze für komplexe Musterkennung.', effectFn: (lvl) => `+${Math.max(1, lvl)}% globale Produktion` },
         { id: 'ki_quanten_prozessoren', title: 'Quanten-Prozessoren', imagePath: 'assets/img/research/quanten-prozessoren.png', requiredLevel: 10, baseCost: { credits: 4000, gold: 500 }, costMultiplier: 1.4, description: 'Quantencomputer ermöglichen exponentiell schnellere Berechnungen.', effectFn: (lvl) => `+${Math.max(1, lvl)}% globale Produktion` },
@@ -137,7 +140,7 @@ export class ResearchComponent {
       costMultiplier: 1.45,
       requiredNode: { id: 'ki_automatisierung', level: 3 },
       description: 'Mikroskopische Bots reparieren und konstruieren autonom, wodurch die Baukosten sinken.',
-      effectFn: (lvl) => `Bau-Rabatt: -${Math.min(50, Math.max(1, lvl))}% auf Eisen, Silber & Gold`,
+      effectFn: (lvl, skills) => `Bau-Rabatt: -${(getNanoDiscount(skills) * 100).toFixed(1)}% auf Eisen, Silber & Gold`,
       upgrades: [
         { id: 'nano_krabbler', title: 'Nano-Krabbler', imagePath: 'assets/img/research/nano-krabbler.png', requiredLevel: 5, baseCost: { credits: 1500, eisen: 500 }, costMultiplier: 1.35, description: 'Krabbler beschleunigen das Recycling und sparen Ressourcen.', effectFn: (lvl) => `+${(Math.max(1, lvl) * 0.5).toFixed(1)}% zusätzlicher Bau-Rabatt` },
         { id: 'nano_schweisser', title: 'Laser-Schweißer', imagePath: 'assets/img/research/laser-schweisser.png', requiredLevel: 10, baseCost: { credits: 5000, silber: 1000 }, costMultiplier: 1.4, description: 'Präzisions-Laser reduzieren Materialverschnitt.', effectFn: (lvl) => `+${(Math.max(1, lvl) * 0.5).toFixed(1)}% zusätzlicher Bau-Rabatt` },
@@ -153,7 +156,7 @@ export class ResearchComponent {
       costMultiplier: 1.5,
       requiredNode: { id: 'ki_automatisierung', level: 5 },
       description: 'Erforscht neue Antriebstechnologien für schnellere Raumschiffe.',
-      effectFn: (lvl) => `Antriebsstufe ${Math.max(1, lvl)} – Schiffsgeschwindigkeit erhöht`,
+      effectFn: (lvl, skills) => `Antriebsleistung: +${Math.round((getEngineSpeedMultiplier(skills) - 1) * 100)}% (${getEngineSpeedMultiplier(skills).toFixed(1)}× Missionsgeschwindigkeit)`,
       upgrades: [
         { id: 'antrieb_ionen', title: 'Ionen-Triebwerke', imagePath: 'assets/img/research/ionen-triebwerke.png', requiredLevel: 5, baseCost: { credits: 2000, eisen: 1000 }, costMultiplier: 1.35, description: 'Effiziente Ionentriebwerke für lange Reisen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
         { id: 'antrieb_plasma', title: 'Plasma-Beschleuniger', imagePath: 'assets/img/research/plasma-beschleuniger.png', requiredLevel: 10, baseCost: { credits: 8000, silber: 2000 }, costMultiplier: 1.4, description: 'Plasmastrahlen für enorme Schubkraft.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
