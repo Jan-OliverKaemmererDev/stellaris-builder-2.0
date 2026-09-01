@@ -1,0 +1,95 @@
+<div class="diplomacy-backdrop" (click)="close()" role="dialog" aria-modal="true" aria-labelledby="diplomacy-heading">
+  <div class="diplomacy-modal" (click)="$event.stopPropagation()">
+    <!-- Holographic scanline & corner accents -->
+    <div class="holo-scanline" aria-hidden="true"></div>
+    <div class="corner-accent top-left"></div>
+    <div class="corner-accent top-right"></div>
+    <div class="corner-accent bottom-left"></div>
+    <div class="corner-accent bottom-right"></div>
+
+    <!-- Header -->
+    <header class="diplomacy-header">
+      <div class="comms-badge">
+        <span class="live-dot" [class.active]="isEnemyActive"></span>
+        <span>SUBRAUM-FREQUENZ: PIRATEN-KORVETTEN</span>
+      </div>
+      <h2 id="diplomacy-heading" class="diplomacy-title">Diplomatische Verhandlungen</h2>
+    </header>
+
+    @if (peaceAccepted) {
+      <div class="success-peace-banner" aria-live="polite">
+        <span class="success-icon">🕊️</span>
+        <h3>Waffenstillstand vereinbart!</h3>
+        <p>Die feindliche Flotte hat den Tribut entgegengenommen und zieht sich aus unserem Orbit zurück. Alle Angriffe wurden eingestellt.</p>
+      </div>
+    } @else if (!isEnemyActive) {
+      <div class="peaceful-status-banner">
+        <span class="peaceful-icon">🛡️</span>
+        <h3>Friedlicher Status</h3>
+        <p>Gegenwärtig befindet sich keine feindliche Flotte im Kriegszustand mit unserem Imperium. Unsere Patrouillen melden keine aktiven Raubzüge.</p>
+        <p class="peaceful-subtext">Hinweis: Wenn du eine Weltraum-Offensive startest, wird der Feind auf unsere Schiffe aufmerksam und Gegenangriffe beginnen.</p>
+      </div>
+    } @else {
+      <!-- Enemy Transmission Body -->
+      <section class="transmission-box" aria-label="Nachricht der Feindflotte">
+        <div class="avatar-box" aria-hidden="true">
+          <div class="alien-hologram">👾</div>
+        </div>
+        <div class="message-content">
+          <span class="sender-name">Kriegsherr Vrax'Keth (Plünderer-Flotte):</span>
+          <blockquote class="message-text">
+            „Hört gut zu, Commander! Ihr habt unsere Patrouillen provoziert. Wenn ihr wollt, dass unsere Schlachtschiffe eure Minen und Stationen in Ruhe lassen, liefert uns den geforderten Tribut. Zahlt, oder stellt euch unseren Angriffswellen!“
+          </blockquote>
+        </div>
+      </section>
+
+      <!-- Demand Tribute Resource Box -->
+      <section class="demands-section" aria-label="Geforderter Tribut">
+        <h3 class="demands-title">Forderungen für dauerhaften Waffenstillstand:</h3>
+        <ul class="demands-list">
+          @if (demands.credits) {
+            <li class="demand-item" style="--res-color: var(--color-credits)">
+              <span class="res-name">Credits:</span>
+              <span class="res-amount">{{ demands.credits | compactNumber }}</span>
+            </li>
+          }
+          @if (demands.eisen) {
+            <li class="demand-item" style="--res-color: var(--color-eisen)">
+              <span class="res-name">Eisen:</span>
+              <span class="res-amount">{{ demands.eisen | compactNumber }}</span>
+            </li>
+          }
+          @if (demands.silber) {
+            <li class="demand-item" style="--res-color: var(--color-silber)">
+              <span class="res-name">Silber:</span>
+              <span class="res-amount">{{ demands.silber | compactNumber }}</span>
+            </li>
+          }
+        </ul>
+
+        @if (!canAfford) {
+          <p class="cant-afford-warning" aria-live="polite">
+            ⚠️ Nicht genügend Ressourcen im Lager, um die Forderungen zu erfüllen.
+          </p>
+        }
+      </section>
+    }
+
+    <!-- Footer Actions -->
+    <footer class="diplomacy-footer">
+      @if (isEnemyActive && !peaceAccepted) {
+        <button
+          class="action-btn accept-btn"
+          [disabled]="!canAfford"
+          (click)="acceptTribute()"
+          aria-label="Tribut zahlen und Frieden schließen"
+        >
+          🤝 Tribut zahlen & Frieden schließen
+        </button>
+      }
+      <button class="action-btn close-btn" (click)="close()" aria-label="Dialog schließen">
+        {{ peaceAccepted || !isEnemyActive ? 'Schließen' : 'Verhandlung abbrechen' }}
+      </button>
+    </footer>
+  </div>
+</div>

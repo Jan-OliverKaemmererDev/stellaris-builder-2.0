@@ -76,6 +76,100 @@
     </div>
   </section>
 
+  <!-- Battle-Bereich (Weltraum-Offensive) -->
+  <section class="battle-section" aria-labelledby="battle-content-heading" style="margin-top: var(--space-2xl); margin-bottom: var(--space-2xl);">
+    <article class="mission-card battle-card" [class.active]="activeBattle()">
+      <div class="mission-bg battle-bg" style="background-image: url('assets/img/fleet/cruiser.jpg');" aria-hidden="true"></div>
+      
+      <div class="mission-content battle-content">
+        <div class="battle-header-row">
+          <h2 id="battle-content-heading">Weltraum-Offensive & Kriegsbeute</h2>
+          <div class="enemy-status-badge" [class.active-danger]="gameState.enemyActivated()">
+            <span class="status-indicator-dot"></span>
+            <span>{{ gameState.enemyActivated() ? 'Feindstatus: AKTIVIERT (Raubzug-Gefahr)' : 'Feindstatus: INAKTIV' }}</span>
+          </div>
+        </div>
+
+        <p>Schicke deine Schlachtschiffe in den Kampf und erbeute wertvolle Kriegsbeute. Durch Angriffe wird die feindliche Flotte auf dich aufmerksam und startet periodische Gegenangriffe!</p>
+        
+        @if (activeBattle(); as b) {
+          <div class="active-mission-info" aria-live="polite">
+            <h3>Offensive läuft ({{ b.shipCount }} Schlachtschiffe | Stärke: {{ totalFleetStrength }})</h3>
+            <div class="progress-bar-wrap" role="progressbar" [attr.aria-valuenow]="battleProgress()" aria-valuemin="0" aria-valuemax="100" aria-label="Battle progress">
+              <div class="progress-bar-fill battle-progress-fill" [style.width.%]="battleProgress()"></div>
+            </div>
+            <p class="mission-time" aria-label="Remaining time">{{ battleTimeLeft() }}</p>
+            
+            @if (generatedBattleBooty(); as r) {
+              <div class="mission-reward" aria-label="Expected booty">
+                <span class="reward-label">Kriegsbeute gesammelt:</span>
+                <ul class="reward-list">
+                  <li class="reward-item" style="color: var(--color-eisen)">{{ r.eisen | compactNumber }} Eisen</li>
+                  <li class="reward-item" style="color: var(--color-silber)">{{ r.silber | compactNumber }} Silber</li>
+                  <li class="reward-item" style="color: var(--color-gold)">{{ r.gold | compactNumber }} Gold</li>
+                  @if (r.xenonit) {
+                    <li class="reward-item" style="color: var(--color-xenonit)">{{ r.xenonit | compactNumber }} Xenonit</li>
+                  }
+                  @if (r.credits) {
+                    <li class="reward-item" style="color: var(--color-credits)">{{ r.credits | compactNumber }} Credits</li>
+                  }
+                </ul>
+              </div>
+            } @else {
+              <div class="mission-reward pending">
+                <span class="reward-label">Gefecht im Gange...</span>
+              </div>
+            }
+            
+            @if (battleProgress() >= 100) {
+              <button class="action-btn collect-btn battle-collect-btn" (click)="collectBattleBooty()" aria-label="Kriegsbeute einsammeln">
+                Kriegsbeute einsammeln
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="idle-mission-info" aria-label="Offensive-Status">
+            <div class="fleet-readiness">
+              <p>Verfügbare Schlachtschiffe: <strong>{{ availableBattleShips }} / {{ totalBattleShipCount }}</strong> (Flottenstärke: <strong style="color: #38bdf8">{{ totalFleetStrength }}</strong>)</p>
+              @if (planetaryDefenseLevel > 0) {
+                <p class="defense-status-note">🛡️ Planetare Verteidigung: Stufe {{ planetaryDefenseLevel }} (Schadensdämpfung: {{ (gameState.defenseDamageReduction() * 100).toFixed(0) }}%)</p>
+              }
+            </div>
+
+            <div class="battle-btn-group">
+              <div class="attack-btn-wrap" [class.locked]="!isBattleUnlocked">
+                <button 
+                  class="action-btn start-btn battle-start-btn" 
+                  [disabled]="!isBattleUnlocked || availableBattleShips <= 0" 
+                  (click)="startBattle()"
+                  aria-label="Start battle offensive"
+                >
+                  @if (!isBattleUnlocked) {
+                    <span class="lock-inline-badge">
+                      <img src="assets/icons/lock.png" alt="Gesperrt" class="inline-lock-icon" />
+                      Planetare Verteidigung Lvl 1 benötigt
+                    </span>
+                  } @else {
+                    Angriff Starten (60s)
+                  }
+                </button>
+              </div>
+
+              <button
+                class="action-btn diplomacy-btn"
+                (click)="openDiplomacy()"
+                aria-label="Diplomatie & Verhandlungen öffnen"
+              >
+                🤝 Diplomatie
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+  </section>
+
+
   <ng-template #shipCard let-ship>
     <article class="ship-card" role="listitem">
       <figure class="ship-img-wrap" aria-hidden="true">
@@ -128,4 +222,9 @@
   </ng-template>
 
   <app-lightbox [data]="selectedLightbox" (closed)="closeLightbox()" />
+
+  @if (showDiplomacy()) {
+    <app-diplomacy-dialog (closed)="closeDiplomacy()"></app-diplomacy-dialog>
+  }
 </main>
+

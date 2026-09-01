@@ -29,6 +29,15 @@ export class GameStateService {
   /** Currently running mission, or `null` if idle. */
   activeMission = signal<MissionState | null>(null);
 
+  /** Currently running battle mission, or `null` if idle. */
+  activeBattle = signal<MissionState | null>(null);
+
+  /** Whether the enemy faction is activated and actively raiding. */
+  enemyActivated = signal<boolean>(false);
+
+  /** Timestamp of the last enemy attack attempt. */
+  lastEnemyAttack = signal<number>(0);
+
   /** Resources earned while offline, shown in the welcome-back dialog. */
   offlineEarnings = signal<GameResources | null>(null);
 
@@ -50,6 +59,18 @@ export class GameStateService {
 
   /** Maximum storage capacity for each resource. */
   maxStorage = computed<GameResources>(() => MathUtils.buildMaxStorage(this.skills()));
+
+  /** Total number of battle ships owned. */
+  totalBattleShips = computed<number>(() => MathUtils.calcTotalBattleShips(this.skills()));
+
+  /** Total offensive fleet combat power. */
+  fleetStrength = computed<number>(() => MathUtils.calcPlayerFleetStrength(this.skills()));
+
+  /** Total defensive power of Planetary Defense and its sub-upgrades. */
+  planetaryDefenseStrength = computed<number>(() => MathUtils.calcPlanetaryDefenseStrength(this.skills()));
+
+  /** Percentage of resource losses mitigated by Planetary Defense during attacks (0 to 0.85). */
+  defenseDamageReduction = computed<number>(() => MathUtils.calcDefenseDamageReduction(this.skills()));
 
   private userSub: Subscription | null = null;
   private stateSub: (() => void) | null = null;
@@ -130,6 +151,9 @@ export class GameStateService {
     this.resources.set(state.resources || DEFAULT_STATE.resources);
     this.skills.set(state.skills || {});
     this.activeMission.set(state.activeMission || null);
+    this.activeBattle.set(state.activeBattle || null);
+    this.enemyActivated.set(state.enemyActivated ?? false);
+    this.lastEnemyAttack.set(state.lastEnemyAttack || 0);
     
     // Check for offline completed builds and update state if needed
     let builds = { ...(state.activeBuilds || {}) };
@@ -178,6 +202,9 @@ export class GameStateService {
     this.resources.set(DEFAULT_STATE.resources);
     this.skills.set({});
     this.activeMission.set(null);
+    this.activeBattle.set(null);
+    this.enemyActivated.set(false);
+    this.lastEnemyAttack.set(0);
     this.activeBuilds.set({});
     this.offlineEarnings.set(null);
   }
@@ -421,4 +448,101 @@ export class GameStateService {
     this.resources.set(newRes);
     await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), { resources: newRes });
   }
+
+  /**
+   * Starts a battle offensive mission with deployed battle ships.
+   * @param shipCount - Number of battle ships sent into combat.
+   * @param durationMs - Duration of the attack mission.
+   */
+  async startBattle(shipCount: number, durationMs: number): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
+    const newBattle: MissionState = { type: 'fleet_battle', startTime: Date.now(), durationMs, shipCount };
+    this.activeBattle.set(newBattle);
+    await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), { activeBattle: newBattle });
+  }
+
+  /**
+   * Completes the battle mission, awards war booty, and activates the enemy faction.
+   * @param reward - War booty resource reward.
+   */
+  async completeBattle(reward: Partial<GameResources>): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
+    const newRes = MathUtils.addRewardCapped(this.resources(), reward, this.maxStorage());
+    this.resources.set(newRes);
+    this.activeBattle.set(null);
+    this.enemyActivated.set(true);
+    await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), {
+      resources: newRes,
+      activeBattle: null,
+      enemyActivated: true,
+    });
+  }
+
+  /**
+   * Fulfills enemy diplomatic demands, stopping enemy attacks.
+   * @param demands - Demanded resources from enemy faction.
+   */
+  async payDiplomacyDemands(demands: Partial<GameResources>): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user || !this.canAfford(demands)) throw new Error('Cannot afford diplomacy tribute');
+
+    const newRes = MathUtils.deductResources(this.resources(), demands);
+    this.resources.set(newRes);
+    this.enemyActivated.set(false);
+    await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), {
+      resources: newRes,
+      enemyActivated: false,
+    });
+  }
+
+  /**
+   * Deactivates the enemy faction.
+   */
+  async deactivateEnemy(): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) return;
+    this.enemyActivated.set(false);
+    await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), { enemyActivated: false });
+  }
+
+  /**
+   * Applies resource losses from an enemy raid defeat and updates the attack timestamp.
+   * @param losses - Deducted resources.
+   */
+  async applyEnemyAttackLosses(losses: Partial<GameResources>): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) return;
+
+    const newRes = MathUtils.deductResources(this.resources(), losses);
+    const now = Date.now();
+    this.resources.set(newRes);
+    this.lastEnemyAttack.set(now);
+    await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), {
+      resources: newRes,
+      lastEnemyAttack: now,
+    });
+  }
+
+  /**
+   * Awards bonus loot from a successfully repelled enemy attack and updates the attack timestamp.
+   * @param reward - Bonus loot.
+   */
+  async applyEnemyAttackVictoryReward(reward: Partial<GameResources>): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) return;
+
+    const newRes = MathUtils.addRewardCapped(this.resources(), reward, this.maxStorage());
+    const now = Date.now();
+    this.resources.set(newRes);
+    this.lastEnemyAttack.set(now);
+    await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), {
+      resources: newRes,
+      lastEnemyAttack: now,
+    });
+  }
 }
+

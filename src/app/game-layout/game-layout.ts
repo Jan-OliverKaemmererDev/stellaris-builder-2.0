@@ -10,6 +10,7 @@ import { GalaxyBackgroundComponent } from '../components/galaxy-background/galax
 import { SettingsService } from '../services/settings.service';
 import { GameStateService } from '../services/game-state.service';
 import { CompactNumberPipe } from '../pipes/compact-number.pipe';
+import { EnemyAttackOverlayComponent } from '../components/enemy-attack-overlay/enemy-attack-overlay.component';
 
 class Particle {
   theta = Math.random() * Math.PI * 2;
@@ -98,7 +99,7 @@ class Satellite {
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })

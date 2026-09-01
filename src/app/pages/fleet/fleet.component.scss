@@ -189,6 +189,160 @@ ul.reward-list {
   }
 }
 
+/* ═══ Battle Section (Weltraum-Offensive) ═══ */
+
+.battle-section {
+  .battle-card {
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+
+    &:hover {
+      border-color: rgba(239, 68, 68, 0.8);
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+    }
+
+    &.active {
+      border-color: rgba(239, 68, 68, 0.9);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
+    }
+  }
+
+  .battle-bg {
+    opacity: 0.28;
+    filter: saturate(1.4) contrast(1.1);
+  }
+
+  .battle-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+
+    h2 {
+      margin: 0;
+      background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .enemy-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+
+    .status-indicator-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+    }
+
+    &.active-danger {
+      background: rgba(239, 68, 68, 0.18);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.45);
+
+      .status-indicator-dot {
+        background: #ef4444;
+        box-shadow: 0 0 8px #ef4444;
+        animation: pulseDanger 1.2s infinite;
+      }
+    }
+  }
+
+  .battle-progress-fill {
+    background: linear-gradient(90deg, #dc2626, #f97316);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+  }
+
+  .battle-collect-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+
+    &:hover:not(:disabled) {
+      border-color: #fde68a;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+    }
+  }
+
+  .fleet-readiness {
+    margin-bottom: var(--space-md);
+
+    p {
+      margin: 0 0 4px 0;
+    }
+
+    .defense-status-note {
+      font-size: 0.84rem;
+      color: #7dd3fc;
+    }
+  }
+
+  .battle-btn-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  .battle-start-btn {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.5);
+      border-color: #fca5a5;
+    }
+  }
+
+  .lock-inline-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .inline-lock-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8));
+  }
+
+  .diplomacy-btn {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #bae6fd;
+
+    &:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    }
+  }
+}
+
+@keyframes pulseDanger {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
 /* ═══ Shipyard Section ═══ */
 
 .shipyard-section {

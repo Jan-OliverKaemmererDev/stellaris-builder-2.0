@@ -7,6 +7,8 @@ import { calcExponential, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
 import { PixelProgressBarComponent } from '../../components/pixel-progress-bar/pixel-progress-bar.component';
+import { DiplomacyDialogComponent } from '../../components/diplomacy-dialog/diplomacy-dialog.component';
+import * as MathUtils from '../../services/game-math.utils';
 
 /** Definition of a purchasable ship type in the shipyard. */
 export interface ShipDef {
@@ -25,19 +27,29 @@ export interface ShipDef {
 }
 
 /**
- * Fleet management page with a shipyard for building ships
- * and an asteroid mining mission system.
+ * Fleet management page with a shipyard for building ships,
+ * an asteroid mining mission system, and a space combat offensive system.
  */
 @Component({
   selector: 'app-fleet',
   standalone: true,
-  imports: [CommonModule, CompactNumberPipe, LightboxComponent, NanoBotsOverlayComponent, PixelProgressBarComponent],
+  imports: [
+    CommonModule,
+    CompactNumberPipe,
+    LightboxComponent,
+    NanoBotsOverlayComponent,
+    PixelProgressBarComponent,
+    DiplomacyDialogComponent,
+  ],
   templateUrl: './fleet.component.html',
   styleUrl: './fleet.component.scss',
 })
 export class FleetComponent implements OnInit, OnDestroy {
   /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
+
+  /** Controls visibility of the diplomacy negotiation overlay. */
+  showDiplomacy = signal(false);
 
   /** Currently selected lightbox data, or null if closed. */
   selectedLightbox: LightboxData | null = null;
@@ -156,12 +168,25 @@ export class FleetComponent implements OnInit, OnDestroy {
   /** Reference to the active mission signal from the game state. */
   activeMission = this.gameState.activeMission;
 
-  /** The randomly generated reward when the mission completes. */
+  /** The randomly generated reward when the asteroid mission completes. */
   generatedReward = signal<Partial<GameResources> | null>(null);
 
-  /** Starts polling the mission progress at 250ms when an active mission exists. */
+  /** Battle progress percentage (0–100). */
+  battleProgress = signal(0);
+
+  /** Human-readable remaining battle time. */
+  battleTimeLeft = signal('');
+
+  /** Reference to the active battle mission signal from the game state. */
+  activeBattle = this.gameState.activeBattle;
+
+  /** The calculated war booty loot when the battle offensive completes. */
+  generatedBattleBooty = signal<Partial<GameResources> | null>(null);
+
+  /** Starts polling mission and battle progress at 250ms. */
   ngOnInit(): void {
     this.updateMissionProgress();
+    this.updateBattleProgress();
     this.intervalId = setInterval(() => {
       if (typeof document !== 'undefined' && document.hidden) return;
       if (this.activeMission()) {
@@ -169,10 +194,16 @@ export class FleetComponent implements OnInit, OnDestroy {
       } else if (this.missionProgress() !== 0 || this.missionTimeLeft() !== '' || this.generatedReward() !== null) {
         this.resetMissionProgress();
       }
+
+      if (this.activeBattle()) {
+        this.updateBattleProgress();
+      } else if (this.battleProgress() !== 0 || this.battleTimeLeft() !== '' || this.generatedBattleBooty() !== null) {
+        this.resetBattleProgress();
+      }
     }, 250);
   }
 
-  /** Clears the mission progress polling interval. */
+  /** Clears the polling interval. */
   ngOnDestroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -342,4 +373,96 @@ export class FleetComponent implements OnInit, OnDestroy {
       console.error('Failed to collect reward', e);
     }
   }
+
+  /** Checks if planetary defense has reached at least level 1. */
+  get isBattleUnlocked(): boolean {
+    return this.gameState.getSkillLevel('planetary_defense') >= 1;
+  }
+
+  /** Current level of Planetary Defense building. */
+  get planetaryDefenseLevel(): number {
+    return this.gameState.getSkillLevel('planetary_defense');
+  }
+
+  /** Total count of all owned battle ships. */
+  get totalBattleShipCount(): number {
+    return this.gameState.totalBattleShips();
+  }
+
+  /** Battle ships not currently deployed in an offensive. */
+  get availableBattleShips(): number {
+    const b = this.activeBattle();
+    if (b && b.type === 'fleet_battle') {
+      return this.totalBattleShipCount - b.shipCount;
+    }
+    return this.totalBattleShipCount;
+  }
+
+  /** Combined offensive combat rating of the player's battle ships. */
+  get totalFleetStrength(): number {
+    return this.gameState.fleetStrength();
+  }
+
+  /** Starts a battle offensive with all available battle ships for 60s. */
+  async startBattle(): Promise<void> {
+    const available = this.availableBattleShips;
+    if (!this.isBattleUnlocked || available <= 0) return;
+    await this.gameState.startBattle(available, 60000);
+    this.updateBattleProgress();
+  }
+
+  /** Updates the battle progress percentage and remaining time display. */
+  updateBattleProgress(): void {
+    const b = this.activeBattle();
+    if (!b) return this.resetBattleProgress();
+
+    const elapsed = Date.now() - b.startTime;
+    if (elapsed >= b.durationMs) {
+      this.battleProgress.set(100);
+      this.battleTimeLeft.set('Offensive abgeschlossen!');
+
+      // Generate war booty if not already generated
+      if (!this.generatedBattleBooty()) {
+        this.generatedBattleBooty.set(MathUtils.calcBattleBooty(this.totalFleetStrength));
+      }
+    } else {
+      this.battleProgress.set((elapsed / b.durationMs) * 100);
+      this.battleTimeLeft.set(this.formatTimeLeft(b.durationMs - elapsed));
+      this.generatedBattleBooty.set(null);
+    }
+  }
+
+  /** Resets battle progress and timer signals. */
+  private resetBattleProgress(): void {
+    this.battleProgress.set(0);
+    this.battleTimeLeft.set('');
+    this.generatedBattleBooty.set(null);
+  }
+
+  /**
+   * Collects the war booty loot, completes the battle, and activates enemy counter-raids.
+   */
+  async collectBattleBooty(): Promise<void> {
+    const b = this.activeBattle();
+    const booty = this.generatedBattleBooty();
+    if (!b || this.battleProgress() < 100 || !booty) return;
+
+    try {
+      await this.gameState.completeBattle(booty);
+      this.generatedBattleBooty.set(null);
+    } catch (e) {
+      console.error('Failed to collect war booty', e);
+    }
+  }
+
+  /** Opens the diplomacy negotiation overlay. */
+  openDiplomacy(): void {
+    this.showDiplomacy.set(true);
+  }
+
+  /** Closes the diplomacy negotiation overlay. */
+  closeDiplomacy(): void {
+    this.showDiplomacy.set(false);
+  }
 }
+

@@ -313,3 +313,113 @@ export function calculateCost(
   }
   return cost;
 }
+
+/**
+ * Calculates the total number of battle ships owned by the player.
+ * @param s - Skills map.
+ * @returns Total count of all combat ships.
+ */
+export function calcTotalBattleShips(s: Record<string, number>): number {
+  return (s['leichter_jaeger'] || 0) + (s['schwerer_jaeger'] || 0) + (s['zerstoerer'] || 0) + (s['kreuzer'] || 0);
+}
+
+/**
+ * Calculates the total offensive attack strength of all owned battle ships.
+ * @param s - Skills map.
+ * @returns Combined fleet combat strength.
+ */
+export function calcPlayerFleetStrength(s: Record<string, number>): number {
+  return (
+    (s['leichter_jaeger'] || 0) * 10 +
+    (s['schwerer_jaeger'] || 0) * 35 +
+    (s['zerstoerer'] || 0) * 150 +
+    (s['kreuzer'] || 0) * 600
+  );
+}
+
+/**
+ * Calculates the total defensive power of Planetary Defense and its sub-upgrades.
+ * @param s - Skills map.
+ * @returns Combined planetary defense rating.
+ */
+export function calcPlanetaryDefenseStrength(s: Record<string, number>): number {
+  const baseDefense = (s['planetary_defense'] || 0) * 100;
+  const subBonus =
+    1 +
+    ((s['defense_railguns'] || 0) +
+      (s['defense_plasmakanonen'] || 0) +
+      (s['defense_schildgeneratoren'] || 0) +
+      (s['defense_tachyonen_lanzen'] || 0)) *
+      0.05;
+  return Math.floor(baseDefense * subBonus);
+}
+
+/**
+ * Calculates the percentage of resource losses mitigated by Planetary Defense during a defeat.
+ * @param s - Skills map.
+ * @returns Fraction between 0 and 0.85 (e.g., 0.60 = 60% damage reduction).
+ */
+export function calcDefenseDamageReduction(s: Record<string, number>): number {
+  const pdLvl = s['planetary_defense'] || 0;
+  if (pdLvl <= 0) return 0;
+  const baseRed = pdLvl * 0.05;
+  const subRed =
+    ((s['defense_railguns'] || 0) +
+      (s['defense_plasmakanonen'] || 0) +
+      (s['defense_schildgeneratoren'] || 0) +
+      (s['defense_tachyonen_lanzen'] || 0)) *
+    0.025;
+  return Math.min(0.85, baseRed + subRed);
+}
+
+/**
+ * Generates war booty rewards for a successful fleet offensive based on fleet strength.
+ * @param fleetStrength - Combined combat power of deployed ships.
+ * @returns Loot reward object.
+ */
+export function calcBattleBooty(fleetStrength: number): Partial<GameResources> {
+  const variance = () => 0.8 + Math.random() * 0.4; // 0.8 to 1.2
+  return {
+    eisen: Math.floor(Math.max(200, fleetStrength * 15 * variance())),
+    silber: Math.floor(Math.max(80, fleetStrength * 6 * variance())),
+    gold: Math.floor(Math.max(20, fleetStrength * 1.5 * variance())),
+    xenonit: fleetStrength >= 100 ? Math.floor(fleetStrength * 0.25 * variance()) : 0,
+    credits: Math.floor(Math.max(100, fleetStrength * 10 * variance())),
+  };
+}
+
+/**
+ * Calculates fair and reasonable diplomacy tribute demands to broker peace with the enemy.
+ * @param s - Skills map.
+ * @param current - Current resources.
+ * @param maxStorage - Maximum resource limits.
+ * @returns Demanded resources.
+ */
+export function calcDiplomacyDemands(
+  s: Record<string, number>,
+  current: GameResources,
+  maxStorage: GameResources
+): Partial<GameResources> {
+  const fleetStrength = Math.max(10, calcPlayerFleetStrength(s));
+  const baseTributeMultiplier = Math.min(3, 1 + fleetStrength / 500);
+
+  const reqCredits = Math.min(
+    Math.floor(maxStorage.credits * 0.12),
+    Math.max(300, Math.floor((current.credits * 0.06 + 300) * baseTributeMultiplier))
+  );
+  const reqEisen = Math.min(
+    Math.floor(maxStorage.eisen * 0.12),
+    Math.max(500, Math.floor((current.eisen * 0.06 + 500) * baseTributeMultiplier))
+  );
+  const reqSilber = Math.min(
+    Math.floor(maxStorage.silber * 0.08),
+    Math.max(150, Math.floor((current.silber * 0.04 + 150) * baseTributeMultiplier))
+  );
+
+  return {
+    credits: reqCredits,
+    eisen: reqEisen,
+    silber: reqSilber,
+  };
+}
+

@@ -59,6 +59,12 @@ export interface GameState {
   activeBuilds?: Record<string, ActiveBuild>;
   /** The currently running mission, or `null` if the fleet is idle. */
   activeMission?: MissionState | null;
+  /** Whether the enemy faction has been activated after player's first battle attack. */
+  enemyActivated?: boolean;
+  /** The currently running battle operation, or `null` if idle. */
+  activeBattle?: MissionState | null;
+  /** Timestamp in ms of the last enemy attack. */
+  lastEnemyAttack?: number;
   /** The Unix timestamp of the last state update, used for offline progress calculation. */
   lastUpdate?: number;
 }
@@ -79,6 +85,7 @@ export const DEFAULT_STATE: GameState = {
     personal: 100,
   },
   skills: {},
+  enemyActivated: false,
 };
 
 /** 
@@ -86,6 +93,14 @@ export const DEFAULT_STATE: GameState = {
  * Ships consume a flat amount of energy per unit rather than exponential upkeep.
  */
 export const SHIP_IDS = ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship', 'leichter_jaeger', 'schwerer_jaeger', 'zerstoerer', 'kreuzer'];
+
+/** Battleship IDs with their base attack strength per unit. */
+export const BATTLE_SHIP_STATS: Record<string, { attackStrength: number; name: string }> = {
+  leichter_jaeger: { attackStrength: 10, name: 'Leichter Jäger' },
+  schwerer_jaeger: { attackStrength: 35, name: 'Schwerer Jäger' },
+  zerstoerer: { attackStrength: 150, name: 'Zerstörer' },
+  kreuzer: { attackStrength: 600, name: 'Kreuzer' },
+};
 
 /** 
  * The base energy upkeep cost per level for buildings or per unit for ships.
