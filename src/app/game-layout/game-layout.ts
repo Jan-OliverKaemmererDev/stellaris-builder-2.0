@@ -1,4 +1,4 @@
-import { Component, inject, signal, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, inject, signal, computed, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Auth, signOut } from '@angular/fire/auth';
@@ -118,6 +118,27 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
   /** GameState service to check if nanobots are unlocked and fetch resources. */
   gameState = inject(GameStateService);
+
+  /**
+   * Computes the percentage of available energy relative to total produced energy.
+   */
+  energyPercentage = computed<number>(() => {
+    const max = this.gameState.energyProduced();
+    if (max <= 0) return 0;
+    return Math.max(0, Math.min(100, Math.round((this.gameState.availableEnergy() / max) * 100)));
+  });
+
+  /**
+   * Computes the dynamic status color for energy (green, yellow, orange, red).
+   */
+  energyColor = computed<string>(() => {
+    if (this.gameState.availableEnergy() < 0) return '#ef4444';
+    const p = this.energyPercentage();
+    if (p > 75) return '#22c55e'; // Green
+    if (p > 50) return '#eab308'; // Yellow
+    if (p > 25) return '#f97316'; // Orange
+    return '#ef4444';             // Red
+  });
 
   /** Signal holding the current visibility state of the user dropdown menu. */
   dropdownOpen = signal(false);

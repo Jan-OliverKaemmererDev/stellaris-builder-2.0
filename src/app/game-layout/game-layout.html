@@ -54,6 +54,23 @@
       <div class="hud-box-wrapper right-hud-wrapper">
         <div class="hud-box-inner right-hud-box">
 
+          <!-- Vertical Energy Bar & Percentage on the left slant of right-hud-box -->
+          <a
+            class="hud-energy-bar"
+            routerLink="/bridge/energy"
+            [style.--energy-color]="energyColor()"
+            [class.critical]="gameState.availableEnergy() < 0"
+            [title]="'Verfügbare Energie: ' + energyPercentage() + '% (' + (gameState.availableEnergy() | compactNumber) + ' / ' + (gameState.energyProduced() | compactNumber) + ')'"
+            aria-label="Verfügbare Energie in Prozent"
+          >
+            <div class="energy-v-track" aria-hidden="true">
+              <div class="energy-v-fill" [style.height.%]="energyPercentage()"></div>
+            </div>
+            <span class="energy-percent-val">{{ energyPercentage() }}%</span>
+          </a>
+
+          <div class="hud-divider slant-divider" aria-hidden="true"></div>
+
           <div class="resource-badges" role="group" aria-label="Ressourcen-Anzeige">
             <div class="res-badge" style="--res-accent: #fbbf24" title="Gold" aria-label="Gold">
               <div class="css-res-icon css-icon-gold"></div>
