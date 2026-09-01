@@ -102,63 +102,63 @@ export class ResearchComponent {
       id: 'biolabor',
       title: 'Bio-Forschungslabor',
       imagePath: 'assets/img/research/bio-forschungslabor.png',
-      baseCost: { eisen: 200, nahrung: 100, energie: 100 },
+      baseCost: { eisen: 200, nahrung: 100 },
       costMultiplier: 1.3,
       description: 'Erforscht biologische Technologien und optimiert die Nahrungsproduktion.',
       effectFn: (lvl) => `Produziert ${formatNumber(calcExponential(200, Math.max(1, lvl)))} Nahrung/h`,
       upgrades: [
-        { id: 'bio_gen_sequenzierer', title: 'Gen-Sequenzierer', imagePath: 'assets/img/research/gen-sequenzierer.png', requiredLevel: 5, baseCost: { credits: 200, nahrung: 150 }, costMultiplier: 1.4, description: 'Analysiert und optimiert genetische Codes für bessere Erträge.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Forschungseffizienz` },
-        { id: 'bio_hydroponik', title: 'Hydroponik-Experimente', imagePath: 'assets/img/research/hydroponik-experimente.png', requiredLevel: 10, baseCost: { credits: 800, nahrung: 500 }, costMultiplier: 1.5, description: 'Wasserkulturen für erdelosen Pflanzenanbau im All.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Forschungseffizienz` },
-        { id: 'bio_zell_regeneration', title: 'Zelluläre Regeneration', imagePath: 'assets/img/research/zellulaere-regeneration.png', requiredLevel: 15, baseCost: { credits: 3000, nahrung: 2000, energie: 500 }, costMultiplier: 1.7, description: 'Regeneriert beschädigtes Gewebe auf zellulärer Ebene.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Forschungseffizienz` },
-        { id: 'bio_klon_vat', title: 'Klon-Vat-Technologie', imagePath: 'assets/img/research/klon-vat-technologie.png', requiredLevel: 20, baseCost: { credits: 15000, nahrung: 8000, xenonit: 500 }, costMultiplier: 1.9, description: 'Klont Arbeitskräfte für maximale Produktivität.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Forschungseffizienz` },
+        { id: 'bio_gen_sequenzierer', title: 'Gen-Sequenzierer', imagePath: 'assets/img/research/gen-sequenzierer.png', requiredLevel: 5, baseCost: { credits: 200, nahrung: 150 }, costMultiplier: 1.35, description: 'Analysiert und optimiert genetische Codes für bessere Erträge.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Nahrungsproduktion` },
+        { id: 'bio_hydroponik', title: 'Hydroponik-Experimente', imagePath: 'assets/img/research/hydroponik-experimente.png', requiredLevel: 10, baseCost: { credits: 800, nahrung: 500 }, costMultiplier: 1.4, description: 'Wasserkulturen für erdelosen Pflanzenanbau im All.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Nahrungsproduktion` },
+        { id: 'bio_zell_regeneration', title: 'Zelluläre Regeneration', imagePath: 'assets/img/research/zellulaere-regeneration.png', requiredLevel: 15, baseCost: { credits: 3000, nahrung: 2000 }, costMultiplier: 1.45, description: 'Regeneriert beschädigtes Gewebe auf zellulärer Ebene.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Nahrungsproduktion` },
+        { id: 'bio_klon_vat', title: 'Klon-Vat-Technologie', imagePath: 'assets/img/research/klon-vat-technologie.png', requiredLevel: 20, baseCost: { credits: 15000, nahrung: 8000, xenonit: 500 }, costMultiplier: 1.55, description: 'Klont Arbeitskräfte für maximale Produktivität.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Nahrungsproduktion` },
       ],
     },
     {
       id: 'ki_automatisierung',
       title: 'KI-Automatisierung',
       imagePath: 'assets/img/research/ki-automatisierung.png',
-      baseCost: { eisen: 1000, gold: 100, energie: 300 },
-      costMultiplier: 1.5,
-
+      baseCost: { eisen: 1000, gold: 100 },
+      costMultiplier: 1.45,
+      requiredNode: { id: 'biolabor', level: 5 },
       description: 'Entwickelt künstliche Intelligenz zur Automatisierung aller Bereiche.',
-      effectFn: (lvl) => `KI-Stufe ${Math.max(1, lvl)} – Globaler Effizienzbonus aktiv`,
+      effectFn: (lvl) => `KI-Stufe ${Math.max(1, lvl)} – Globaler Effizienzbonus +${Math.max(1, lvl) * 2}% auf alle Ressourcen`,
       upgrades: [
-        { id: 'ki_neuronale_netze', title: 'Neuronale Netze', imagePath: 'assets/img/research/neuronale-netze.png', requiredLevel: 8, baseCost: { credits: 1000, silber: 300, energie: 500 }, costMultiplier: 1.5, description: 'Tiefe neuronale Netze für komplexe Musterkennung.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% KI-Effizienz` },
-        { id: 'ki_quanten_prozessoren', title: 'Quanten-Prozessoren', imagePath: 'assets/img/research/quanten-prozessoren.png', requiredLevel: 12, baseCost: { credits: 4000, gold: 500, energie: 1500 }, costMultiplier: 1.6, description: 'Quantencomputer ermöglichen exponentiell schnellere Berechnungen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% KI-Effizienz` },
-        { id: 'ki_selbstlernend', title: 'Selbstlernende Algorithmen', imagePath: 'assets/img/research/selbstlernende-algorithmen.png', requiredLevel: 18, baseCost: { credits: 12000, gold: 2000, energie: 4000 }, costMultiplier: 1.8, description: 'KI verbessert sich kontinuierlich selbst.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% KI-Effizienz` },
-        { id: 'ki_bewusstsein', title: 'Bewusstseins-Emulation', imagePath: 'assets/img/research/bewusstseins-emulation.png', requiredLevel: 25, baseCost: { credits: 50000, xenonit: 1000, energie: 15000 }, costMultiplier: 2.0, description: 'Eine wahrhaft bewusste KI leitet alle Operationen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% KI-Effizienz` },
+        { id: 'ki_neuronale_netze', title: 'Neuronale Netze', imagePath: 'assets/img/research/neuronale-netze.png', requiredLevel: 5, baseCost: { credits: 1000, silber: 300 }, costMultiplier: 1.35, description: 'Tiefe neuronale Netze für komplexe Musterkennung.', effectFn: (lvl) => `+${Math.max(1, lvl)}% globale Produktion` },
+        { id: 'ki_quanten_prozessoren', title: 'Quanten-Prozessoren', imagePath: 'assets/img/research/quanten-prozessoren.png', requiredLevel: 10, baseCost: { credits: 4000, gold: 500 }, costMultiplier: 1.4, description: 'Quantencomputer ermöglichen exponentiell schnellere Berechnungen.', effectFn: (lvl) => `+${Math.max(1, lvl)}% globale Produktion` },
+        { id: 'ki_selbstlernend', title: 'Selbstlernende Algorithmen', imagePath: 'assets/img/research/selbstlernende-algorithmen.png', requiredLevel: 15, baseCost: { credits: 12000, gold: 2000 }, costMultiplier: 1.45, description: 'KI verbessert sich kontinuierlich selbst.', effectFn: (lvl) => `+${Math.max(1, lvl)}% globale Produktion` },
+        { id: 'ki_bewusstsein', title: 'Bewusstseins-Emulation', imagePath: 'assets/img/research/bewusstseins-emulation.png', requiredLevel: 20, baseCost: { credits: 50000, xenonit: 1000 }, costMultiplier: 1.55, description: 'Eine wahrhaft bewusste KI leitet alle Operationen.', effectFn: (lvl) => `+${Math.max(1, lvl)}% globale Produktion` },
       ],
     },
     {
       id: 'nano_bots',
       title: 'Nano-Bots',
       imagePath: 'assets/img/research/nano-bots.png',
-      baseCost: { eisen: 1500, silber: 500, energie: 400 },
-      costMultiplier: 1.5,
-
-      description: 'Mikroskopische Bots reparieren und konstruieren autonom, wodurch die Kosten für Eisen und Silber sinken.',
-      effectFn: (lvl) => `Reparatur & Bau -${Math.max(1, lvl)}% Eisen & Silber Kosten`,
+      baseCost: { eisen: 1500, silber: 500 },
+      costMultiplier: 1.45,
+      requiredNode: { id: 'ki_automatisierung', level: 3 },
+      description: 'Mikroskopische Bots reparieren und konstruieren autonom, wodurch die Baukosten sinken.',
+      effectFn: (lvl) => `Bau-Rabatt: -${Math.min(50, Math.max(1, lvl))}% auf Eisen, Silber & Gold`,
       upgrades: [
-        { id: 'nano_krabbler', title: 'Nano-Krabbler', imagePath: 'assets/img/research/nano-krabbler.png', requiredLevel: 10, baseCost: { credits: 1500, eisen: 500, energie: 600 }, costMultiplier: 1.5, description: 'Krabbler beschleunigen das Recycling und sparen Ressourcen.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
-        { id: 'nano_schweisser', title: 'Laser-Schweißer', imagePath: 'assets/img/research/laser-schweisser.png', requiredLevel: 15, baseCost: { credits: 5000, silber: 1000, energie: 2000 }, costMultiplier: 1.6, description: 'Präzisions-Laser reduzieren Materialverschnitt.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
-        { id: 'nano_reparatur', title: 'Autonome Reparatur', imagePath: 'assets/img/research/autonome-reparatur.png', requiredLevel: 20, baseCost: { credits: 15000, gold: 2000, energie: 5000 }, costMultiplier: 1.8, description: 'Ermöglicht automatische Strukturinstandsetzung.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
-        { id: 'nano_replikator', title: 'Nano-Replikator', imagePath: 'assets/img/research/nano-replikator.png', requiredLevel: 25, baseCost: { credits: 60000, xenonit: 2000, energie: 20000 }, costMultiplier: 2.0, description: 'Erlaubt den Bots sich bei Bedarf selbst zu reproduzieren.', effectFn: (lvl) => `Verbessert Nano-Bots Effizienz` },
+        { id: 'nano_krabbler', title: 'Nano-Krabbler', imagePath: 'assets/img/research/nano-krabbler.png', requiredLevel: 5, baseCost: { credits: 1500, eisen: 500 }, costMultiplier: 1.35, description: 'Krabbler beschleunigen das Recycling und sparen Ressourcen.', effectFn: (lvl) => `+${(Math.max(1, lvl) * 0.5).toFixed(1)}% zusätzlicher Bau-Rabatt` },
+        { id: 'nano_schweisser', title: 'Laser-Schweißer', imagePath: 'assets/img/research/laser-schweisser.png', requiredLevel: 10, baseCost: { credits: 5000, silber: 1000 }, costMultiplier: 1.4, description: 'Präzisions-Laser reduzieren Materialverschnitt.', effectFn: (lvl) => `+${(Math.max(1, lvl) * 0.5).toFixed(1)}% zusätzlicher Bau-Rabatt` },
+        { id: 'nano_reparatur', title: 'Autonome Reparatur', imagePath: 'assets/img/research/autonome-reparatur.png', requiredLevel: 15, baseCost: { credits: 15000, gold: 2000 }, costMultiplier: 1.45, description: 'Ermöglicht automatische Strukturinstandsetzung.', effectFn: (lvl) => `+${(Math.max(1, lvl) * 0.5).toFixed(1)}% zusätzlicher Bau-Rabatt` },
+        { id: 'nano_replikator', title: 'Nano-Replikator', imagePath: 'assets/img/research/nano-replikator.png', requiredLevel: 20, baseCost: { credits: 60000, xenonit: 2000 }, costMultiplier: 1.55, description: 'Erlaubt den Bots sich bei Bedarf selbst zu reproduzieren.', effectFn: (lvl) => `+${(Math.max(1, lvl) * 0.5).toFixed(1)}% zusätzlicher Bau-Rabatt` },
       ],
     },
     {
       id: 'antriebstechnik',
       title: 'Antriebstechnik',
       imagePath: 'assets/img/research/antriebstechnik.png',
-      baseCost: { eisen: 2500, silber: 800, energie: 500 },
-      costMultiplier: 1.6,
-
+      baseCost: { eisen: 2500, silber: 800 },
+      costMultiplier: 1.5,
+      requiredNode: { id: 'ki_automatisierung', level: 5 },
       description: 'Erforscht neue Antriebstechnologien für schnellere Raumschiffe.',
       effectFn: (lvl) => `Antriebsstufe ${Math.max(1, lvl)} – Schiffsgeschwindigkeit erhöht`,
       upgrades: [
-        { id: 'antrieb_ionen', title: 'Ionen-Triebwerke', imagePath: 'assets/img/research/ionen-triebwerke.png', requiredLevel: 10, baseCost: { credits: 2000, eisen: 1000, energie: 1000 }, costMultiplier: 1.5, description: 'Effiziente Ionentriebwerke für lange Reisen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
-        { id: 'antrieb_plasma', title: 'Plasma-Beschleuniger', imagePath: 'assets/img/research/plasma-beschleuniger.png', requiredLevel: 15, baseCost: { credits: 8000, silber: 2000, energie: 3000 }, costMultiplier: 1.6, description: 'Plasmastrahlen für enorme Schubkraft.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
-        { id: 'antrieb_hyperraum', title: 'Hyperraum-Kern', imagePath: 'assets/img/research/hyperraum-kern.png', requiredLevel: 20, baseCost: { credits: 25000, gold: 5000, energie: 8000 }, costMultiplier: 1.8, description: 'Öffnet Tore in den Hyperraum für Überlichtgeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
-        { id: 'antrieb_sprungtor', title: 'Sprungtor-Matrix', imagePath: 'assets/img/research/sprungtor-matrix.png', requiredLevel: 30, baseCost: { credits: 80000, xenonit: 5000, energie: 25000 }, costMultiplier: 2.1, description: 'Permanente Sprungtore verbinden entfernte Systeme.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_ionen', title: 'Ionen-Triebwerke', imagePath: 'assets/img/research/ionen-triebwerke.png', requiredLevel: 5, baseCost: { credits: 2000, eisen: 1000 }, costMultiplier: 1.35, description: 'Effiziente Ionentriebwerke für lange Reisen.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_plasma', title: 'Plasma-Beschleuniger', imagePath: 'assets/img/research/plasma-beschleuniger.png', requiredLevel: 10, baseCost: { credits: 8000, silber: 2000 }, costMultiplier: 1.4, description: 'Plasmastrahlen für enorme Schubkraft.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_hyperraum', title: 'Hyperraum-Kern', imagePath: 'assets/img/research/hyperraum-kern.png', requiredLevel: 15, baseCost: { credits: 25000, gold: 5000 }, costMultiplier: 1.45, description: 'Öffnet Tore in den Hyperraum für Überlichtgeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
+        { id: 'antrieb_sprungtor', title: 'Sprungtor-Matrix', imagePath: 'assets/img/research/sprungtor-matrix.png', requiredLevel: 20, baseCost: { credits: 80000, xenonit: 5000 }, costMultiplier: 1.55, description: 'Permanente Sprungtore verbinden entfernte Systeme.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Antriebsleistung` },
       ],
     },
   ];
@@ -186,20 +186,12 @@ export class ResearchComponent {
 
   isUpgradeUnlocked(item: ResearchItem, index: number): boolean {
     const upgrade = item.upgrades[index];
-    if (index === 0) {
-      return this.getSkillLevel(item.id) >= upgrade.requiredLevel;
-    }
-    const prevUpgrade = item.upgrades[index - 1];
-    return this.getSkillLevel(prevUpgrade.id) >= upgrade.requiredLevel;
+    return this.getSkillLevel(item.id) >= upgrade.requiredLevel;
   }
 
   getUpgradeLockText(item: ResearchItem, index: number): string {
     const upgrade = item.upgrades[index];
-    if (index === 0) {
-      return `${item.title} Lvl ${upgrade.requiredLevel}`;
-    }
-    const prevUpgrade = item.upgrades[index - 1];
-    return `${prevUpgrade.title} Lvl ${upgrade.requiredLevel}`;
+    return `${item.title} Lvl ${upgrade.requiredLevel}`;
   }
 
   getBuildingLockText(item: ResearchItem): string {

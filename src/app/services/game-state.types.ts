@@ -69,12 +69,12 @@ export interface GameState {
  */
 export const DEFAULT_STATE: GameState = {
   resources: {
-    eisen: 1000,
+    eisen: 1500,
     silber: 500,
     gold: 100,
     xenonit: 0,
-    energie: 2000,
-    credits: 1000,
+    energie: 0,
+    credits: 1500,
     nahrung: 2000,
     personal: 100,
   },

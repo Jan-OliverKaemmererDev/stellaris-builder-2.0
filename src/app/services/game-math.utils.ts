@@ -1,4 +1,4 @@
-import { GameResources } from './game-state.types';
+import { GameResources, ENERGY_UPKEEP, SHIP_IDS } from './game-state.types';
 
 /**
  * Formats a number into a compact, human-readable string using K, M, B suffixes.
@@ -58,20 +58,93 @@ export function getMineBonus(mineId: string, s: Record<string, number>): number 
 }
 
 /**
- * Builds the full resource production rates per hour based on current skill and building levels.
+ * Calculates total energy produced by all power plants including their sub-upgrades.
  * @param s - A record containing the current skill levels of the player.
+ * @returns Total energy production capacity.
+ */
+export function calcTotalEnergyProduced(s: Record<string, number>): number {
+  const solarBonus = 1 + ((s['solar_erweiterte_panele'] || 0) + (s['solar_thermische_speicher'] || 0) + (s['solar_orbitalspiegel'] || 0) + (s['solar_dyson_schwarm'] || 0)) * 0.05;
+  const fusionBonus = 1 + ((s['fusion_plasma_eindaemmung'] || 0) + (s['fusion_deuterium_anreicherung'] || 0) + (s['fusion_laser_katalysator'] || 0) + (s['fusion_kaltfusions_matrix'] || 0)) * 0.05;
+  const antimaterieBonus = 1 + ((s['antimaterie_positronen'] || 0) + (s['antimaterie_magnetfelder'] || 0) + (s['antimaterie_subraumkuehlung'] || 0) + (s['antimaterie_nullpunkt'] || 0)) * 0.05;
+
+  return Math.floor(calcExponential(200, s['solarkraftwerk'] || 0) * solarBonus) +
+         Math.floor(calcExponential(800, s['fusionsreaktor'] || 0) * fusionBonus) +
+         Math.floor(calcExponential(3000, s['antimaterie'] || 0) * antimaterieBonus);
+}
+
+/**
+ * Calculates total energy consumed by all active buildings and ships.
+ * @param s - A record containing the current skill levels of the player.
+ * @returns Total energy consumption.
+ */
+export function calcTotalEnergyConsumed(s: Record<string, number>): number {
+  return Object.entries(s).reduce((total, [id, level]) => {
+    if (!ENERGY_UPKEEP[id]) return total;
+    return total + (SHIP_IDS.includes(id) ? ENERGY_UPKEEP[id] * level : calcCumulativeUpkeep(ENERGY_UPKEEP[id], level));
+  }, 0);
+}
+
+/**
+ * Calculates available energy (produced minus consumed).
+ * @param s - A record containing the current skill levels of the player.
+ * @returns Remaining energy capacity.
+ */
+export function calcAvailableEnergy(s: Record<string, number>): number {
+  return calcTotalEnergyProduced(s) - calcTotalEnergyConsumed(s);
+}
+
+/**
+ * Builds the full resource production rates per hour based on current skill and building levels.
+ * When energy is depleted (availableEnergy <= 0), mines shut down and produce 0.
+ * @param s - A record containing the current skill levels of the player.
+ * @param availableEnergy - Optional precomputed available energy value.
  * @returns A `GameResources` object containing the hourly production rates.
  */
-export function buildResourceRates(s: Record<string, number>): GameResources {
+export function buildResourceRates(s: Record<string, number>, availableEnergy?: number): GameResources {
+  const hasPower = (availableEnergy !== undefined ? availableEnergy : calcAvailableEnergy(s)) > 0;
+
+  const kiGlobalBonus = 1 + ((s['ki_automatisierung'] || 0) * 0.02) +
+    ((s['ki_neuronale_netze'] || 0) + (s['ki_quanten_prozessoren'] || 0) + (s['ki_selbstlernend'] || 0) + (s['ki_bewusstsein'] || 0)) * 0.01;
+
+  const refineryBonus = 1 + ((s['refinery_thermalschmelze'] || 0) + (s['refinery_katalytische_konverter'] || 0) + (s['refinery_plasma_extraktion'] || 0) + (s['refinery_antimaterie_anreicherung'] || 0)) * 0.05;
+
+  const tradePostBonus = 1 + ((s['trade_lokale_gilden'] || 0) + (s['trade_frachtdrohnen'] || 0) + (s['trade_schwarzmarkt'] || 0) + (s['trade_planetarer_zoll'] || 0)) * 0.05;
+  const marketBonus = 1 + ((s['market_kartographierung'] || 0) + (s['market_subraum_komm'] || 0) + (s['market_geleitschutz'] || 0) + (s['market_banken'] || 0)) * 0.05;
+  const exchangeBonus = 1 + ((s['exchange_hft'] || 0) + (s['exchange_megakonzern'] || 0) + (s['exchange_monopol'] || 0) + (s['exchange_waehrungsamt'] || 0)) * 0.05;
+
+  const bioBonus = 1 + ((s['bio_gen_sequenzierer'] || 0) + (s['bio_hydroponik'] || 0) + (s['bio_zell_regeneration'] || 0) + (s['bio_klon_vat'] || 0)) * 0.05;
+
+  const stationBonus = 1 + ((s['station_verstaerkte_huelle'] || 0) + (s['station_hydroponische_gaerten'] || 0) + (s['station_kommerz_hub'] || 0) + (s['station_orbitaler_verteidigungsring'] || 0)) * 0.05;
+
+  // Mines produce only if empire has positive available energy
+  const eisenHourly = hasPower ? Math.floor((calcExponential(150, s['eisenmine'] || 0) * getMineBonus('eisenmine', s) + (s['transportschiffe'] || 0) * 150) * kiGlobalBonus) : 0;
+  const silberHourly = hasPower ? Math.floor((calcExponential(80, s['silbermine'] || 0) * getMineBonus('silbermine', s)) * kiGlobalBonus) : 0;
+  const goldHourly = hasPower ? Math.floor((calcExponential(30, s['goldmine'] || 0) * getMineBonus('goldmine', s)) * kiGlobalBonus) : 0;
+  const xenonitHourly = hasPower ? Math.floor(calcExponential(10, s['refinery'] || 0) * refineryBonus * kiGlobalBonus) : 0;
+
+  const creditsHourly = Math.floor(
+    (calcExponential(100, s['trading_post'] || 0) * tradePostBonus +
+     calcExponential(400, s['interstellar_market'] || 0) * marketBonus +
+     calcExponential(1500, s['galactic_exchange'] || 0) * exchangeBonus) * kiGlobalBonus
+  );
+
+  const nahrungHourly = Math.floor(
+    (calcExponential(200, s['biolabor'] || 0) * bioBonus + (s['transportschiffe'] || 0) * 200) * kiGlobalBonus
+  );
+
+  const personalHourly = Math.floor(
+    (calcExponential(5, s['large_station'] || 0) * stationBonus + (s['kolonisierungsschiffe'] || 0) * 10) * kiGlobalBonus
+  );
+
   return {
-    eisen: Math.floor(calcExponential(150, s['eisenmine'] || 0) * getMineBonus('eisenmine', s)) + (s['transportschiffe'] || 0) * 150,
-    silber: Math.floor(calcExponential(80, s['silbermine'] || 0) * getMineBonus('silbermine', s)),
-    gold: Math.floor(calcExponential(30, s['goldmine'] || 0) * getMineBonus('goldmine', s)),
-    xenonit: calcExponential(10, s['refinery'] || 0),
+    eisen: eisenHourly,
+    silber: silberHourly,
+    gold: goldHourly,
+    xenonit: xenonitHourly,
     energie: 0,
-    credits: calcExponential(100, s['trading_post'] || 0) + calcExponential(400, s['interstellar_market'] || 0) + calcExponential(1500, s['galactic_exchange'] || 0),
-    nahrung: calcExponential(200, s['biolabor'] || 0) + (s['transportschiffe'] || 0) * 200,
-    personal: calcExponential(5, s['large_station'] || 0) + (s['kolonisierungsschiffe'] || 0) * 10,
+    credits: creditsHourly,
+    nahrung: nahrungHourly,
+    personal: personalHourly,
   };
 }
 
@@ -81,7 +154,8 @@ export function buildResourceRates(s: Record<string, number>): GameResources {
  * @returns A `GameResources` object containing the maximum limits for each resource.
  */
 export function buildMaxStorage(s: Record<string, number>): GameResources {
-  const mult = Math.pow(1.5, s['lager'] || 0) * Math.pow(1.1, s['logistikschiff'] || 0);
+  const lagerSubBonus = 1 + ((s['lager_erweiterte_ladebucht'] || 0) + (s['lager_automatisierte_logistik'] || 0) + (s['lager_quantenspeicher'] || 0) + (s['lager_subraum_kompression'] || 0)) * 0.05;
+  const mult = Math.pow(1.5, s['lager'] || 0) * lagerSubBonus * Math.pow(1.1, s['logistikschiff'] || 0);
   const kol = (s['kolonisierungsschiffe'] || 0) * 1000;
   return {
     eisen: Math.floor(10000 * mult), silber: Math.floor(5000 * mult),
@@ -225,12 +299,13 @@ export function calculateCost(
   const mult = Math.pow(multiplier, currentLevel);
   
   const nanoLvl = skills['nano_bots'] || 0;
-  const discount = Math.min(0.5, nanoLvl * 0.01);
+  const nanoSubBonus = ((skills['nano_krabbler'] || 0) + (skills['nano_schweisser'] || 0) + (skills['nano_reparatur'] || 0) + (skills['nano_replikator'] || 0)) * 0.005;
+  const discount = Math.min(0.5, nanoLvl * 0.01 + nanoSubBonus);
 
   for (const [key, val] of Object.entries(baseCost)) {
     if (val !== undefined) {
       let finalVal = val * mult;
-      if (key === 'eisen' || key === 'silber') {
+      if (key === 'eisen' || key === 'silber' || key === 'gold') {
         finalVal = finalVal * (1 - discount);
       }
       (cost as any)[key] = Math.floor(finalVal);

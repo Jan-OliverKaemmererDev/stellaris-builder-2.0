@@ -116,8 +116,8 @@ export class MiningComponent {
       id: 'eisenmine',
       title: 'Eisenmine',
       imagePath: 'assets/img/mining/metallmine.png',
-      baseCost: { eisen: 10, energie: 10 },
-      costMultiplier: 1.5,
+      baseCost: { eisen: 20 },
+      costMultiplier: 1.4,
       resourceName: 'Eisen',
       baseRate: 150,
       description: 'Baut Eisenerz in den Asteroiden ab.',
@@ -128,25 +128,25 @@ export class MiningComponent {
       id: 'silbermine',
       title: 'Silbermine',
       imagePath: 'assets/img/mining/metallmine.png',
-      baseCost: { eisen: 500, credits: 50, energie: 20 },
-      costMultiplier: 1.6,
+      baseCost: { eisen: 400, credits: 50 },
+      costMultiplier: 1.45,
       resourceName: 'Silber',
       baseRate: 80,
       description: 'Gewinnt wertvolles Silber aus tiefen Schächten.',
       effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(80, Math.max(1, lvl)) * getMineBonus('silbermine', skills)))} Silber/h`,
-      upgrades: this.generateUpgrades('silbermine', [8, 12, 18, 25]),
+      upgrades: this.generateUpgrades('silbermine', [5, 10, 15, 20]),
     },
     {
       id: 'goldmine',
       title: 'Goldmine',
       imagePath: 'assets/img/mining/metallmine.png',
-      baseCost: { eisen: 2000, silber: 100, energie: 50 },
-      costMultiplier: 1.8,
+      baseCost: { eisen: 1500, silber: 100 },
+      costMultiplier: 1.5,
       resourceName: 'Gold',
       baseRate: 30,
       description: 'Extrahiert seltenes Gold aus den tiefsten Minen.',
       effectFn: (lvl, skills) => `Produziert ${formatNumber(Math.floor(calcExponential(30, Math.max(1, lvl)) * getMineBonus('goldmine', skills)))} Gold/h`,
-      upgrades: this.generateUpgrades('goldmine', [10, 15, 22, 30]),
+      upgrades: this.generateUpgrades('goldmine', [5, 10, 15, 20]),
     },
   ];
 
@@ -165,15 +165,15 @@ export class MiningComponent {
   /**
    * Creates the four standard production upgrades for a mine with specific level requirements.
    * @param mineId - The parent mine's skill ID used to build upgrade IDs.
-   * @param levels - Required predecessor levels for each upgrade step.
+   * @param levels - Required parent mine levels for each upgrade step.
    * @returns Array of upgrades for the given mine.
    */
   generateUpgrades(mineId: string, levels: number[] = [5, 10, 15, 20]): MineUpgrade[] {
     return [
-      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/mining/roboter-arbeiter.png', requiredLevel: levels[0], baseCost: { credits: 100, energie: 50 }, costMultiplier: 1.4, description: 'Automatisierte Roboter erhöhen die Abbaugeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
-      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/mining/transportlaster.png', requiredLevel: levels[1], baseCost: { credits: 500, eisen: 200, energie: 100 }, costMultiplier: 1.5, description: 'Schwere Transporter für schnelleren Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
-      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/mining/ki-automation.png', requiredLevel: levels[2], baseCost: { credits: 2000, silber: 500, energie: 300 }, costMultiplier: 1.6, description: 'Künstliche Intelligenz optimiert den gesamten Abbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
-      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/mining/hochgeschwindigkeitszug.png', requiredLevel: levels[3], baseCost: { credits: 10000, gold: 1000, energie: 1000 }, costMultiplier: 1.8, description: 'Hochgeschwindigkeitszüge für den Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_roboter`, title: 'Roboter Arbeiter', imagePath: 'assets/img/mining/roboter-arbeiter.png', requiredLevel: levels[0], baseCost: { credits: 100 }, costMultiplier: 1.35, description: 'Automatisierte Roboter erhöhen die Abbaugeschwindigkeit.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_transport`, title: 'Transportlaster', imagePath: 'assets/img/mining/transportlaster.png', requiredLevel: levels[1], baseCost: { credits: 500, eisen: 200 }, costMultiplier: 1.4, description: 'Schwere Transporter für schnelleren Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_ki`, title: 'KI Automation', imagePath: 'assets/img/mining/ki-automation.png', requiredLevel: levels[2], baseCost: { credits: 2000, silber: 500 }, costMultiplier: 1.45, description: 'Künstliche Intelligenz optimiert den gesamten Abbau.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
+      { id: `${mineId}_zug`, title: 'Expresszug', imagePath: 'assets/img/mining/hochgeschwindigkeitszug.png', requiredLevel: levels[3], baseCost: { credits: 10000, gold: 1000 }, costMultiplier: 1.5, description: 'Hochgeschwindigkeitszüge für den Materialtransport.', effectFn: (lvl) => `+${Math.max(1, lvl) * 5}% Produktion` },
     ];
   }
 
@@ -197,18 +197,14 @@ export class MiningComponent {
   }
 
   /**
-   * Checks whether a mine upgrade is unlocked based on its predecessor in the chain.
+   * Checks whether a mine upgrade is unlocked based on parent mine level.
    * @param mine - The parent mine.
    * @param index - The index of the upgrade in the array.
-   * @returns True if the predecessor meets the level requirement.
+   * @returns True if the parent mine meets the level requirement.
    */
   isUpgradeUnlocked(mine: Mine, index: number): boolean {
     const upgrade = mine.upgrades[index];
-    if (index === 0) {
-      return this.getSkillLevel(mine.id) >= upgrade.requiredLevel;
-    }
-    const prevUpgrade = mine.upgrades[index - 1];
-    return this.getSkillLevel(prevUpgrade.id) >= upgrade.requiredLevel;
+    return this.getSkillLevel(mine.id) >= upgrade.requiredLevel;
   }
 
   /**
@@ -216,11 +212,7 @@ export class MiningComponent {
    */
   getUpgradeLockText(mine: Mine, index: number): string {
     const upgrade = mine.upgrades[index];
-    if (index === 0) {
-      return `${mine.title} Lvl ${upgrade.requiredLevel}`;
-    }
-    const prevUpgrade = mine.upgrades[index - 1];
-    return `${prevUpgrade.title} Lvl ${upgrade.requiredLevel}`;
+    return `${mine.title} Lvl ${upgrade.requiredLevel}`;
   }
 
   /**

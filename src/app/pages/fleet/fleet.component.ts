@@ -67,7 +67,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Kolonisierungsschiff',
       description: 'Besiedelt ferne Planeten. Erhöht dauerhaft die Personal-Produktion und Kapazität.',
       imagePath: 'assets/img/fleet/kolonisierungsschiffe.png',
-      cost: { eisen: 5000, nahrung: 1000, credits: 500, energie: 100 },
+      cost: { eisen: 5000, nahrung: 1000, credits: 500 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 10} Personal/h, +${count * 1000} Personalkapazität`,
     },
     {
@@ -75,7 +75,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Logistikschiff',
       description: 'Erhöht die globale Lagerkapazität aller Rohstoffe.',
       imagePath: 'assets/img/fleet/logistikschiff.png',
-      cost: { eisen: 2000, credits: 500, energie: 50 },
+      cost: { eisen: 2000, credits: 500 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 10}% globale Lagerkapazität`,
     },
     {
@@ -83,7 +83,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Transportschiff',
       description: 'Versorgt deine Planeten mit Materialien.',
       imagePath: 'assets/img/fleet/transportschiffe.png',
-      cost: { eisen: 3000, silber: 1000, energie: 50 },
+      cost: { eisen: 3000, silber: 1000 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 200} Nahrung/h, +${count * 150} Eisen/h`,
     },
     {
@@ -91,7 +91,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Mining Ship',
       description: 'Kann in den Asteroidengürtel geschickt werden, um Rohstoffe abzubauen.',
       imagePath: 'assets/img/fleet/mining-ship.png',
-      cost: { eisen: 1000, silber: 200, energie: 20 },
+      cost: { eisen: 1000, silber: 200 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `${count} Schiffe für Missionen verfügbar`,
     },
   ];
@@ -103,7 +103,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Leichter Jäger',
       description: 'Ein schnelles, wendiges Angriffsschiff. Gut für Eskorten und leichte Angriffe.',
       imagePath: 'assets/img/fleet/light_fighter.jpg',
-      cost: { eisen: 500, energie: 10 },
+      cost: { eisen: 500 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 10} Angriffsstärke`,
     },
     {
@@ -111,7 +111,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Schwerer Jäger',
       description: 'Ein schwer gepanzertes Angriffsschiff mit mehr Feuerkraft.',
       imagePath: 'assets/img/fleet/heavy_fighter.jpg',
-      cost: { eisen: 1500, silber: 300, energie: 30 },
+      cost: { eisen: 1500, silber: 300 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 35} Angriffsstärke`,
     },
     {
@@ -119,7 +119,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Zerstörer',
       description: 'Ein großes, furchteinflößendes Kampfschiff, das planetare Verteidigungen brechen kann.',
       imagePath: 'assets/img/fleet/destroyer.jpg',
-      cost: { eisen: 5000, silber: 1500, gold: 200, xenonit: 50, energie: 100 },
+      cost: { eisen: 5000, silber: 1500, gold: 200, xenonit: 50 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 150} Angriffsstärke`,
     },
     {
@@ -127,7 +127,7 @@ export class FleetComponent implements OnInit, OnDestroy {
       title: 'Kreuzer',
       description: 'Das ultimative Schlachtschiff. Massive Feuerkraft und Panzerung.',
       imagePath: 'assets/img/fleet/cruiser.jpg',
-      cost: { eisen: 15000, silber: 5000, gold: 1000, xenonit: 300, energie: 300 },
+      cost: { eisen: 15000, silber: 5000, gold: 1000, xenonit: 300 },
       effectFn: (count) => count === 0 ? 'Noch keines gebaut.' : `+${count * 600} Angriffsstärke`,
     },
   ];

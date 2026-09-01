@@ -34,25 +34,19 @@ export class GameStateService {
 
   /** Total energy capacity produced by all power plants. */
   energyProduced = computed<number>(() => {
-    const s = this.skills();
-    return MathUtils.calcExponential(200, s['solarkraftwerk'] || 0) +
-           MathUtils.calcExponential(800, s['fusionsreaktor'] || 0) +
-           MathUtils.calcExponential(3000, s['antimaterie'] || 0);
+    return MathUtils.calcTotalEnergyProduced(this.skills());
   });
 
   /** Total energy consumed by all buildings and ships. */
   energyConsumed = computed<number>(() => {
-    return Object.entries(this.skills()).reduce((total, [id, level]) => {
-      if (!ENERGY_UPKEEP[id]) return total;
-      return total + (SHIP_IDS.includes(id) ? ENERGY_UPKEEP[id] * level : MathUtils.calcCumulativeUpkeep(ENERGY_UPKEEP[id], level));
-    }, 0);
+    return MathUtils.calcTotalEnergyConsumed(this.skills());
   });
 
   /** Remaining energy capacity (produced minus consumed). */
   availableEnergy = computed<number>(() => this.energyProduced() - this.energyConsumed());
 
-  /** Hourly production rates for each resource based on current skills. */
-  productionRates = computed<GameResources>(() => MathUtils.buildResourceRates(this.skills()));
+  /** Hourly production rates for each resource based on current skills and energy state. */
+  productionRates = computed<GameResources>(() => MathUtils.buildResourceRates(this.skills(), this.availableEnergy()));
 
   /** Maximum storage capacity for each resource. */
   maxStorage = computed<GameResources>(() => MathUtils.buildMaxStorage(this.skills()));
