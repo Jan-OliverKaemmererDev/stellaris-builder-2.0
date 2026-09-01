@@ -11,6 +11,7 @@ import { EnergyComponent } from './pages/energy/energy.component';
 import { ResearchComponent } from './pages/research/research.component';
 import { InfrastructureComponent } from './pages/infrastructure/infrastructure.component';
 import { TradeComponent } from './pages/trade/trade.component';
+import { RulesComponent } from './pages/rules/rules.component';
 
 /**
  * Top-level route configuration for the application.
@@ -33,6 +34,7 @@ export const routes: Routes = [
       { path: 'infrastructure', component: InfrastructureComponent },
       { path: 'trade', component: TradeComponent },
       { path: 'fleet', component: FleetComponent, data: { title: 'Flotte', icon: '🚀' } },
+      { path: 'spielregeln', component: RulesComponent, data: { title: 'Spielregeln', icon: '📖' } },
     ],
   },
 ];

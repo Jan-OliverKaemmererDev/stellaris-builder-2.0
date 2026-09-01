@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Auth, user } from '@angular/fire/auth';
 import { Firestore, doc, onSnapshot, setDoc, updateDoc } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { GameResources, MissionState, GameState, DEFAULT_STATE, SHIP_IDS, ENERGY_UPKEEP, ActiveBuild } from './game-state.types';
 import * as MathUtils from './game-math.utils';
@@ -16,6 +17,7 @@ import * as MathUtils from './game-math.utils';
 export class GameStateService {
   private auth = inject(Auth);
   private firestore = inject(Firestore);
+  private router = inject(Router);
 
   /** Current resource amounts as a reactive signal. */
   resources = signal<GameResources>(DEFAULT_STATE.resources);
@@ -40,6 +42,9 @@ export class GameStateService {
 
   /** Resources earned while offline, shown in the welcome-back dialog. */
   offlineEarnings = signal<GameResources | null>(null);
+
+  /** Whether the user has seen the rules page. */
+  hasSeenRules = signal<boolean>(false);
 
   /** Total energy capacity produced by all power plants. */
   energyProduced = computed<number>(() => {
@@ -133,6 +138,7 @@ export class GameStateService {
     this.resources.set(initialState.resources);
     this.skills.set(initialState.skills);
     this.isInitialized = true;
+    this.router.navigate(['/bridge/spielregeln']);
   }
 
   /**
@@ -143,17 +149,23 @@ export class GameStateService {
    */
   private async handleExistingState(state: GameState, stateRef: ReturnType<typeof doc>): Promise<void> {
     if (!state) return;
+    const isFirstLoad = !this.isInitialized;
     if (!this.isInitialized && state.lastUpdate) {
       const offlineHours = (Date.now() - state.lastUpdate) / (1000 * 60 * 60);
       if (offlineHours > 0.01) state = await this.processOfflineProgress(state, offlineHours, Date.now(), stateRef);
-      this.isInitialized = true;
     }
+    this.isInitialized = true;
     this.resources.set(state.resources || DEFAULT_STATE.resources);
     this.skills.set(state.skills || {});
     this.activeMission.set(state.activeMission || null);
     this.activeBattle.set(state.activeBattle || null);
     this.enemyActivated.set(state.enemyActivated ?? false);
     this.lastEnemyAttack.set(state.lastEnemyAttack || 0);
+    this.hasSeenRules.set(state.hasSeenRules ?? false);
+    
+    if (isFirstLoad && !state.hasSeenRules) {
+      this.router.navigate(['/bridge/spielregeln']);
+    }
     
     // Check for offline completed builds and update state if needed
     let builds = { ...(state.activeBuilds || {}) };
@@ -543,6 +555,21 @@ export class GameStateService {
       resources: newRes,
       lastEnemyAttack: now,
     });
+  }
+
+  /**
+   * Marks the rules page as seen by the user.
+   */
+  async markRulesAsSeen(): Promise<void> {
+    this.hasSeenRules.set(true);
+    const user = this.auth.currentUser;
+    if (!user) return;
+    try {
+      const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+      await updateDoc(stateRef, { hasSeenRules: true });
+    } catch (err) {
+      console.warn('Could not persist hasSeenRules to Firestore:', err);
+    }
   }
 }
 

@@ -59,6 +59,8 @@ export interface GameState {
   activeBuilds?: Record<string, ActiveBuild>;
   /** The currently running mission, or `null` if the fleet is idle. */
   activeMission?: MissionState | null;
+  /** Whether the user has seen the rules page on their first login. */
+  hasSeenRules?: boolean;
   /** Whether the enemy faction has been activated after player's first battle attack. */
   enemyActivated?: boolean;
   /** The currently running battle operation, or `null` if idle. */
@@ -85,6 +87,7 @@ export const DEFAULT_STATE: GameState = {
     personal: 100,
   },
   skills: {},
+  hasSeenRules: false,
   enemyActivated: false,
 };
 

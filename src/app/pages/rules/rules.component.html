@@ -1,0 +1,130 @@
+<div class="rules-container">
+  @if (canGoBack()) {
+    <a href="#" (click)="goBack($event)" class="back-button" aria-label="Zurück zur vorherigen Seite">
+      <span class="back-arrow" aria-hidden="true">&larr;</span> Zurück
+    </a>
+  }
+
+  <header class="rules-header">
+    <h1 class="page-title">Commander's Handbuch & Spielregeln</h1>
+    <p class="subtitle">Wissen ist Macht. Überleben ist Pflicht.</p>
+  </header>
+
+  <section class="rules-section">
+    <h2>1. Erste Schritte - Wie beginne ich?</h2>
+    <div class="rules-content">
+      <p>Willkommen Commander! Wenn du neu auf der Brücke bist, solltest du folgende Dinge zuerst tun:</p>
+      <ul>
+        <li><strong>Ressourcen-Minen bauen:</strong> Gehe in das Menü <strong>Mining</strong> und baue eine Eisenmine, Silbermine und Goldmine. Sie sind die Grundlage für dein Imperium.</li>
+        <li><strong>Energie sichern:</strong> Gehe in das Menü <strong>Energie</strong> und baue ein Solarkraftwerk. Jedes Gebäude und Schiff verbraucht Energie.</li>
+        <li><strong>Vermeide Sackgassen:</strong> Baue am Anfang nicht zu schnell teure Anlagen oder Schiffe. Wenn deine Energie unter 0 fällt, <strong>stoppt die gesamte Ressourcenproduktion</strong> deiner Minen! Achte immer auf einen Energieüberschuss.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="rules-section">
+    <h2>2. Energie - Der Herzschlag deines Imperiums</h2>
+    <div class="rules-content">
+      <p>Ohne Energie läuft nichts. Deine Anlagen benötigen konstant Energie.</p>
+      <ul>
+        <li><strong>Energieproduktion:</strong> Solarkraftwerke, Fusionsreaktoren und Antimaterie-Reaktoren produzieren Energie. Jedes Level bringt exponentiell mehr Energie, wird aber auch teurer in der Anschaffung.</li>
+        <li><strong>Energieverbrauch:</strong> Fast jedes Gebäude verbraucht Energie. Die Unterhaltskosten steigen mit jedem Level. Kampfschiffe verbrauchen ebenfalls permanent Energie.</li>
+        <li><strong>Achtung Blackout:</strong> Fällt dein verfügbarer Energie-Wert (oben rechts) in den negativen Bereich (rot), produzieren deine Eisen-, Silber-, Gold- und Xenonit-Anlagen <strong>keine Ressourcen mehr!</strong> Baue sofort Kraftwerke aus oder schalte Verbraucher ab (zukünftiges Feature).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="rules-section">
+    <h2>3. Fortgeschrittene Ressourcen</h2>
+    <div class="rules-content">
+      <p>Neben den Basis-Ressourcen gibt es speziellere Materialien, die du im späteren Spielverlauf zwingend benötigst:</p>
+      <div class="resource-cards">
+        <div class="res-card">
+          <div class="res-icon xen-icon"></div>
+          <h3>Xenonit</h3>
+          <p>Wird für hochstufige Schiffe und Gebäude (wie den Kreuzer) benötigt. Du erhältst Xenonit durch die <strong>Refinery (Raffinerie)</strong> im Infrastruktur-Menü.</p>
+        </div>
+        <div class="res-card">
+          <div class="res-icon per-icon"></div>
+          <h3>Personal</h3>
+          <p>Dein Imperium braucht Menschen! Du gewinnst Personal durch den Bau einer <strong>Großen Raumstation</strong> (Infrastruktur) oder durch den Bau von <strong>Kolonisierungsschiffen</strong> (Flotte).</p>
+        </div>
+        <div class="res-card">
+          <div class="res-icon nah-icon"></div>
+          <h3>Nahrung</h3>
+          <p>Wird produziert durch <strong>Biolabore</strong> (Infrastruktur) und <strong>Transportschiffe</strong> (Flotte). Unverzichtbar für die Kolonisierung und Versorgung.</p>
+        </div>
+        <div class="res-card">
+          <div class="res-icon cre-icon"></div>
+          <h3>Credits</h3>
+          <p>Die galaktische Währung. Erzeugt durch den <strong>Handelsposten</strong>, <strong>Interstellaren Markt</strong> oder die <strong>Galaktische Börse</strong> im Trade-Menü. Du kannst Credits auch verdienen, indem du Ressourcen verkaufst.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rules-section">
+    <h2>4. Die Flotte und Asteroiden-Mining</h2>
+    <div class="rules-content">
+      <p>Unter <strong>Flotte</strong> kannst du auf dem Orbitalen Werftdock (Orbital Shipyard) Schiffe bauen. Die Werft muss zuvor im Infrastruktur-Menü freigeschaltet und ausgebaut werden, um die Bauzeit und Kosten zu senken.</p>
+      <ul>
+        <li><strong>Zivile Schiffe:</strong> Kolonisierungsschiffe, Logistikschiffe und Transportschiffe bieten permanente globale Boni auf deine Produktion und Lagerkapazität.</li>
+        <li><strong>Asteroiden-Mining:</strong> Baue <strong>Mining Ships</strong>. Du kannst sie auf Asteroiden-Mining-Missionen schicken. Diese Missionen dauern (je nach Antriebstechnik) meistens 1 Minute und bringen nach Abschluss eine große Menge an Eisen, Silber und Gold auf einmal zurück!</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="rules-section">
+    <h2>5. Das Kampfsystem und Feindliche Übergriffe</h2>
+    <div class="rules-content">
+      <div class="warning-box">
+        <strong>VORSICHT:</strong> Sobald du Kampfschiffe besitzt und deine erste Offensive startest, erwacht eine feindliche Fraktion!
+      </div>
+      <p>Um an Kämpfen teilzunehmen, benötigst du die <strong>Planetare Verteidigung</strong> (Infrastruktur). Sobald diese Level 1 erreicht, ist das Kampfsystem in der Flotte freigeschaltet.</p>
+      
+      <h3>Offensiven Starten</h3>
+      <ul>
+        <li>Baue Kampfschiffe (Leichter Jäger, Schwerer Jäger, Zerstörer, Kreuzer). Jedes Schiff hat einen Angriffsstärke-Wert.</li>
+        <li>Starte eine Flotten-Offensive. Wenn sie abgeschlossen ist, erbeutest du <strong>War Booty (Kriegsbeute)</strong> in Form von Ressourcen (inklusive wertvollem Xenonit!).</li>
+        <li><strong>Achtung:</strong> Die erste gestartete Schlacht <strong>aktiviert die Feinde</strong>.</li>
+      </ul>
+
+      <h3>Feindliche Angriffe (Raids)</h3>
+      <ul>
+        <li>Solange der Feind aktiv ist und du Kampfschiffe besitzt, wirst du unregelmäßig (ca. alle 3 bis 7 Minuten) angegriffen, während du online bist.</li>
+        <li><strong>Sieg:</strong> Wenn deine Flottenstärke + Planetare Verteidigung höher ist als die Stärke der Angreifer, wehrst du den Angriff ab und sicherst dir sogar einen Beute-Bonus!</li>
+        <li><strong>Niederlage:</strong> Wenn der Feind stärker ist, plündert er Ressourcen aus deinem Lager.</li>
+        <li><strong>Verteidigung mitigiert Schaden:</strong> Selbst bei einer Niederlage reduziert ein hohes Level der <strong>Planetaren Verteidigung</strong> den Anteil der gestohlenen Ressourcen enorm (bis zu 85% Schadensreduktion).</li>
+        <li><strong>Diplomatie:</strong> Du kannst die Angriffe jederzeit stoppen, indem du im Flotten-Menü auf "Diplomatie" klickst und einen Tribut in Form von Eisen, Silber und Credits an die Feinde zahlst. Dies deaktiviert die Raids, bis du selbst wieder angreifst.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="rules-section">
+    <h2>6. Technologien und Nano-Bots</h2>
+    <div class="rules-content">
+      <p>Im <strong>Research (Forschung)</strong> Tab findest du Nano-Bots und verschiedene Upgrades für Gebäude.</p>
+      <ul>
+        <li><strong>Nano-Bots:</strong> Ein revolutionäres Upgrade, das die Baukosten für <strong>alle</strong> Gebäude (Eisen, Silber, Gold) um 1% pro Level (maximal 50%) senkt. Investiere frühzeitig in Nano-Bots, das spart massiv Ressourcen!</li>
+        <li>Du kannst die Nano-Bot-Visualisierung in deinem Profil-Dropdown (oben rechts) ein- und ausschalten.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="action-footer" id="rules-bottom">
+    <button
+      class="btn-acknowledge"
+      [class.acknowledged]="isAcknowledging()"
+      (click)="acknowledgeRules()"
+      type="button"
+    >
+      Alles verstanden
+    </button>
+  </div>
+</div>
+
+<button class="scroll-down-btn" (click)="scrollToBottom()" type="button" aria-label="Direkt nach unten scrollen">
+  Direkt starten
+  <span class="arrow" aria-hidden="true">↓</span>
+</button>
+
