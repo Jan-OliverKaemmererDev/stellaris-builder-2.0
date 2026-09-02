@@ -88,6 +88,7 @@ $primary-light: #00f2fe;
 
 .scene {
   perspective: 1200px;
+  -webkit-perspective: 1200px;
   position: relative;
   z-index: 2;
   width: 100%;
@@ -104,11 +105,13 @@ $primary-light: #00f2fe;
   height: 480px;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  -webkit-transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none; /* Let clicks pass through empty spaces of planet */
 
   &.is-flipped {
     transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
 
     .planet-face {
       &.front { pointer-events: none; }
@@ -117,59 +120,30 @@ $primary-light: #00f2fe;
   }
 }
 
-.planet-sphere {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow:
-    inset -40px -40px 60px rgba(0, 0, 0, 0.9),
-    inset 20px 20px 50px rgba(255, 255, 255, 0.15),
-    0 0 60px rgba(79, 172, 254, 0.3);
-}
-
-.planet-surface {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    60deg,
-    #131b2c 0%, #131b2c 10%,
-    #1a243a 10%, #1a243a 20%,
-    #0f172a 20%, #0f172a 35%
-  );
-  animation: spin-surface 40s linear infinite;
-  z-index: -1;
-}
-
-@keyframes spin-surface {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
 .planet-face {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: 20px;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   display: flex;
   justify-content: center;
   align-items: center;
 
   &.front {
     pointer-events: auto;
+    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg);
   }
 
   &.back {
     transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
     pointer-events: none;
   }
 }
@@ -180,6 +154,8 @@ $primary-light: #00f2fe;
   width: 420px;
   padding: 2.5rem;
   transform: translateZ(60px);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .glass-panel {
@@ -191,6 +167,8 @@ $primary-light: #00f2fe;
   box-shadow:
     0 8px 32px 0 rgba(0, 0, 0, 0.5),
     inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .logo-container {
@@ -489,6 +467,178 @@ $primary-light: #00f2fe;
     &:hover {
       color: $primary;
       text-decoration: underline;
+    }
+  }
+}
+
+/* ═══ Mobile Responsive Styles ═══ */
+
+@media (max-width: 768px) {
+  .space-background {
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 1rem;
+    box-sizing: border-box;
+  }
+
+  .intro-overlay {
+    position: fixed;
+    animation: fadeOutBackground 1s ease-in-out 0.4s forwards;
+  }
+
+  .animated-logo {
+    position: absolute;
+    width: min(280px, 70vw);
+    animation: shrinkToCornerMobile 1s ease-in-out 0.4s forwards;
+    pointer-events: none;
+  }
+
+  @keyframes shrinkToCornerMobile {
+    0% {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(280px, 70vw);
+    }
+    100% {
+      top: 16px;
+      left: 16px;
+      transform: translate(0, 0);
+      width: 68px;
+    }
+  }
+
+  .scene {
+    width: 100%;
+    margin-top: 96px; /* Positions section cleanly below the 68px logo at top: 16px (ends at 84px) */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex: 0 0 auto;
+    pointer-events: auto;
+  }
+
+  .planet {
+    width: 100%;
+    max-width: 390px;
+    height: 480px; /* Comfortably encloses login form */
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s ease;
+    will-change: transform;
+
+    &.is-flipped {
+      height: 640px; /* Comfortably encloses registration form */
+      transform: rotateY(180deg);
+      -webkit-transform: rotateY(180deg);
+    }
+  }
+
+  .planet-face {
+    border-radius: 20px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    height: 100%;
+    width: 100%;
+  }
+
+  .form-wrapper {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem 1.25rem;
+    transform: none; /* Crucial: no translateZ on mobile eliminates layer clipping and 3D flash */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .glass-panel {
+    background: rgba(18, 26, 44, 0.88); /* Deep glass preventing backdrop flash during 3D rotation */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .logo-container {
+    margin-bottom: 1.25rem;
+
+    h1 {
+      font-size: 1.85rem;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      margin-top: 0.35rem;
+    }
+  }
+
+  .form-title {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+  }
+
+  .input-group {
+    margin-bottom: 0.85rem;
+
+    label {
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+
+    input {
+      padding: 0.65rem 0.85rem;
+      font-size: 0.95rem;
+    }
+  }
+
+  .privacy-policy-check {
+    margin-bottom: 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .submit-btn {
+    padding: 0.75rem;
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .toggle-mode {
+    margin-top: 1.1rem;
+    font-size: 0.85rem;
+  }
+
+  .landing-footer {
+    position: static; /* Place in normal document flow below .scene */
+    margin-top: auto; /* Push to bottom on tall viewports */
+    padding-top: 2rem; /* Guarantees clean 2rem distance from the form */
+    padding-bottom: 1.75rem;
+    width: 100%;
+    text-align: center;
+    flex-shrink: 0;
+    z-index: 20;
+
+    a {
+      font-size: 0.85rem;
+      margin: 0 0.75rem;
     }
   }
 }

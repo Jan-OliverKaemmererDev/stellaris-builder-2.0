@@ -75,6 +75,9 @@ export class LandingPageComponent implements AfterViewInit {
     this.commanderName.set('');
     this.privacyAccepted.set(false);
     this.confirmPassword.set('');
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   /**
