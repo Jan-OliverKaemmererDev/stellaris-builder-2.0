@@ -148,7 +148,7 @@ export class LandingPageComponent implements AfterViewInit {
     }
 
     if (!this.isLoginMode() && !this.privacyAccepted()) {
-      this.errorMessage.set('Bitte akzeptiere die Privacy Policy.');
+      this.errorMessage.set('Bitte akzeptiere den Datenschutz.');
       this.successMessage.set(null);
       return false;
     }

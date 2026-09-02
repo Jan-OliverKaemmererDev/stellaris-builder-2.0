@@ -21,7 +21,9 @@ import { RulesComponent } from './pages/rules/rules.component';
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'legal-notice', component: LegalNotice },
+  { path: 'impressum', redirectTo: 'legal-notice', pathMatch: 'full' },
   { path: 'privacy-policy', component: PrivacyPolicy },
+  { path: 'datenschutz', redirectTo: 'privacy-policy', pathMatch: 'full' },
   {
     path: 'bridge',
     component: GameLayout,

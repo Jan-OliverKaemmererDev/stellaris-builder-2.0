@@ -165,8 +165,8 @@
 
             <div class="privacy-policy-check">
               <label>
-                <input type="checkbox" name="privacyAccepted" [ngModel]="privacyAccepted()" (ngModelChange)="privacyAccepted.set($event)" aria-label="Accept privacy policy" required />
-                Ich akzeptiere die <a routerLink="/privacy-policy" class="text-btn inline-link" aria-label="Read privacy policy">Privacy Policy</a>
+                <input type="checkbox" name="privacyAccepted" [ngModel]="privacyAccepted()" (ngModelChange)="privacyAccepted.set($event)" aria-label="Datenschutz akzeptieren" required />
+                Ich akzeptiere den <a routerLink="/privacy-policy" class="text-btn inline-link" aria-label="Datenschutz lesen">Datenschutz</a>
               </label>
             </div>
 
@@ -190,7 +190,7 @@
   </main>
 
   <footer class="landing-footer" aria-label="Site footer">
-    <a routerLink="/privacy-policy" aria-label="Privacy Policy">Privacy Policy</a>
-    <a routerLink="/legal-notice" aria-label="Legal Notice">Legal notice</a>
+    <a routerLink="/privacy-policy" aria-label="Datenschutz">Datenschutz</a>
+    <a routerLink="/legal-notice" aria-label="Impressum">Impressum</a>
   </footer>
 </div>
