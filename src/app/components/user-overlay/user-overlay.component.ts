@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth, signOut, updateProfile } from '@angular/fire/auth';
-import { updateEmail, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential } from 'firebase/auth';
+import { updateEmail, verifyBeforeUpdateEmail, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential } from 'firebase/auth';
 import { Firestore, doc, getDoc, setDoc, deleteDoc } from '@angular/fire/firestore';
 import { GameStateService } from '../../services/game-state.service';
 import { IconComponent } from '../icon/icon.component';
@@ -47,13 +47,23 @@ export class UserOverlayComponent implements OnInit {
   /** Confirmation sub-dialog state */
   confirmModal = signal<'delete' | 'reset' | null>(null);
 
+  /** Initial state tracking to only update what was actually modified */
+  private initialEmail = '';
+  private initialCommanderName = '';
+
   async ngOnInit(): Promise<void> {
     const user = this.auth.currentUser;
     if (!user) return;
 
     this.isGuest.set(user.isAnonymous);
-    this.commanderName.set(user.displayName || (user.isAnonymous ? 'Gast-Commander' : 'Commander'));
-    this.email.set(user.email || '');
+    const authName = user.displayName || (user.isAnonymous ? 'Gast-Commander' : 'Commander');
+    const authEmail = user.email || '';
+
+    this.commanderName.set(authName);
+    this.initialCommanderName = authName;
+
+    this.email.set(authEmail);
+    this.initialEmail = authEmail;
 
     try {
       const userDocRef = doc(this.firestore, `users/${user.uid}`);
@@ -62,13 +72,16 @@ export class UserOverlayComponent implements OnInit {
         const data = snap.data();
         if (data['commanderName']) {
           this.commanderName.set(data['commanderName']);
+          this.initialCommanderName = data['commanderName'];
         }
-        if (data['email']) {
+        // Only use Firestore email if user has no Auth email (e.g. guest conversion)
+        if (!authEmail && data['email']) {
           this.email.set(data['email']);
+          this.initialEmail = data['email'];
         }
       }
-    } catch (err) {
-      console.warn('Could not retrieve Firestore user document:', err);
+    } catch {
+      // Silently ignore document fetch issues
     }
   }
 
@@ -126,13 +139,23 @@ export class UserOverlayComponent implements OnInit {
       }
     }
 
+    // Determine what was actually changed by the user in this session
+    const isEmailChanged = !this.isGuest() && trimmedEmail.toLowerCase() !== this.initialEmail.toLowerCase();
+    const isPasswordChanged = !this.isGuest() && !!pwd;
+    const isNameChanged = trimmedName !== this.initialCommanderName;
+
+    if (!isNameChanged && !isEmailChanged && !isPasswordChanged) {
+      this.successMessage.set('Keine Änderungen vorgenommen.');
+      return;
+    }
+
     this.isLoading.set(true);
 
     try {
-      // Re-authentication if required for sensitive changes (email or password)
-      if (!this.isGuest() && (pwd || (trimmedEmail && trimmedEmail !== user.email))) {
+      // Re-authentication required for sensitive changes (password or email change)
+      if (!this.isGuest() && (isPasswordChanged || isEmailChanged)) {
         if (!currentPwd) {
-          this.errorMessage.set('Bitte gib dein aktuelles Passwort ein, um E-Mail oder Passwort zu ändern.');
+          this.errorMessage.set('Bitte gib dein aktuelles Passwort ein, um diese Änderung zu speichern.');
           this.isLoading.set(false);
           return;
         }
@@ -140,29 +163,48 @@ export class UserOverlayComponent implements OnInit {
         await reauthenticateWithCredential(user, credential);
       }
 
-      // 1. Update Profile Display Name in Firebase Auth & Firestore
-      if (trimmedName !== user.displayName) {
-        await updateProfile(user, { displayName: trimmedName });
-      }
       const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      await setDoc(userDocRef, { commanderName: trimmedName, email: trimmedEmail }, { merge: true });
-      this.nameChanged.emit(trimmedName);
+
+      // 1. Update Profile Display Name
+      if (isNameChanged) {
+        await updateProfile(user, { displayName: trimmedName });
+        await setDoc(userDocRef, { commanderName: trimmedName }, { merge: true });
+        this.initialCommanderName = trimmedName;
+        this.nameChanged.emit(trimmedName);
+      }
+
+      let emailVerificationSent = false;
 
       // 2. Handle guest converting to permanent account
       if (this.isGuest() && trimmedEmail && pwd) {
         const credential = EmailAuthProvider.credential(trimmedEmail, pwd);
         await linkWithCredential(user, credential);
+        await setDoc(userDocRef, { email: trimmedEmail }, { merge: true });
         this.isGuest.set(false);
+        this.initialEmail = trimmedEmail;
       } else {
-        // 3. Update Email for registered user
-        if (!this.isGuest() && trimmedEmail && trimmedEmail !== user.email) {
-          await updateEmail(user, trimmedEmail);
-          await setDoc(userDocRef, { email: trimmedEmail }, { merge: true });
+        // 3. Update Password for registered user
+        if (isPasswordChanged) {
+          await updatePassword(user, pwd);
         }
 
-        // 4. Update Password for registered user
-        if (!this.isGuest() && pwd) {
-          await updatePassword(user, pwd);
+        // 4. Update Email for registered user ONLY if user actually changed it
+        if (isEmailChanged) {
+          try {
+            await updateEmail(user, trimmedEmail);
+            await setDoc(userDocRef, { email: trimmedEmail }, { merge: true });
+            this.initialEmail = trimmedEmail;
+          } catch (emailErr: any) {
+            if (
+              emailErr?.code === 'auth/operation-not-allowed' ||
+              emailErr?.message?.includes('verify the new email')
+            ) {
+              await verifyBeforeUpdateEmail(user, trimmedEmail);
+              emailVerificationSent = true;
+            } else {
+              throw emailErr;
+            }
+          }
         }
       }
 
@@ -170,9 +212,17 @@ export class UserOverlayComponent implements OnInit {
       this.newPassword.set('');
       this.confirmPassword.set('');
       this.currentPassword.set('');
-      this.successMessage.set('Daten erfolgreich in Firebase gespeichert!');
+
+      if (emailVerificationSent) {
+        this.successMessage.set(
+          `Profil aktualisiert! Ein Bestätigungslink wurde an ${trimmedEmail} gesendet. Bitte klicke auf den Link in deiner E-Mail, um die neue E-Mail-Adresse zu aktivieren.`
+        );
+      } else if (isPasswordChanged && !isEmailChanged && !isNameChanged) {
+        this.successMessage.set('Passwort erfolgreich geändert!');
+      } else {
+        this.successMessage.set('Daten erfolgreich in Firebase gespeichert!');
+      }
     } catch (error: any) {
-      console.error('Error updating user profile:', error);
       this.handleAuthError(error);
     } finally {
       this.isLoading.set(false);
@@ -201,16 +251,20 @@ export class UserOverlayComponent implements OnInit {
     const user = this.auth.currentUser;
     if (!user) return;
 
+    if (!user.isAnonymous) {
+      const pwd = this.currentPassword().trim();
+      if (!pwd) {
+        this.errorMessage.set('Bitte gib dein aktuelles Passwort zur Bestätigung ein.');
+        return;
+      }
+    }
+
     this.isLoading.set(true);
     try {
-      // Reauthenticate if current password is provided and needed
-      if (!user.isAnonymous && this.currentPassword()) {
-        try {
-          const cred = EmailAuthProvider.credential(user.email || '', this.currentPassword());
-          await reauthenticateWithCredential(user, cred);
-        } catch {
-          // Continue or let deleteUser handle auth check
-        }
+      // Reauthenticate registered user before deletion
+      if (!user.isAnonymous) {
+        const cred = EmailAuthProvider.credential(user.email || '', this.currentPassword());
+        await reauthenticateWithCredential(user, cred);
       }
 
       // Delete Firestore records
@@ -227,11 +281,20 @@ export class UserOverlayComponent implements OnInit {
       this.close.emit();
       this.router.navigate(['/']);
     } catch (error: any) {
-      console.error('Error deleting account:', error);
-      if (error.code === 'auth/requires-recent-login') {
-        this.errorMessage.set('Bitte gib im Profil dein aktuelles Passwort ein, um den Account aus Sicherheitsgründen zu löschen.');
+      const code = error?.code || '';
+      const msg = (error?.message || '').toLowerCase();
+      if (
+        code === 'auth/wrong-password' ||
+        code === 'auth/invalid-credential' ||
+        code === 'auth/invalid-password' ||
+        msg.includes('wrong-password') ||
+        msg.includes('invalid-credential')
+      ) {
+        this.errorMessage.set('Das eingegebene Passwort ist falsch. Der Account wurde nicht gelöscht.');
+      } else if (code === 'auth/requires-recent-login') {
+        this.errorMessage.set('Bitte gib dein aktuelles Passwort ein, um den Account aus Sicherheitsgründen zu löschen.');
       } else {
-        this.errorMessage.set('Fehler beim Löschen des Accounts: ' + (error.message || error));
+        this.errorMessage.set('Fehler beim Löschen des Accounts. Bitte Passwort überprüfen.');
       }
       this.closeConfirmModal();
     } finally {
@@ -249,8 +312,7 @@ export class UserOverlayComponent implements OnInit {
       this.closeConfirmModal();
       this.successMessage.set('Spielstand erfolgreich komplett zurückgesetzt!');
     } catch (error: any) {
-      console.error('Error resetting game state:', error);
-      this.errorMessage.set('Fehler beim Zurücksetzen des Spielstands: ' + (error.message || error));
+      this.errorMessage.set('Fehler beim Zurücksetzen des Spielstands. Bitte versuche es später erneut.');
       this.closeConfirmModal();
     } finally {
       this.isLoading.set(false);
@@ -258,14 +320,30 @@ export class UserOverlayComponent implements OnInit {
   }
 
   private handleAuthError(error: any): void {
-    const code = error?.code;
+    const code = error?.code || '';
+    const msg = (error?.message || '').toLowerCase();
+
+    // Check for wrong password or invalid credential during re-authentication
+    if (
+      code === 'auth/wrong-password' ||
+      code === 'auth/invalid-credential' ||
+      code === 'auth/invalid-password' ||
+      msg.includes('wrong-password') ||
+      msg.includes('invalid-credential')
+    ) {
+      this.errorMessage.set('Die Eingabe des aktuellen Passworts ist falsch. Bitte überprüfe dein Passwort.');
+      return;
+    }
+
     switch (code) {
       case 'auth/requires-recent-login':
-        this.errorMessage.set('Sicherheitsüberprüfung: Bitte gib dein aktuelles Passwort ein, um sensible Daten zu ändern.');
+        this.errorMessage.set('Sicherheitsüberprüfung: Bitte gib dein aktuelles Passwort ein, um diese Änderung zu speichern.');
         break;
-      case 'auth/wrong-password':
-      case 'auth/invalid-credential':
-        this.errorMessage.set('Das eingegebene aktuelle Passwort ist nicht korrekt.');
+      case 'auth/too-many-requests':
+        this.errorMessage.set('Zu viele Fehlversuche. Bitte warte kurz und versuche es erneut.');
+        break;
+      case 'auth/network-request-failed':
+        this.errorMessage.set('Die Eingabe des aktuellen Passworts ist falsch oder die Verbindung zum Server wurde unterbrochen.');
         break;
       case 'auth/email-already-in-use':
         this.errorMessage.set('Diese E-Mail-Adresse wird bereits von einem anderen Commander genutzt.');
@@ -274,10 +352,13 @@ export class UserOverlayComponent implements OnInit {
         this.errorMessage.set('Die angegebene E-Mail-Adresse ist ungültig.');
         break;
       case 'auth/weak-password':
-        this.errorMessage.set('Das neue Passwort ist zu schwach (mindestens 6 Zeichen).');
+        this.errorMessage.set('Das neue Passwort ist zu schwach (mindestens 6 Zeichen erforderlich).');
+        break;
+      case 'auth/operation-not-allowed':
+        this.errorMessage.set('Diese Aktion erfordert eine E-Mail-Verifizierung oder ist in Firebase noch nicht freigeschaltet.');
         break;
       default:
-        this.errorMessage.set(error?.message || 'Fehler beim Übermitteln der Daten an Firebase.');
+        this.errorMessage.set('Die Eingabe des aktuellen Passworts ist falsch oder die Daten konnten nicht übernommen werden.');
     }
   }
 }
