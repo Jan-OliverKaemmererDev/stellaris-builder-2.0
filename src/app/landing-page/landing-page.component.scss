@@ -246,6 +246,56 @@ $primary-light: #00f2fe;
   }
 }
 
+.input-wrapper {
+  position: relative;
+  width: 100%;
+
+  &.has-trailing-btn {
+    input {
+      padding-right: 46px;
+    }
+
+    .btn-eye-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #8c9baf;
+      border-radius: 6px;
+      transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+
+      &:hover {
+        color: #00f2fe;
+        background: rgba(0, 242, 254, 0.12);
+      }
+
+      &:active {
+        transform: translateY(-50%) scale(0.95);
+      }
+
+      &:focus-visible {
+        outline: none;
+        color: #00f2fe;
+        box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.3);
+      }
+
+      .eye-svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+        stroke: currentColor;
+      }
+    }
+  }
+}
+
 /* ═══ Buttons ═══ */
 
 .submit-btn {

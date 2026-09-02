@@ -571,5 +571,30 @@ export class GameStateService {
       console.warn('Could not persist hasSeenRules to Firestore:', err);
     }
   }
+
+  /**
+   * Completely resets the player's game state in Firestore and in-memory signals back to the starting values.
+   */
+  async resetGameState(): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
+    const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+    const freshState: GameState = {
+      ...DEFAULT_STATE,
+      hasSeenRules: true,
+      lastUpdate: Date.now(),
+    };
+    await setDoc(stateRef, freshState);
+
+    this.resources.set(freshState.resources);
+    this.skills.set({});
+    this.activeMission.set(null);
+    this.activeBattle.set(null);
+    this.enemyActivated.set(false);
+    this.lastEnemyAttack.set(0);
+    this.activeBuilds.set({});
+    this.offlineEarnings.set(null);
+  }
 }
 

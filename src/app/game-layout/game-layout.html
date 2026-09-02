@@ -112,7 +112,17 @@
         <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="User menu">
           <div class="user-dropdown-inner">
             <header class="dropdown-header">
-              <span class="dropdown-name">{{ commanderName }}</span>
+              <button
+                type="button"
+                class="dropdown-name-btn"
+                (click)="openUserOverlay()"
+                role="menuitem"
+                aria-label="Commander-Profil und Einstellungen öffnen"
+                title="Commander-Profil öffnen"
+              >
+                <span class="dropdown-name">{{ commanderName }}</span>
+                <span class="dropdown-name-tag">PROFIL</span>
+              </button>
             </header>
             
             @if (hasNanobots) {
@@ -181,5 +191,11 @@
 
   <app-offline-progress-dialog></app-offline-progress-dialog>
   <app-enemy-attack-overlay></app-enemy-attack-overlay>
+  @if (userOverlayOpen()) {
+    <app-user-overlay
+      (close)="closeUserOverlay()"
+      (nameChanged)="onCommanderNameChanged($event)"
+    />
+  }
 </div>
 

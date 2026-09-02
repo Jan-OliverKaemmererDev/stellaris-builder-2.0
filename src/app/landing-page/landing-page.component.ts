@@ -55,6 +55,11 @@ export class LandingPageComponent implements AfterViewInit {
   /** Whether an authentication operation is currently in progress. */
   isLoading = signal(false);
 
+  /** Visibility toggles for password fields */
+  showLoginPassword = signal(false);
+  showRegisterPassword = signal(false);
+  showRegisterConfirmPassword = signal(false);
+
   /** Reference to the email input for initial focus. */
   @ViewChild('emailInput') emailInput!: ElementRef<HTMLInputElement>;
 
@@ -63,6 +68,18 @@ export class LandingPageComponent implements AfterViewInit {
     if (this.emailInput && this.emailInput.nativeElement) {
       setTimeout(() => this.emailInput.nativeElement.focus(), 0);
     }
+  }
+
+  toggleLoginPassword(): void {
+    this.showLoginPassword.update(v => !v);
+  }
+
+  toggleRegisterPassword(): void {
+    this.showRegisterPassword.update(v => !v);
+  }
+
+  toggleRegisterConfirmPassword(): void {
+    this.showRegisterConfirmPassword.update(v => !v);
   }
 
   /**
@@ -75,6 +92,9 @@ export class LandingPageComponent implements AfterViewInit {
     this.commanderName.set('');
     this.privacyAccepted.set(false);
     this.confirmPassword.set('');
+    this.showLoginPassword.set(false);
+    this.showRegisterPassword.set(false);
+    this.showRegisterConfirmPassword.set(false);
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

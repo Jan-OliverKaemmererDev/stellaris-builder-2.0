@@ -97,11 +97,12 @@ class Satellite {
  * Provides the top header, sidebar navigation, footer, and the user dropdown menu.
  */
 import { IconComponent } from '../components/icon/icon.component';
+import { UserOverlayComponent } from '../components/user-overlay/user-overlay.component';
 
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent, IconComponent],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent, IconComponent, UserOverlayComponent],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })
@@ -120,6 +121,12 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
   /** GameState service to check if nanobots are unlocked and fetch resources. */
   gameState = inject(GameStateService);
+
+  /** Signal holding the current visibility state of the user profile overlay. */
+  userOverlayOpen = signal(false);
+
+  /** Signal for immediate reactive commander name updates across the layout. */
+  customCommanderName = signal<string | null>(null);
 
   /**
    * Computes the percentage of available energy relative to total produced energy.
@@ -355,12 +362,15 @@ export class GameLayout implements AfterViewInit, OnDestroy {
    * @returns A string representing the user's initials, e.g., 'JD'.
    */
   get userInitials(): string {
+    const name = this.commanderName;
+    if (name && name !== 'Commander' && name !== 'Gast-Commander') {
+      return this.getInitialsFromName(name);
+    }
     const user = this.auth.currentUser;
     if (!user) return '?';
-    if (user.displayName) return this.getInitialsFromName(user.displayName);
     if (user.isAnonymous) return 'G';
     if (user.email) return user.email.substring(0, 2).toUpperCase();
-    return '?';
+    return 'C';
   }
 
   /**
@@ -381,6 +391,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
    * @returns The display name or a fallback title if none is set.
    */
   get commanderName(): string {
+    if (this.customCommanderName()) return this.customCommanderName()!;
     const user = this.auth.currentUser;
     if (!user) return 'Commander';
     return user.displayName || (user.isAnonymous ? 'Gast-Commander' : 'Commander');
@@ -406,6 +417,28 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Opens the user profile settings overlay and closes dropdown.
+   */
+  openUserOverlay(): void {
+    this.dropdownOpen.set(false);
+    this.userOverlayOpen.set(true);
+  }
+
+  /**
+   * Closes the user profile settings overlay.
+   */
+  closeUserOverlay(): void {
+    this.userOverlayOpen.set(false);
+  }
+
+  /**
+   * Updates the displayed commander name immediately after a successful save.
+   */
+  onCommanderNameChanged(newName: string): void {
+    this.customCommanderName.set(newName);
+  }
+
+  /**
    * Closes the menus when a click occurs outside their respective areas.
    * @param event - The document click event.
    */
@@ -413,8 +446,8 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     
-    // Dropdown close logic
-    if (!target.closest('.user-menu')) {
+    // Dropdown close logic: close only when clicking outside both user-menu and user-dropdown
+    if (!target.closest('.user-menu') && !target.closest('.user-dropdown')) {
       this.dropdownOpen.set(false);
     }
     
@@ -425,13 +458,14 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Closes all menus when the Escape key is pressed.
+   * Closes all menus and overlays when the Escape key is pressed.
    * @param _event - The global keyboard event.
    */
   @HostListener('document:keydown.escape', ['$event'])
   onEscapePress(_event: Event): void {
     this.dropdownOpen.set(false);
     this.navMenuOpen.set(false);
+    this.userOverlayOpen.set(false);
   }
 
   /**
