@@ -164,17 +164,12 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   private satellites: Satellite[] = [];
 
   constructor() {
+    this.updateTitle(this.router.url);
+
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      const url = event.urlAfterRedirects;
-      if (url.includes('/mining')) this.pageTitle.set('ROHSTOFF\u00ADABBAU');
-      else if (url.includes('/energy')) this.pageTitle.set('ENERGIENETZ');
-      else if (url.includes('/research')) this.pageTitle.set('FORSCHUNGS\u00ADZENTRUM');
-      else if (url.includes('/infrastructure')) this.pageTitle.set('INFRA\u00ADSTRUKTUR');
-      else if (url.includes('/trade')) this.pageTitle.set('HANDEL & WIRTSCHAFT');
-      else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
-      else this.pageTitle.set('BRÜCKE');
+      this.updateTitle(event.urlAfterRedirects);
 
       // Force scroll to top on route change
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -182,6 +177,17 @@ export class GameLayout implements AfterViewInit, OnDestroy {
       // Automatically close the side menu
       this.navMenuOpen.set(false);
     });
+  }
+
+  private updateTitle(url: string): void {
+    if (url.includes('/mining')) this.pageTitle.set('ROHSTOFF\u00ADABBAU');
+    else if (url.includes('/energy')) this.pageTitle.set('ENERGIENETZ');
+    else if (url.includes('/research')) this.pageTitle.set('FORSCHUNGS\u00ADZENTRUM');
+    else if (url.includes('/infrastructure')) this.pageTitle.set('INFRA\u00ADSTRUKTUR');
+    else if (url.includes('/trade')) this.pageTitle.set('HANDEL & WIRTSCHAFT');
+    else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
+    else if (url.includes('/spielregeln')) this.pageTitle.set('SPIELREGELN');
+    else this.pageTitle.set('BRÜCKE');
   }
 
   ngAfterViewInit() {

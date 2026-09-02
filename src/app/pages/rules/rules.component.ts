@@ -25,7 +25,11 @@ export class RulesComponent {
 
   goBack(event: Event): void {
     event.preventDefault();
-    this.location.back();
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/bridge']);
+    }
   }
 
   scrollToBottom(): void {
