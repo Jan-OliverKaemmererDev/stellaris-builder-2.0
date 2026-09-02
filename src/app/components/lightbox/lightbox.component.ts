@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
-import { NgClass } from '@angular/common';
 
 /**
  * Data model for the lightbox overlay content.
@@ -21,10 +20,12 @@ export interface LightboxData {
  * Displays a full-screen overlay with an enlarged image,
  * a title above and description + effect info below.
  */
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-lightbox',
   standalone: true,
-  imports: [NgClass],
+  imports: [IconComponent],
   templateUrl: './lightbox.component.html',
   styleUrl: './lightbox.component.scss',
 })

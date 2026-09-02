@@ -96,10 +96,12 @@ class Satellite {
  * Shell component that wraps all authenticated game pages.
  * Provides the top header, sidebar navigation, footer, and the user dropdown menu.
  */
+import { IconComponent } from '../components/icon/icon.component';
+
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent, IconComponent],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })

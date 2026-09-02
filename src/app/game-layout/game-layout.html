@@ -73,19 +73,19 @@
 
           <div class="resource-badges" role="group" aria-label="Ressourcen-Anzeige">
             <div class="res-badge" style="--res-accent: #fbbf24" title="Gold" aria-label="Gold">
-              <div class="css-res-icon css-icon-gold"></div>
+              <app-icon name="gold" />
               <span class="res-value">{{ gameState.resources().gold | compactNumber }}</span>
             </div>
             <div class="res-badge" style="--res-accent: #38bdf8" title="Credits" aria-label="Credits">
-              <div class="css-res-icon css-icon-credits"></div>
+              <app-icon name="credits" />
               <span class="res-value">{{ gameState.resources().credits | compactNumber }}</span>
             </div>
             <div class="res-badge" style="--res-accent: #e2e8f0" title="Silber" aria-label="Silber">
-              <div class="css-res-icon css-icon-silver"></div>
+              <app-icon name="silber" />
               <span class="res-value">{{ gameState.resources().silber | compactNumber }}</span>
             </div>
             <div class="res-badge" style="--res-accent: #94a3b8" title="Eisen" aria-label="Eisen">
-              <div class="css-res-icon css-icon-iron"></div>
+              <app-icon name="eisen" />
               <span class="res-value">{{ gameState.resources().eisen | compactNumber }}</span>
             </div>
           </div>
@@ -117,7 +117,7 @@
             
             @if (hasNanobots) {
               <div class="dropdown-item nanobots-dropdown-item" (click)="$event.stopPropagation()" role="menuitem">
-                <span class="dropdown-icon" aria-hidden="true"><div class="css-res-icon css-icon-nanobots"></div></span>
+                <span class="dropdown-icon" aria-hidden="true"><app-icon name="nanobots" /></span>
                 <span style="flex:1">Nano-Bots</span>
                 <label class="switch">
                   <input type="checkbox" [checked]="settings.showNanobots()" (change)="settings.toggleNanobots()" aria-label="Nano-Bots anzeigen oder verbergen">
@@ -134,7 +134,7 @@
               role="menuitem"
               aria-label="Spielregeln"
             >
-              <span class="dropdown-icon" aria-hidden="true"><div class="css-res-icon css-icon-rules"></div></span>
+              <span class="dropdown-icon" aria-hidden="true"><app-icon name="rules" /></span>
               Spielregeln
             </a>
             <a

@@ -89,22 +89,52 @@
 /* ═══ Icon Container ═══ */
 
 .icon-container {
-  font-size: 2rem;
-  width: 50px;
-  height: 50px;
+  width: 62px;
+  height: 62px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   border: 2px solid transparent;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 
-  &.eisen { border-color: var(--color-eisen); background: rgba(176, 196, 222, 0.1); }
-  &.silber { border-color: var(--color-silber); background: rgba(192, 192, 192, 0.1); }
-  &.gold { border-color: var(--color-gold); background: rgba(255, 215, 0, 0.1); }
-  &.xenonit { border-color: var(--color-xenonit); background: rgba(100, 149, 237, 0.1); }
-  &.credits { border-color: var(--color-credits); background: rgba(218, 165, 32, 0.1); }
-  &.nahrung { border-color: var(--color-nahrung); background: rgba(144, 238, 144, 0.1); }
-  &.personal { border-color: var(--color-personal); background: rgba(173, 216, 230, 0.1); }
+  &.eisen {
+    border-color: var(--color-eisen);
+    background: rgba(203, 213, 225, 0.12);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(203, 213, 225, 0.25);
+  }
+  &.silber {
+    border-color: var(--color-silber);
+    background: rgba(226, 232, 240, 0.12);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(226, 232, 240, 0.25);
+  }
+  &.gold {
+    border-color: var(--color-gold);
+    background: rgba(251, 191, 36, 0.12);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(251, 191, 36, 0.25);
+  }
+  &.xenonit {
+    border-color: var(--color-xenonit);
+    background: rgba(16, 185, 129, 0.12);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(16, 185, 129, 0.25);
+  }
+  &.credits {
+    border-color: var(--color-credits);
+    background: rgba(59, 130, 246, 0.12);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(59, 130, 246, 0.25);
+  }
+  &.nahrung {
+    border-color: var(--color-nahrung);
+    background: rgba(52, 211, 153, 0.12);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(52, 211, 153, 0.25);
+  }
+  &.personal {
+    border-color: var(--color-personal);
+    background: rgba(244, 114, 182, 0.12);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(244, 114, 182, 0.25);
+  }
 }
 
 /* ═══ Details ═══ */
@@ -188,11 +218,11 @@
   }
 
   .icon-container {
-    width: 38px;
-    height: 38px;
+    width: 48px;
+    height: 48px;
 
-    .css-res-icon {
-      transform: scale(0.9);
+    app-icon {
+      transform: scale(0.85);
     }
   }
 

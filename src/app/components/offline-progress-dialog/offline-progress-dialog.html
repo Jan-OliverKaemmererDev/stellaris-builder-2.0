@@ -4,61 +4,17 @@
     <p>Während deiner Abwesenheit hat dein Imperium fleißig weiterproduziert.</p>
 
     <section class="resources" aria-label="Offline production earnings">
-      <article class="resource" *ngIf="earnings.eisen > 0" aria-label="Iron earnings">
-        <span class="icon-container eisen" aria-hidden="true"><div class="css-res-icon css-icon-iron" aria-hidden="true"></div></span>
-        <div class="details">
-          <span class="label">Eisen</span>
-          <span class="amount">+{{ earnings.eisen | compactNumber }}</span>
-        </div>
-      </article>
-
-      <article class="resource" *ngIf="earnings.silber > 0" aria-label="Silver earnings">
-        <span class="icon-container silber" aria-hidden="true"><div class="css-res-icon css-icon-silver" aria-hidden="true"></div></span>
-        <div class="details">
-          <span class="label">Silber</span>
-          <span class="amount">+{{ earnings.silber | compactNumber }}</span>
-        </div>
-      </article>
-
-      <article class="resource" *ngIf="earnings.gold > 0" aria-label="Gold earnings">
-        <span class="icon-container gold" aria-hidden="true"><div class="css-res-icon css-icon-gold" aria-hidden="true"></div></span>
-        <div class="details">
-          <span class="label">Gold</span>
-          <span class="amount">+{{ earnings.gold | compactNumber }}</span>
-        </div>
-      </article>
-
-      <article class="resource" *ngIf="earnings.xenonit > 0" aria-label="Xenonite earnings">
-        <span class="icon-container xenonit" aria-hidden="true"><div class="css-res-icon css-icon-xenonit" aria-hidden="true"></div></span>
-        <div class="details">
-          <span class="label">Xenonit</span>
-          <span class="amount">+{{ earnings.xenonit | compactNumber }}</span>
-        </div>
-      </article>
-
-      <article class="resource" *ngIf="earnings.credits > 0" aria-label="Credits earnings">
-        <span class="icon-container credits" aria-hidden="true"><div class="css-res-icon css-icon-credits" aria-hidden="true"></div></span>
-        <div class="details">
-          <span class="label">Credits</span>
-          <span class="amount">+{{ earnings.credits | compactNumber }}</span>
-        </div>
-      </article>
-
-      <article class="resource" *ngIf="earnings.nahrung > 0" aria-label="Food earnings">
-        <span class="icon-container nahrung" aria-hidden="true"><div class="css-res-icon css-icon-food" aria-hidden="true"></div></span>
-        <div class="details">
-          <span class="label">Nahrung</span>
-          <span class="amount">+{{ earnings.nahrung | compactNumber }}</span>
-        </div>
-      </article>
-
-      <article class="resource" *ngIf="earnings.personal > 0" aria-label="Personnel earnings">
-        <span class="icon-container personal" aria-hidden="true"><div class="css-res-icon css-icon-staff" aria-hidden="true"></div></span>
-        <div class="details">
-          <span class="label">Personal</span>
-          <span class="amount">+{{ earnings.personal | compactNumber }}</span>
-        </div>
-      </article>
+      @for (item of activeEarnings; track item.def.id) {
+        <article class="resource" [attr.aria-label]="item.def.name + ' earnings'">
+          <span class="icon-container" [ngClass]="item.def.id" aria-hidden="true">
+            <app-icon [name]="item.def.id" size="30px" />
+          </span>
+          <div class="details">
+            <span class="label">{{ item.def.name }}</span>
+            <span class="amount">+{{ item.amount | compactNumber }}</span>
+          </div>
+        </article>
+      }
     </section>
 
     <button (click)="close()" aria-label="Close dialog">Einsammeln</button>

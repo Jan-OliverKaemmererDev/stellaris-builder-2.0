@@ -3,10 +3,12 @@ import { CommonModule, DOCUMENT, Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { GameStateService } from '../../services/game-state.service';
 
+import { IconComponent } from '../../components/icon/icon.component';
+
 @Component({
   selector: 'app-rules',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './rules.component.html',
   styleUrl: './rules.component.scss',
 })

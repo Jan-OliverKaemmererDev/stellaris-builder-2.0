@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 import { GameStateService } from '../../services/game-state.service';
 
+import { IconComponent } from '../icon/icon.component';
+import { RESOURCE_LIST, ResourceDefinition } from '../../constants/resources.constant';
+
 /**
  * Modal dialog component that displays the resources earned while the player was offline.
  * This dialog is shown automatically when the user logs in and significant offline production has occurred.
@@ -10,7 +13,7 @@ import { GameStateService } from '../../services/game-state.service';
 @Component({
   selector: 'app-offline-progress-dialog',
   standalone: true,
-  imports: [CommonModule, CompactNumberPipe],
+  imports: [CommonModule, CompactNumberPipe, IconComponent],
   templateUrl: './offline-progress-dialog.html',
   styleUrl: './offline-progress-dialog.scss',
 })
@@ -25,6 +28,17 @@ export class OfflineProgressDialog {
    */
   get earnings() {
     return this.gameState.offlineEarnings();
+  }
+
+  /**
+   * Returns a list of resources that produced positive earnings while offline.
+   */
+  get activeEarnings(): { def: ResourceDefinition; amount: number }[] {
+    const e = this.earnings;
+    if (!e) return [];
+    return RESOURCE_LIST
+      .map(def => ({ def, amount: (e as any)[def.id] || 0 }))
+      .filter(item => item.amount > 0);
   }
 
   /**

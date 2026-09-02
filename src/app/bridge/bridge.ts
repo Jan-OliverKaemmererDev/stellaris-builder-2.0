@@ -33,10 +33,12 @@ interface ShipType {
  * Bridge dashboard component - the main command center view.
  * Displays a live resource overview, energy status, fleet summary, and a trading panel.
  */
+import { IconComponent } from '../components/icon/icon.component';
+
 @Component({
   selector: 'app-bridge',
   standalone: true,
-  imports: [DecimalPipe, NgClass, AnimatedNumberComponent, RouterLink, CompactNumberPipe],
+  imports: [DecimalPipe, NgClass, AnimatedNumberComponent, RouterLink, CompactNumberPipe, IconComponent],
   templateUrl: './bridge.html',
   styleUrl: './bridge.scss',
 })

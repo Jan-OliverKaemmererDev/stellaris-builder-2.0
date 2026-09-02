@@ -30,6 +30,8 @@ export interface ShipDef {
  * Fleet management page with a shipyard for building ships,
  * an asteroid mining mission system, and a space combat offensive system.
  */
+import { IconComponent } from '../../components/icon/icon.component';
+
 @Component({
   selector: 'app-fleet',
   standalone: true,
@@ -40,6 +42,7 @@ export interface ShipDef {
     NanoBotsOverlayComponent,
     PixelProgressBarComponent,
     DiplomacyDialogComponent,
+    IconComponent,
   ],
   templateUrl: './fleet.component.html',
   styleUrl: './fleet.component.scss',

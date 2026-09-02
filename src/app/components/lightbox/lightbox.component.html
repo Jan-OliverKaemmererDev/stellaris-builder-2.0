@@ -11,7 +11,7 @@
 
         <!-- Enlarged image -->
         @if (data.imagePath.startsWith('css-icon-')) {
-          <div class="css-res-icon" [ngClass]="data.imagePath" style="width: 200px; height: 200px; font-size: 160px; margin: 0 auto; display: block;"></div>
+          <app-icon [name]="data.imagePath" size="200px" style="margin: 0 auto; display: block;" />
         } @else {
           <img [src]="data.imagePath" [alt]="data.title" class="lightbox-image" />
         }
