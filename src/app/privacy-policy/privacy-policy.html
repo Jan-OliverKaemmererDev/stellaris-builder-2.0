@@ -1,74 +1,120 @@
 <main class="legal-page">
-  <article class="glass-container">
-    <a href="#" (click)="goBack($event)" class="back-button" aria-label="Zurück zur vorherigen Seite">&larr; Zurück</a>
+  <div class="rules-container">
+    <a href="#" (click)="goBack($event)" class="back-button" aria-label="Zurück zur vorherigen Seite">
+      <span class="back-arrow" aria-hidden="true">&larr;</span> Zurück
+    </a>
 
-    <h1>Datenschutz</h1>
+    <header class="rules-header">
+      <h1 class="page-title">Datenschutz</h1>
+      <p class="subtitle">Sicherheit & Transparenz für alle Sternenreiche</p>
+    </header>
 
-    <p>
-      Dieser Datenschutzhinweis erläutert, wie personenbezogene Daten
-      erhoben, verarbeitet und geschützt werden, wenn Sie <span class="highlight">Stellaris Builder</span>, ein
-      privates Open-Source-Projekt, nutzen.
-    </p>
+    <section class="rules-section">
+      <h2>Überblick</h2>
+      <div class="rules-content">
+        <p>
+          Dieser Datenschutzhinweis erläutert, wie personenbezogene Daten
+          erhoben, verarbeitet und geschützt werden, wenn Sie <span class="highlight">Stellaris Builder</span>, ein
+          privates Open-Source-Projekt, nutzen.
+        </p>
+      </div>
+    </section>
 
-    <h2>1. Datenerhebung</h2>
-    <p>
-      Es werden personenbezogene Daten erhoben, die Sie bei der
-      Registrierung eines Kontos oder bei der Erstellung Ihres Sternenreichs freiwillig angeben.
-      Dazu gehören:
-    </p>
-    <ul aria-label="Gesammelte Daten">
-      <li>Kommandanten-Name (Benutzername)</li>
-      <li>E-Mail-Adresse</li>
-      <li>Anmeldedaten (verschlüsselt)</li>
-    </ul>
+    <section class="rules-section">
+      <h2>1. Datenerhebung</h2>
+      <div class="rules-content">
+        <p>
+          Es werden personenbezogene Daten erhoben, die Sie bei der
+          Registrierung eines Kontos oder bei der Erstellung Ihres Sternenreichs freiwillig angeben.
+          Dazu gehören:
+        </p>
+        <ul aria-label="Gesammelte Daten">
+          <li><strong>Kommandanten-Name:</strong> Benutzername für Ihr Sternenreich</li>
+          <li><strong>E-Mail-Adresse:</strong> Zur Kontoverwaltung und Authentifizierung</li>
+          <li><strong>Anmeldedaten:</strong> Sicher und verschlüsselt gespeichert</li>
+        </ul>
+      </div>
+    </section>
 
-    <h2>2. Zweck der Datenverarbeitung</h2>
-    <p>
-      Die Daten werden ausschließlich für die Funktionalität der
-      <span class="highlight">Stellaris Builder</span>-Anwendung gespeichert und verwendet, unter anderem für:
-    </p>
-    <ul aria-label="Zweck der Datenverarbeitung">
-      <li>Benutzerauthentifizierung und Kontoverwaltung</li>
-      <li>Speichern Ihres Spielfortschritts und Ihrer Einstellungen</li>
-    </ul>
+    <section class="rules-section">
+      <h2>2. Zweck der Datenverarbeitung</h2>
+      <div class="rules-content">
+        <p>
+          Die Daten werden ausschließlich für die Funktionalität der
+          <span class="highlight">Stellaris Builder</span>-Anwendung gespeichert und verwendet, unter anderem für:
+        </p>
+        <ul aria-label="Zweck der Datenverarbeitung">
+          <li><strong>Benutzerauthentifizierung:</strong> Kontoverwaltung und sicherer Login</li>
+          <li><strong>Spielfortschritt:</strong> Speichern Ihres Spielfortschritts, Gebäudestufen, Flotten und Einstellungen</li>
+        </ul>
+      </div>
+    </section>
 
-    <h2>3. Datenspeicherung und Datensicherheit</h2>
-    <p>
-      Ihre Daten werden in einer sicheren Cloud-Datenbank (Firebase)
-      von Google gespeichert. Es werden dem Industriestandard entsprechende Sicherheitsmaßnahmen eingesetzt,
-      um Ihre Daten zu schützen. Bitte beachten Sie jedoch, dass
-      <span class="highlight">Stellaris Builder</span> ein privates Projekt ist und nicht
-      für die Speicherung hochsensibler Daten im produktiven Einsatz gedacht ist.
-    </p>
+    <section class="rules-section">
+      <h2>3. Datenspeicherung und Datensicherheit</h2>
+      <div class="rules-content">
+        <p>
+          Ihre Daten werden in einer sicheren Cloud-Datenbank (Firebase)
+          von Google gespeichert. Es werden dem Industriestandard entsprechende Sicherheitsmaßnahmen eingesetzt,
+          um Ihre Daten zu schützen.
+        </p>
+        <div class="warning-box">
+          <strong>HINWEIS:</strong> <span class="highlight">Stellaris Builder</span> ist ein privates Projekt zu Bildungs- und Unterhaltungszwecken und nicht für die Speicherung hochsensibler Daten im produktiven Einsatz gedacht.
+        </div>
+      </div>
+    </section>
 
-    <h2>4. Rechte der Nutzer (DSGVO)</h2>
-    <p>
-      Gemäß der Datenschutz-Grundverordnung (DSGVO) haben Sie
-      folgende Rechte:
-    </p>
-    <ul aria-label="Benutzerrechte">
-      <li>Auskunft über die zu Ihrer Person gespeicherten Daten (Art. 15 DSGVO)</li>
-      <li>Berichtigung oder Vervollständigung unrichtiger Daten (Art. 16 DSGVO)</li>
-      <li>Löschung Ihres Kontos und der zugehörigen Daten (Art. 17 DSGVO)</li>
-      <li>Widerspruch gegen die Verarbeitung Ihrer Daten (Art. 21 DSGVO)</li>
-      <li>Widerruf einer erteilten Einwilligung zur Datenverarbeitung (Art. 7 Abs. 3 DSGVO)</li>
-    </ul>
+    <section class="rules-section">
+      <h2>4. Rechte der Nutzer (DSGVO)</h2>
+      <div class="rules-content">
+        <p>
+          Gemäß der Datenschutz-Grundverordnung (DSGVO) haben Sie
+          folgende Rechte:
+        </p>
+        <ul aria-label="Benutzerrechte">
+          <li><strong>Auskunft (Art. 15 DSGVO):</strong> Auskunft über die zu Ihrer Person gespeicherten Daten</li>
+          <li><strong>Berichtigung (Art. 16 DSGVO):</strong> Berichtigung oder Vervollständigung unrichtiger Daten</li>
+          <li><strong>Löschung (Art. 17 DSGVO):</strong> Löschung Ihres Kontos und der zugehörigen Daten</li>
+          <li><strong>Widerspruch (Art. 21 DSGVO):</strong> Widerspruch gegen die Verarbeitung Ihrer Daten</li>
+          <li><strong>Widerruf (Art. 7 Abs. 3 DSGVO):</strong> Widerruf einer erteilten Einwilligung zur Datenverarbeitung</li>
+        </ul>
+      </div>
+    </section>
 
-    <h2>5. Dienste von Drittanbietern</h2>
-    <p>
-      Für die Datenspeicherung und Authentifizierung wird Firebase (ein Dienst von Google)
-      genutzt. Google kann Daten auf Servern außerhalb der Europäischen Union verarbeiten und speichern.
-    </p>
+    <section class="rules-section">
+      <h2>5. Dienste von Drittanbietern</h2>
+      <div class="rules-content">
+        <p>
+          Für die Datenspeicherung und Authentifizierung wird Firebase (ein Dienst von Google)
+          genutzt. Google kann Daten auf Servern außerhalb der Europäischen Union verarbeiten und speichern.
+        </p>
+      </div>
+    </section>
 
-    <h2>6. Kontakt</h2>
-    <p>
-      Wenn Sie Fragen zum Datenschutz haben oder Ihre
-      Betroffenenrechte wahrnehmen möchten, wenden Sie sich bitte an
-      jowieja22&#64;gmail.com.
-    </p>
+    <section class="rules-section">
+      <h2>6. Kontakt & Gültigkeit</h2>
+      <div class="rules-content">
+        <p>
+          Wenn Sie Fragen zum Datenschutz haben oder Ihre
+          Betroffenenrechte wahrnehmen möchten, wenden Sie sich bitte an:
+        </p>
+        <ul>
+          <li><strong>E-Mail:</strong> <a href="mailto:jowieja22@gmail.com">jowieja22&#64;gmail.com</a></li>
+        </ul>
+        <p class="doc-date">
+          <em>Stand: 8. Juni 2026</em>
+        </p>
+      </div>
+    </section>
 
-    <p>
-      <em>Stand: 8. Juni 2026</em>
-    </p>
-  </article>
+    <div class="action-footer">
+      <button
+        class="btn-acknowledge"
+        (click)="goBack($event)"
+        type="button"
+      >
+        Zurück
+      </button>
+    </div>
+  </div>
 </main>

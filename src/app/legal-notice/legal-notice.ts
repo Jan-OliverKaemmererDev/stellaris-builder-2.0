@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 /**
  * Component that displays the legal notice and imprint page.
@@ -15,13 +16,18 @@ import { Location } from '@angular/common';
 export class LegalNotice {
   /** Angular service used to interact with the browser's URL history. */
   private location = inject(Location);
+  private router = inject(Router);
 
   /**
-   * Navigates the user back to the previous page in their history stack.
+   * Navigates the user back to the previous page in their history stack, or root as fallback.
    * @param event - The DOM click event, used to prevent default anchor navigation.
    */
   goBack(event: Event): void {
     event.preventDefault();
-    this.location.back();
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 }
