@@ -1054,6 +1054,10 @@ $pixel-max-dist: ($pixel-cols - 1) + ($pixel-rows - 1);
     /* user-avatar-btn retains fully untouched desktop styling */
   }
 
+  .user-dropdown {
+    right: 8px;
+  }
+
   .game-content {
     margin-top: 100px;
     padding: var(--space-md) var(--space-sm);

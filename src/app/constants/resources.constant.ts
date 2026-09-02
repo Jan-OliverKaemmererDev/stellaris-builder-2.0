@@ -127,7 +127,21 @@ export function getResourceIconClass(key: string): string {
     personal: 'css-icon-staff',
     nanobots: 'css-icon-nanobots',
     rules: 'css-icon-rules',
+    spielregeln: 'css-icon-rules',
+    privacy: 'css-icon-privacy',
+    datenschutz: 'css-icon-privacy',
+    legal: 'css-icon-legal',
+    impressum: 'css-icon-legal',
+    logout: 'css-icon-logout',
     diplomacy: 'css-icon-diplomacy',
+    handshake: 'css-icon-diplomacy',
+    peace: 'css-icon-peace',
+    peaceful: 'css-icon-peaceful',
+    shield: 'css-icon-peaceful',
+    alien: 'css-icon-alien',
+    warlord: 'css-icon-warlord',
+    warning: 'css-icon-warning',
+    alert: 'css-icon-warning',
   };
 
   if (aliasMap[normalized]) {

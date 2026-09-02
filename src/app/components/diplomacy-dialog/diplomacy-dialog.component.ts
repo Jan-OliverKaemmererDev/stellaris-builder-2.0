@@ -4,11 +4,12 @@ import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
 import * as MathUtils from '../../services/game-math.utils';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-diplomacy-dialog',
   standalone: true,
-  imports: [CommonModule, CompactNumberPipe],
+  imports: [CommonModule, CompactNumberPipe, IconComponent],
   templateUrl: './diplomacy-dialog.component.html',
   styleUrl: './diplomacy-dialog.component.scss',
 })

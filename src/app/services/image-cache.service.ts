@@ -23,8 +23,6 @@ export class ImageCacheService {
     'assets/logo.png',
     'assets/icons/close.png',
     'assets/icons/lock.png',
-    'assets/icons/legal-notice.png',
-    'assets/icons/logout.png',
 
     // Mining
     'assets/img/mining/metallmine.png',
