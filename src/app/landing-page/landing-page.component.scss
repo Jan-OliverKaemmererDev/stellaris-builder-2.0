@@ -10,6 +10,8 @@ $text-light: #fff;
 $text-muted: #ffffff;
 $primary: #4facfe;
 $primary-light: #00f2fe;
+$font-display: var(--font-display, 'Orbitron', sans-serif);
+$font-body: var(--font-body, 'Inter', sans-serif);
 
 /* ═══ Background & Starfield ═══ */
 
@@ -22,7 +24,7 @@ $primary-light: #00f2fe;
   background: $bg-dark;
   background: radial-gradient(ellipse at bottom, $bg-light 0%, $bg-dark 100%);
   overflow: hidden;
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family: $font-body;
   color: $text-light;
 }
 
@@ -156,6 +158,7 @@ $primary-light: #00f2fe;
   transform: translateZ(60px);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  pointer-events: auto;
 }
 
 .glass-panel {
@@ -176,10 +179,11 @@ $primary-light: #00f2fe;
   margin-bottom: 2rem;
 
   h1 {
+    font-family: $font-display;
     font-size: 2.5rem;
     font-weight: 800;
     margin: 0;
-    letter-spacing: -1px;
+    letter-spacing: 1px;
     background: linear-gradient(135deg, $text-light 0%, #b3cdd1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -193,6 +197,7 @@ $primary-light: #00f2fe;
 }
 
 .subtitle {
+  font-family: $font-display;
   color: $text-muted;
   font-size: 0.95rem;
   margin-top: 0.5rem;
@@ -201,11 +206,13 @@ $primary-light: #00f2fe;
 }
 
 .form-title {
+  font-family: $font-display;
   font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 1.25rem;
   color: #00f2fe;
   text-align: center;
+  letter-spacing: 0.5px;
 }
 
 /* ═══ Input Fields ═══ */
@@ -215,6 +222,7 @@ $primary-light: #00f2fe;
 
   label {
     display: block;
+    font-family: $font-body;
     font-size: 0.85rem;
     font-weight: 500;
     color: #ffffff;
@@ -224,6 +232,7 @@ $primary-light: #00f2fe;
 
   input {
     width: 100%;
+    font-family: $font-body;
     padding: 0.8rem 1rem;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -305,8 +314,10 @@ $primary-light: #00f2fe;
   border-radius: 10px;
   background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
   color: $bg-dark;
+  font-family: $font-display;
   font-size: 1rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 1rem;
@@ -389,6 +400,7 @@ $primary-light: #00f2fe;
 .toggle-mode {
   text-align: center;
   margin-top: 1.5rem;
+  font-family: $font-body;
   font-size: 0.9rem;
   color: #ffffff;
 }
@@ -396,6 +408,7 @@ $primary-light: #00f2fe;
 .text-btn {
   background: none;
   border: none;
+  font-family: $font-body;
   color: $primary;
   font-weight: 600;
   cursor: pointer;
@@ -412,6 +425,7 @@ $primary-light: #00f2fe;
 
 .privacy-policy-check {
   margin-bottom: 1.25rem;
+  font-family: $font-body;
   font-size: 0.85rem;
   color: #ffffff;
   display: flex;
@@ -464,6 +478,7 @@ $primary-light: #00f2fe;
   bottom: 0;
   background-color: #000;
   z-index: 10;
+  pointer-events: none;
   animation: fadeOutBackground 1.5s ease-in-out 1s forwards;
 }
 
@@ -474,12 +489,13 @@ $primary-light: #00f2fe;
   transform: translate(-50%, -50%);
   width: min(400px, 80vw);
   z-index: 11;
+  pointer-events: none;
   animation: shrinkToCorner 1.5s ease-in-out 1s forwards;
 }
 
 @keyframes fadeOutBackground {
   0% { opacity: 1; visibility: visible; }
-  100% { opacity: 0; visibility: hidden; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 
 @keyframes shrinkToCorner {
@@ -505,11 +521,13 @@ $primary-light: #00f2fe;
   width: 100%;
   text-align: center;
   padding: 1rem 0;
+  font-family: $font-body;
   z-index: 20;
 
   a {
     color: $text-muted;
     text-decoration: none;
+    font-family: $font-body;
     font-size: 0.85rem;
     margin: 0 1rem;
     transition: color 0.3s ease;
@@ -540,6 +558,7 @@ $primary-light: #00f2fe;
 
   .intro-overlay {
     position: fixed;
+    pointer-events: none;
     animation: fadeOutBackground 1s ease-in-out 0.4s forwards;
   }
 
@@ -613,6 +632,7 @@ $primary-light: #00f2fe;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    pointer-events: auto;
   }
 
   .glass-panel {
