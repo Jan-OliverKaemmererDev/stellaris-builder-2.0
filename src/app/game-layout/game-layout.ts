@@ -254,7 +254,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   private drawMobilePlanet(ctx: CanvasRenderingContext2D, timeSec: number): void {
     const cx = 30;
     const cy = 30;
-    const planetRadius = 20;
+    const planetRadius = 24.5;
 
     // Update satellites position & 3D orbital depth
     for (let i = 0; i < this.satellites.length; i++) {
@@ -269,20 +269,20 @@ export class GameLayout implements AfterViewInit, OnDestroy {
     }
 
     // 2. Draw Soft Atmospheric Corona Glow
-    const atmoGrad = ctx.createRadialGradient(cx, cy, planetRadius * 0.85, cx, cy, planetRadius * 1.25);
-    atmoGrad.addColorStop(0, 'rgba(37, 99, 235, 0.35)');
-    atmoGrad.addColorStop(0.6, 'rgba(56, 189, 248, 0.12)');
+    const atmoGrad = ctx.createRadialGradient(cx, cy, planetRadius * 0.85, cx, cy, planetRadius * 1.22);
+    atmoGrad.addColorStop(0, 'rgba(37, 99, 235, 0.45)');
+    atmoGrad.addColorStop(0.6, 'rgba(56, 189, 248, 0.18)');
     atmoGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
     ctx.fillStyle = atmoGrad;
     ctx.beginPath();
-    ctx.arc(cx, cy, planetRadius * 1.25, 0, Math.PI * 2);
+    ctx.arc(cx, cy, planetRadius * 1.22, 0, Math.PI * 2);
     ctx.fill();
 
-    // 3. Draw Solid Planet Body (Rich, matte cosmic deep blue - no cheap glossy glare)
-    const planetGrad = ctx.createRadialGradient(cx - 5, cy - 5, 2, cx, cy, planetRadius);
-    planetGrad.addColorStop(0, '#1e40af');    // Deep royal blue
-    planetGrad.addColorStop(0.35, '#1d4ed8'); // Rich sapphire blue
-    planetGrad.addColorStop(0.65, '#0f2b5c'); // Deep ocean cobalt
+    // 3. Draw Solid Planet Body (Rich, vibrant cosmic deep blue with illuminated edge)
+    const planetGrad = ctx.createRadialGradient(cx - 6, cy - 6, 2, cx, cy, planetRadius);
+    planetGrad.addColorStop(0, '#2563eb');    // Electric royal highlight
+    planetGrad.addColorStop(0.3, '#1d4ed8'); // Rich sapphire blue
+    planetGrad.addColorStop(0.6, '#0f2b5c'); // Deep ocean cobalt
     planetGrad.addColorStop(0.85, '#0b1a36'); // Midnight navy
     planetGrad.addColorStop(1, '#050c1a');    // Deep space shadow
     ctx.fillStyle = planetGrad;
@@ -291,10 +291,10 @@ export class GameLayout implements AfterViewInit, OnDestroy {
     ctx.fill();
 
     // Subtle atmospheric limb softness on the sphere edge
-    const limbGrad = ctx.createRadialGradient(cx, cy, planetRadius * 0.75, cx, cy, planetRadius);
+    const limbGrad = ctx.createRadialGradient(cx, cy, planetRadius * 0.72, cx, cy, planetRadius);
     limbGrad.addColorStop(0, 'rgba(56, 189, 248, 0)');
-    limbGrad.addColorStop(0.85, 'rgba(56, 189, 248, 0.08)');
-    limbGrad.addColorStop(1, 'rgba(56, 189, 248, 0.22)');
+    limbGrad.addColorStop(0.82, 'rgba(56, 189, 248, 0.12)');
+    limbGrad.addColorStop(1, 'rgba(56, 189, 248, 0.35)');
     ctx.fillStyle = limbGrad;
     ctx.beginPath();
     ctx.arc(cx, cy, planetRadius, 0, Math.PI * 2);
@@ -342,11 +342,11 @@ export class GameLayout implements AfterViewInit, OnDestroy {
     if (this.isMobile) {
       // Create lightweight orbital satellites for mobile
       this.satellites = [
-        new Satellite({ a: 25.5, b: 9.5, tilt: -0.3, speed: 0.48, phase: 0, size: 1.4, glowColor: 'rgba(125, 211, 252, 0.9)' }),
-        new Satellite({ a: 25.5, b: 9.5, tilt: -0.3, speed: 0.48, phase: Math.PI, size: 1.1, glowColor: 'rgba(56, 189, 248, 0.75)' }),
-        new Satellite({ a: 24.5, b: 11.0, tilt: 0.55, speed: -0.38, phase: 1.2, size: 1.3, glowColor: 'rgba(56, 189, 248, 0.85)' }),
-        new Satellite({ a: 24.5, b: 11.0, tilt: 0.55, speed: -0.38, phase: 1.2 + Math.PI, size: 1.0, glowColor: 'rgba(147, 197, 253, 0.75)' }),
-        new Satellite({ a: 26.0, b: 7.0, tilt: 0.1, speed: 0.54, phase: 2.5, size: 1.2, glowColor: 'rgba(56, 189, 248, 0.8)' })
+        new Satellite({ a: 28.5, b: 11.5, tilt: -0.28, speed: 0.48, phase: 0, size: 1.4, glowColor: 'rgba(125, 211, 252, 0.9)' }),
+        new Satellite({ a: 28.5, b: 11.5, tilt: -0.28, speed: 0.48, phase: Math.PI, size: 1.1, glowColor: 'rgba(56, 189, 248, 0.75)' }),
+        new Satellite({ a: 27.5, b: 12.5, tilt: 0.52, speed: -0.38, phase: 1.2, size: 1.3, glowColor: 'rgba(56, 189, 248, 0.85)' }),
+        new Satellite({ a: 27.5, b: 12.5, tilt: 0.52, speed: -0.38, phase: 1.2 + Math.PI, size: 1.0, glowColor: 'rgba(147, 197, 253, 0.75)' }),
+        new Satellite({ a: 29.0, b: 8.5, tilt: 0.1, speed: 0.54, phase: 2.5, size: 1.2, glowColor: 'rgba(56, 189, 248, 0.8)' })
       ];
     } else {
       // 300 3D particle sphere for desktop

@@ -12,7 +12,13 @@
     <div class="header-left">
       <div class="hud-box-wrapper left-hud-wrapper">
         <div class="hud-box-inner title-box">
-          <svg class="hud-reticle" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg
+            class="hud-reticle"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
             <circle cx="12" cy="12" r="6" stroke="#38bdf8" stroke-width="1.5" opacity="0.8" />
             <circle cx="12" cy="12" r="1.5" fill="#38bdf8" />
             <line x1="12" y1="2" x2="12" y2="5" stroke="#38bdf8" stroke-width="1.5" />
@@ -23,7 +29,10 @@
 
           <h1 class="header-page-title">{{ pageTitle() }}</h1>
           @if (pageTitle() === 'BRÜCKE') {
-            <span class="header-welcome-text">Willkommen zurück, <strong class="commander-highlight">{{ commanderName }}</strong>. Alle Systeme nominal.</span>
+            <span class="header-welcome-text"
+              >Willkommen zurück, <strong class="commander-highlight">{{ commanderName }}</strong
+              >. Alle Systeme nominal.</span
+            >
           }
         </div>
       </div>
@@ -32,16 +41,64 @@
     <!-- Center: Navigation Trigger and Drawer Menu -->
     <div class="header-center">
       <div class="hud-box-wrapper center-hud-wrapper">
-        <button 
+        <button
           class="hud-box-inner center-hud-pod"
+          [class.saturn-active]="navMenuOpen()"
           (click)="toggleNavMenu()"
           [attr.aria-expanded]="navMenuOpen() ? 'true' : 'false'"
           aria-controls="drawer-side-menu"
           aria-label="Toggle Navigation Menu"
         >
+          <!-- Back Layer of Saturn Ring (behind the blue planet, mobile only) -->
+          <div class="saturn-ring-wrapper back-layer" aria-hidden="true">
+            <svg class="saturn-ring-svg" viewBox="0 0 160 60">
+              <defs>
+                <clipPath id="saturn-back-clip">
+                  <rect x="0" y="0" width="160" height="30.5" />
+                </clipPath>
+                <path id="saturn-orbit-back" d="M 12,30 A 68,17 0 1,0 148,30 A 68,17 0 1,0 12,30" />
+              </defs>
+              <g transform="rotate(-15 80 30)" clip-path="url(#saturn-back-clip)">
+                <path d="M 12,30 A 68,17 0 0,1 148,30" class="saturn-track back" />
+                <path d="M 18,30 A 62,15 0 0,1 142,30" class="saturn-track-inner back" />
+                <text class="saturn-marquee-text back">
+                  <textPath href="#saturn-orbit-back" xlink:href="#saturn-orbit-back" startOffset="0%">
+                    ✦ NAVIGATOR ✦ NAVIGATOR ✦ NAVIGATOR ✦ NAVIGATOR ✦
+                    <animate attributeName="startOffset" from="0%" to="-100%" dur="12s" repeatCount="indefinite" />
+                  </textPath>
+                </text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Blue Orb Canvas (larger on mobile, in background of front ring) -->
           <canvas #orbCanvas width="60" height="60" class="orb-canvas"></canvas>
+
+          <!-- Desktop Static Ticker Elements -->
           <span class="ticker-label">NAVIGATOR</span>
           <div class="glowing-notch"></div>
+
+          <!-- Front Layer of Saturn Ring with Marquee (in front of planet, mobile only) -->
+          <div class="saturn-ring-wrapper front-layer" aria-hidden="true">
+            <svg class="saturn-ring-svg" viewBox="0 0 160 60">
+              <defs>
+                <clipPath id="saturn-front-clip">
+                  <rect x="0" y="29.5" width="160" height="30.5" />
+                </clipPath>
+                <path id="saturn-orbit-front" d="M 12,30 A 68,17 0 1,0 148,30 A 68,17 0 1,0 12,30" />
+              </defs>
+              <g transform="rotate(-15 80 30)" clip-path="url(#saturn-front-clip)">
+                <path d="M 12,30 A 68,17 0 0,0 148,30" class="saturn-track front" />
+                <path d="M 18,30 A 62,15 0 0,0 142,30" class="saturn-track-inner front" />
+                <text class="saturn-marquee-text front">
+                  <textPath href="#saturn-orbit-front" xlink:href="#saturn-orbit-front" startOffset="0%">
+                    ✦ NAVIGATOR ✦ NAVIGATOR ✦ NAVIGATOR ✦ NAVIGATOR ✦
+                    <animate attributeName="startOffset" from="0%" to="-100%" dur="12s" repeatCount="indefinite" />
+                  </textPath>
+                </text>
+              </g>
+            </svg>
+          </div>
         </button>
       </div>
 
@@ -53,14 +110,21 @@
     <div class="header-right">
       <div class="hud-box-wrapper right-hud-wrapper">
         <div class="hud-box-inner right-hud-box">
-
           <!-- Vertical Energy Bar & Percentage on the left slant of right-hud-box -->
           <a
             class="hud-energy-bar"
             routerLink="/bridge/energy"
             [style.--energy-color]="energyColor()"
             [class.critical]="gameState.availableEnergy() < 0"
-            [title]="'Verfügbare Energie: ' + energyPercentage() + '% (' + (gameState.availableEnergy() | compactNumber) + ' / ' + (gameState.energyProduced() | compactNumber) + ')'"
+            [title]="
+              'Verfügbare Energie: ' +
+              energyPercentage() +
+              '% (' +
+              (gameState.availableEnergy() | compactNumber) +
+              ' / ' +
+              (gameState.energyProduced() | compactNumber) +
+              ')'
+            "
             aria-label="Verfügbare Energie in Prozent"
           >
             <div class="energy-v-track" aria-hidden="true">
@@ -76,7 +140,12 @@
               <app-icon name="gold" />
               <span class="res-value">{{ gameState.resources().gold | compactNumber }}</span>
             </div>
-            <div class="res-badge" style="--res-accent: #38bdf8" title="Credits" aria-label="Credits">
+            <div
+              class="res-badge"
+              style="--res-accent: #38bdf8"
+              title="Credits"
+              aria-label="Credits"
+            >
               <app-icon name="credits" />
               <span class="res-value">{{ gameState.resources().credits | compactNumber }}</span>
             </div>
@@ -124,13 +193,22 @@
                 <span class="dropdown-name-tag">PROFIL</span>
               </button>
             </header>
-            
+
             @if (hasNanobots) {
-              <div class="dropdown-item nanobots-dropdown-item" (click)="$event.stopPropagation()" role="menuitem">
+              <div
+                class="dropdown-item nanobots-dropdown-item"
+                (click)="$event.stopPropagation()"
+                role="menuitem"
+              >
                 <span class="dropdown-icon" aria-hidden="true"><app-icon name="nanobots" /></span>
-                <span style="flex:1">Nano-Bots</span>
+                <span style="flex: 1">Nano-Bots</span>
                 <label class="switch">
-                  <input type="checkbox" [checked]="settings.showNanobots()" (change)="settings.toggleNanobots()" aria-label="Nano-Bots anzeigen oder verbergen">
+                  <input
+                    type="checkbox"
+                    [checked]="settings.showNanobots()"
+                    (change)="settings.toggleNanobots()"
+                    aria-label="Nano-Bots anzeigen oder verbergen"
+                  />
                   <span class="slider round"></span>
                 </label>
               </div>
@@ -188,17 +266,19 @@
   </header>
 
   <!-- Main Content -->
-  <main #mainContent class="game-content" id="main-content" aria-label="Main game content" tabindex="-1">
+  <main
+    #mainContent
+    class="game-content"
+    id="main-content"
+    aria-label="Main game content"
+    tabindex="-1"
+  >
     <router-outlet></router-outlet>
   </main>
 
   <app-offline-progress-dialog></app-offline-progress-dialog>
   <app-enemy-attack-overlay></app-enemy-attack-overlay>
   @if (userOverlayOpen()) {
-    <app-user-overlay
-      (close)="closeUserOverlay()"
-      (nameChanged)="onCommanderNameChanged($event)"
-    />
+    <app-user-overlay (close)="closeUserOverlay()" (nameChanged)="onCommanderNameChanged($event)" />
   }
 </div>
-
