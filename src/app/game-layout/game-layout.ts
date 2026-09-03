@@ -181,8 +181,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
       // Force scroll to top on route change
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
-      // Automatically close the side menu
+      // Automatically close the side menu and user dropdown
       this.navMenuOpen.set(false);
+      this.dropdownOpen.set(false);
     });
   }
 
@@ -407,6 +408,13 @@ export class GameLayout implements AfterViewInit, OnDestroy {
    */
   toggleDropdown(): void {
     this.dropdownOpen.set(!this.dropdownOpen());
+  }
+
+  /**
+   * Closes the user dropdown menu.
+   */
+  closeDropdown(): void {
+    this.dropdownOpen.set(false);
   }
 
   /**
