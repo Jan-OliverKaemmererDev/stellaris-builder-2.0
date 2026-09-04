@@ -14,11 +14,12 @@
 
   <p align="center">
     <b>Übernimm das Kommando über ein aufstrebendes Sternenreich.</b><br>
-    Fördere Ressourcen, meistere komplexe Energiehaushalte, erforsche futuristische Technologien,<br>
-    baue eine schlagkräftige Raumflotte auf und verteidige dein Territorium gegen unberechenbare feindliche Raids.
+    Fördere Ressourcen, meistere komplexe Energiehaushalte mit intelligentem Lastabwurf,<br>
+    erforsche futuristische Technologien, baue schlagkräftige Raumflotten auf,<br>
+    erlebe atmosphärischen Sound mit Sprachausgabe und verteidige dein Territorium gegen unberechenbare Raids.
   </p>
 
-  [Funktionen](#-features--spielmechaniken) • [Technologie-Stack](#-technologie-stack) • [Installation & Setup](#-schnellstart--installation) • [Architektur](#-architektur--projektstruktur) • [Spielregeln](#-spielregeln--mechaniken)
+  [Funktionen](#-features--spielmechaniken) • [Technologie-Stack](#-technologie-stack) • [Installation & Setup](#-schnellstart--installation) • [Architektur](#-architektur--projektstruktur) • [Spielregeln](#-spielregeln--tipps-für-den-einstieg)
 
 </div>
 
@@ -26,9 +27,9 @@
 
 ## 🌌 Über das Projekt
 
-**Stellaris Builder 2.0** ist ein immersives, browserbasiertes Sci-Fi-Aufbau- und Managementspiel. Es kombiniert klassische Idle-/Incremental-Mechaniken mit strategischem Ressourcenmanagement, Echtzeit-Flottenoperationen und einem dynamischen Kampfsystem.
+**Stellaris Builder 2.0** ist ein immersives, browserbasiertes Sci-Fi-Aufbau- und Managementspiel. Es kombiniert klassische Idle-/Incremental-Mechaniken mit anspruchsvollem Ressourcenmanagement, Echtzeit-Flottenoperationen, Lastabwurf-Energiemanagement und einem dynamischen Kampfsystem.
 
-Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals & Modern Control Flow) umgesetzt und setzt auf visuell beeindruckende **Three.js WebGL-Shader** (inkl. interaktivem 3D-Schwarzen-Loch mit Gravitationslinse und Bloom-Effekt), responsive Sci-Fi-HUD-Grafiken und Cloud-Synchronisation über **Firebase**.
+Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals & Modern Control Flow) umgesetzt und setzt auf visuell beeindruckende **Three.js WebGL-Shader** (inkl. interaktivem 3D-Schwarzen-Loch mit Gravitationslinse und Bloom-Effekt), responsive Sci-Fi-HUD-Grafiken, ein vollwertiges **Audio-System** mit Soundtrack und KI-Sprachausgabe sowie Cloud-Synchronisation über **Firebase**.
 
 ---
 
@@ -40,17 +41,27 @@ Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals 
   * **Xenonit:** Seltenes Element, gewonnen durch planetare Raffinerien für Highend-Technologien und schwere Kriegsschiffe.
   * **Personal & Bevölkerung:** Generiert durch orbitale Raumstationen und Kolonisierungsschiffe.
   * **Nahrung:** Versorgungsbasis durch Biolabore und Transportschiffe.
-  * **Credits:** Galaktische Währung durch Handelsstationen, interstellare Märkte und Ressourcenbörsen.
+  * **Credits:** Galaktische Währung durch Handelsstationen, interstellare Märkte und Börsen.
 
-### ⚡ Komplexes Energie- & Blackout-System
+### ⚡ Komplexes Energie- & Lastabwurf-System
 * **Energieerzeugung:** Solarkraftwerke, Fusionsreaktoren und Antimaterie-Reaktoren mit exponentieller Skalierung.
-* **Verbrauch & Instandhaltung:** Jedes Gebäude und jedes Kriegsschiff benötigt konstant Energie.
-* **⚠️ Blackout-Mechanik:** Sinkt der Energiehaushalt in den negativen Bereich, **stoppt die Minenproduktion vollständig**, bis neue Energiekapazitäten bereitgestellt werden.
+* **Permanenter Upkeep:** Jedes Gebäude und jedes Raumschiff verbraucht kontinuierlich Energie.
+* **🔌 Notfall-Abschaltung / Lastabwurf (Power-Toggle):**
+  * Gebäude und Flotteneinheiten können per Klick auf das **Blitz-Icon** abgeschaltet werden.
+  * Deaktivierte Einheiten verbrauchen **0 Energie** (mit markantem `OFFLINE`-Indikator), wodurch das Stromnetz bei Engpässen sofort entlastet wird.
+* **📊 Dynamische HUD-Energieanzeige:** Vertikaler Energiebalken mit Echtzeit-Prozentwerten und dynamischem Farbwechsel (Grün / Gelb / Rot).
+* **⚠️ Blackout-Mechanik:** Fällt die verfügbare Energie auf oder unter 0, **stoppt die Minenproduktion vollständig**, bis wieder ein positiver Energiehaushalt hergestellt ist.
+
+### 🎵 Integriertes Audio- & Sound-System
+* **Atmosphärischer Soundtrack:** Sci-Fi Ambient-Musikstücke (*Paradigm*, *Chronometry*) mit integriertem Player (Play/Pause, Track-Wechsel, Fortschrittsanzeige).
+* **Dynamische Soundeffekte (SFX):** Akustisches Feedback bei Schiffsbau, Missionsstarts, Klicks und Upgrades.
+* **🎙️ GLaDOS-Sprachausgabe:** Galaktische KI-Stimme für Ereignisansagen (*"Welcome back, Commander"*, *"Ship construction completed"*, *"Building construction completed"*).
+* **🎛️ Sci-Fi Sound-Overlay:** Zentrales Einstellungs-Panel zur separaten Lautstärkeregelung (Master, Musik, SFX) und Stummschaltung – zugänglich über Startseite und Ingame-HUD.
 
 ### 🚀 Flottenbau & Weltraumoperationen
 * **Zivile Flotten:** Kolonisierungsschiffe, Logistikfrachter und Transporter gewähren permanente Boni auf Lager, Produktion und Versorgung.
 * **Asteroiden-Mining:** Entsende spezialisierte Bergbauschiffe (*Mining Ships*) auf zeitkritische Expeditionen zu Asteroidengürteln für massive Sofort-Ressourcen.
-* **Militärflotte:** Fertigung von Leichten Jägern, Schweren Jägern, Zerstörern und Schlachtkreuzern.
+* **Militärflotte:** Fertigung von Leichten Jägern, Schweren Jägern, Zerstörern und Schlachtkreuzern (inkl. individuellem Energie-Upkeep und Power-Toggles).
 
 ### ⚔️ Kampfsystem, Feindangriffe & Diplomatie
 * **Offensive Raids:** Schicke deine Flotte auf Kampfeinsätze, um Ressourcen und Xenonit als Kriegsbeute (*War Booty*) zu erobern.
@@ -62,13 +73,18 @@ Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals 
 * **Technologiebaum:** Schalte neue Baumöglichkeiten, Effizienzboni und Schiffsklassen frei.
 * **Nano-Bots:** Revolutionäre Technologie, die die globalen Baukosten für Gebäude um bis zu 50 % senkt. Inklusive toggelbarer Partikel-Visualisierung im HUD.
 
+### 👤 Spielerprofil & Flottenkommando
+* **User-Overlay:** Spielerprofil-Dashboard zur Anpassung des Kommandantennamens, Aktualisierung von E-Mail und Passwort mit Sichtbarkeits-Toggle.
+* **Sicherheit & Reset:** Bestätigungsdialoge für vollständigen Spielstand-Reset und Account-Löschung.
+
 ### ⏳ Offline-Fortschritt & Cloud-Save
-* **Automatische Offline-Berechnung:** Beim Wiedereinloggen kalkuliert das System akkumulierte Ressourcen, fertiggestellte Gebäude und beendete Flottenmissionen anhand von Zeitstempeln präzise nach.
-* **Echtzeit-Synchronisation:** Speicherung aller Fortschritte in Google Cloud Firestore.
+* **Automatische Offline-Berechnung:** Beim Wiedereinloggen kalkuliert das System akkumulierte Ressourcen, fertiggestellte Gebäude und beendete Flottenmissionen präzise nach.
+* **Echtzeit-Synchronisation:** Nahtlose Speicherung aller Spielfortschritte in Google Cloud Firestore.
 
 ### 🪐 Visuelle 3D-Effekte & Sci-Fi HUD
 * **3D-Schwarzes-Loch (Three.js):** Eigene GLSL-Shader für Akkretionsscheibe, Gravitationslinseneffekt (Lensing) und Post-Processing-Bloom (`UnrealBloomPass`).
-* **Audiovisuelles Design:** Interaktive Raumschiff-Brücke, dynamische Hintergrund-Shader, Soundeffekte und pixelgenaue Retro-Fortschrittsbalken.
+* **Mobiles & responsives HUD:** Optimierte HUD-Ansichten mit mobiler Ressourcenleiste, vertikalem Energiebalken und dynamischen Planeten- & Satelliten-Renderings mit verfeinerten Drop-Shadows.
+* **🎨 Zentralisiertes SVG-Icon-System:** CSS-basierte SVG-Masken mit Glow-Effekten für Ressourcen, Schiffsklassen und Aktionen (`_icons.scss`).
 
 ---
 
@@ -79,9 +95,10 @@ Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals 
 | **Frontend Framework** | [Angular 21](https://angular.dev/) (Signals, Standalone Components, Modern Control Flow) |
 | **Programmiersprache** | [TypeScript 5.9](https://www.typescriptlang.org/) |
 | **3D Rendering & WebGL** | [Three.js 0.185](https://threejs.org/) (OrbitControls, EffectComposer, UnrealBloomPass, Custom GLSL) |
-| **Styling & UI** | SCSS, Custom Sci-Fi Theme & Design Tokens, Custom Cursors, Responsive Layout |
+| **Styling & UI** | SCSS, Custom Sci-Fi Theme & Design Tokens, Centralized SVG-Mask Icons (`_icons.scss`), Responsive HUD |
+| **Audio-Engine** | HTML5 Audio & Angular Signals `AudioService` (Soundtrack, SFX, GLaDOS-Sprachausgabe, Sound-Overlay) |
 | **Backend & Auth** | [Firebase 12](https://firebase.google.com/) (Firebase Auth: E-Mail/Passwort & Anonymer Gastzugang, Cloud Firestore) |
-| **Performance & PWA** | Service Worker (`sw.js`), Custom IndexedDB/Memory `ImageCacheService`, SVG Icon Pipeline |
+| **Performance & PWA** | Service Worker (`sw.js`), Custom IndexedDB/Memory `ImageCacheService`, Preload Pipeline |
 | **Testing & Tooling** | [Vitest 4](https://vitest.dev/), jsdom, Prettier, Angular CLI 21 |
 
 ---
@@ -145,43 +162,60 @@ Die Anwendung öffnet sich automatisch unter `http://localhost:4200/`.
 ```text
 stellaris-builder-2.0/
 ├── public/
-│   ├── assets/              # Grafiken, Icons, Schiff-Assets & Sounds
-│   │   ├── backgrounds/     # Sci-Fi Hintergrundgrafiken
-│   │   ├── icons/           # Spiel- und Ressourcen-Icons
-│   │   ├── img/             # Modul-Bilder (Mining, Fleet, Energy, ...)
-│   │   └── logo.png         # Offizielles Spiel-Logo
-│   └── sw.js                # Service Worker für Asset-Caching
+│   ├── assets/                 # Grafiken, Icons, Schiff-Assets & Hintergründe
+│   │   ├── backgrounds/        # Sci-Fi Hintergrundgrafiken
+│   │   ├── icons/              # Spiel-Icons & Fallbacks
+│   │   ├── img/                # Modul-Bilder (Mining, Fleet, Energy, ...)
+│   │   └── logo.png            # Offizielles Spiel-Logo
+│   ├── sounds/                 # Audiomaterial & Sound-Assets
+│   │   ├── fleet/              # Flotten- und Missions-Sounds
+│   │   ├── glados-voice/       # KI-Sprachansagen (GLaDOS-Voice)
+│   │   └── music/              # Ambient-Soundtrack (Paradigm, Chronometry)
+│   └── sw.js                   # Service Worker für Asset-Caching
 ├── src/
 │   ├── app/
-│   │   ├── bridge/          # Kommandozentrale & Übersicht
-│   │   ├── components/      # Wiederverwendbare UI- & 3D-Komponenten
-│   │   │   ├── black-hole/  # Three.js 3D WebGL Schwarzes Loch
-│   │   │   ├── diplomacy-dialog/      # Diplomatie & Friedensverhandlungen
-│   │   │   ├── enemy-attack-overlay/  # Benachrichtigung bei Feindangriffen
+│   │   ├── bridge/             # Kommandozentrale & Übersicht
+│   │   ├── components/         # Wiederverwendbare UI-, Audio- & 3D-Komponenten
+│   │   │   ├── black-hole/             # Three.js 3D WebGL Schwarzes Loch
+│   │   │   ├── diplomacy-dialog/       # Diplomatie & Friedensverhandlungen
+│   │   │   ├── enemy-attack-overlay/   # Benachrichtigung bei Feindangriffen
+│   │   │   ├── icon/                   # Zentralisierte SVG-Icon-Komponente
+│   │   │   ├── lightbox/               # Vollbild-Bildbetrachter
+│   │   │   ├── nano-bots-overlay/      # Nano-Bot-Partikelanzeige
 │   │   │   ├── offline-progress-dialog/# Dialog für Offline-Ressourcenberechnung
-│   │   │   ├── pixel-progress-bar/    # Sci-Fi Fortschrittsanzeige
-│   │   │   └── user-overlay/          # Spielerprofil & Einstellungen
-│   │   ├── guards/          # AuthGuard zum Schutz der Spielrouten
-│   │   ├── landing-page/    # Startseite mit Login, Registrierung & 3D-Canvas
-│   │   ├── pages/           # Hauptbereiche des Spiels
-│   │   │   ├── energy/      # Energieerzeugung & Kraftwerksbau
-│   │   │   ├── fleet/       # Raumschiff-Werft & Asteroiden-Missionen
+│   │   │   ├── pixel-progress-bar/     # Sci-Fi Fortschrittsanzeige
+│   │   │   ├── skill-node/             # Gebäude-/Forschungs-Knoten mit Power-Toggle
+│   │   │   ├── sound-overlay/          # Audio-Dashboard (BGM, SFX, Voice, Lautstärke)
+│   │   │   └── user-overlay/           # Spielerprofil, Sicherheit & Spielstand-Reset
+│   │   ├── constants/          # Ressourcen- & Icon-Konstanten
+│   │   ├── game-layout/        # Haupt-HUD, vertikaler Energiebalken & mobile Navigation
+│   │   ├── guards/             # AuthGuard zum Schutz der Spielrouten
+│   │   ├── landing-page/       # Startseite mit Login, Registrierung & 3D-Canvas
+│   │   ├── legal-notice/       # Impressum im Sci-Fi Design
+│   │   ├── pages/              # Hauptbereiche des Spiels
+│   │   │   ├── energy/         # Energieerzeugung & Kraftwerksbau
+│   │   │   ├── fleet/          # Raumschiff-Werft, Asteroiden-Mining & Flottentoggle
 │   │   │   ├── infrastructure/ # Raffinerien, Biolabore & Verteidigung
-│   │   │   ├── mining/      # Minen für Eisen, Silber, Gold
-│   │   │   ├── research/    # Forschung & Nano-Bot-Entwicklung
-│   │   │   ├── rules/       # Ausführliches Regelwerk & Anfängerleitfaden
-│   │   │   └── trade/       # Ressourcenmarkt & Handel
-│   │   ├── services/        # Business-Logik & State-Management
+│   │   │   ├── mining/         # Minen für Eisen, Silber, Gold
+│   │   │   ├── research/       # Forschung & Nano-Bot-Entwicklung
+│   │   │   ├── rules/          # Ausführliches Regelwerk & Upkeep-Tabellen
+│   │   │   └── trade/          # Ressourcenmarkt & Handel
+│   │   ├── privacy-policy/     # Datenschutzerklärung
+│   │   ├── services/           # Business-Logik & State-Management
+│   │   │   ├── audio.service.ts        # Soundtrack-Player, SFX & Sprachausgabe
 │   │   │   ├── enemy-attack.service.ts # Raids, Kampflogik & Schadensberechnung
-│   │   │   ├── game-math.utils.ts      # Baukostenformeln & Multiplikatoren
-│   │   │   ├── game-state.service.ts   # Zentrales State-Management & Persistence
-│   │   │   └── image-cache.service.ts  # Caching für schnelle Bildladezeiten
-│   │   └── app.routes.ts    # Routen-Konfiguration
-│   ├── environments/        # Firebase- & Umgebungs-Konfigurationen
-│   └── styles.scss          # Globale Stylesheets & Sci-Fi Design Tokens
-├── angular.json             # Angular Workspace Konfiguration
-├── package.json             # Projekt-Metadaten & Abhängigkeiten
-└── tsconfig.json            # TypeScript Compiler-Konfiguration
+│   │   │   ├── game-math.utils.ts      # Baukostenformeln & Upkeep-Kalkulationen
+│   │   │   ├── game-state.service.ts   # Zentrales State-Management & Power-States
+│   │   │   ├── image-cache.service.ts  # Caching für schnelle Bildladezeiten
+│   │   │   └── settings.service.ts     # Benutzereinstellungen
+│   │   └── app.routes.ts       # Routen-Konfiguration
+│   ├── environments/           # Firebase- & Umgebungs-Konfigurationen
+│   └── styles/
+│       └── _icons.scss         # Zentrales SVG-Masken- & Glow-Icon-System
+│   └── styles.scss             # Globale Stylesheets & Sci-Fi Design Tokens
+├── angular.json                # Angular Workspace Konfiguration
+├── package.json                # Projekt-Metadaten & Abhängigkeiten
+└── tsconfig.json               # TypeScript Compiler-Konfiguration
 ```
 
 ---
@@ -189,10 +223,12 @@ stellaris-builder-2.0/
 ## 📖 Spielregeln & Tipps für den Einstieg
 
 1. **Aller Anfang ist Bergbau:** Errichte zuerst Minen für Eisen, Silber und Gold im Bereich **Mining**.
-2. **Energie zuerst absichern:** Jede neue Ausbaustufe benötigt Energie. Baue rechtzeitig Solarkraftwerke im Bereich **Energie**, um Produktionsausfälle durch Strommangel zu vermeiden.
-3. **Infrastruktur ausbauen:** Errichte eine **Raffinerie**, um Xenonit zu gewinnen, und **Biolabore**, um Nahrung für deine Crew bereitzustellen.
-4. **Asteroiden-Mining nutzen:** Baue Bergbauschiffe und schicke sie auf Expeditionen – sie bringen wertvolle Ressourcen-Schübe in Rekordzeit ein!
-5. **Verteidigung nicht vergessen:** Sobald du Feindschiffe angreifst, werden feindliche Flotten auf dich aufmerksam. Baue die **Planetare Verteidigung** aus, um geplünderte Ressourcen bei Angriffen zu minimieren!
+2. **Energie zuerst absichern:** Jede neue Ausbaustufe und jedes Schiff verursacht laufende Energiekosten. Baue rechtzeitig Solarkraftwerke im Bereich **Energie**, um Produktionsausfälle durch Strommangel zu vermeiden.
+3. **Notfall-Abschaltung nutzen:** Droht ein Blackout? Nutze das **Blitz-Icon** auf Gebäuden oder Schiffen, um diese temporär zu deaktivieren. Sie verbrauchen dann 0 Energie und entlasten sofort das Netz.
+4. **Infrastruktur ausbauen:** Errichte eine **Raffinerie**, um Xenonit zu gewinnen, und **Biolabore**, um Nahrung für deine Crew bereitzustellen.
+5. **Asteroiden-Mining nutzen:** Baue Bergbauschiffe und schicke sie auf Expeditionen – sie bringen wertvolle Ressourcen-Schübe in Rekordzeit ein!
+6. **Verteidigung nicht vergessen:** Sobald du Feindschiffe angreifst, werden feindliche Flotten auf dich aufmerksam. Baue die **Planetare Verteidigung** aus, um geplünderte Ressourcen bei Angriffen zu minimieren!
+7. **Sound & Profil anpassen:** Über die Icons im oberen HUD hast du jederzeit Zugriff auf das **Sound-Overlay** (Lautstärke, BGM, SFX) und das **User-Overlay** (Profil, Passwort, Spielstand-Reset).
 
 ---
 
