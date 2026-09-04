@@ -114,6 +114,6 @@ export const ENERGY_UPKEEP: Record<string, number> = {
   orbital_shipyard: 200, planetary_defense: 300, large_station: 500, biolabor: 100,
   nano_bots: 250, ki_automatisierung: 300, antriebstechnik: 500, trading_post: 50,
   interstellar_market: 200, galactic_exchange: 1000,
-  kolonisierungsschiffe: 100, logistikschiff: 50, transportschiffe: 50, mining_ship: 20,
-  leichter_jaeger: 10, schwerer_jaeger: 30, zerstoerer: 100, kreuzer: 300,
+  kolonisierungsschiffe: 300, logistikschiff: 150, transportschiffe: 120, mining_ship: 40,
+  leichter_jaeger: 30, schwerer_jaeger: 90, zerstoerer: 350, kreuzer: 1200,
 };

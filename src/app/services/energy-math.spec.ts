@@ -41,11 +41,11 @@ describe('Energy System & Upkeep Balancing', () => {
     const skills = {
       planetary_defense: 1, // 300
       nano_bots: 1,         // 250
-      leichter_jaeger: 5,   // 5 * 10 = 50
-      kreuzer: 2,           // 2 * 300 = 600
+      leichter_jaeger: 5,   // 5 * 30 = 150
+      kreuzer: 2,           // 2 * 1200 = 2400
     };
     const totalConsumed = calcTotalEnergyConsumed(skills);
-    expect(totalConsumed).toBe(300 + 250 + 50 + 600); // 1200
+    expect(totalConsumed).toBe(300 + 250 + 150 + 2400); // 3100
   });
 
   it('should calculate available energy and detect deficits', () => {
