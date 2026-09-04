@@ -18,6 +18,9 @@
             )
           "
           [energyDelta]="getEnergyDelta(item.id)"
+          [isDeactivated]="gameState.isDeactivated(item.id)"
+          [canTogglePower]="getSkillLevel(item.id) > 0"
+          (powerToggled)="gameState.togglePower(item.id)"
           [canAfford]="
             canAfford(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))
           "

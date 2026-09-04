@@ -5,7 +5,10 @@ import {
   calcBuildingEnergyUpkeep,
   calcTotalEnergyConsumed,
   calcAvailableEnergy,
-  calcTotalEnergyProduced
+  calcTotalEnergyProduced,
+  buildResourceRates,
+  calcPlayerFleetStrength,
+  calcPlanetaryDefenseStrength
 } from './game-math.utils';
 
 describe('Energy System & Upkeep Balancing', () => {
@@ -61,4 +64,61 @@ describe('Energy System & Upkeep Balancing', () => {
     expect(consumed).toBe(300);
     expect(available).toBe(-100); // Deficit!
   });
+
+  it('should ignore disabled buildings and ships in calcTotalEnergyConsumed and free energy', () => {
+    const skills = {
+      solarkraftwerk: 1,    // Produces 200
+      planetary_defense: 1, // Consumes 300
+      kreuzer: 2,           // Consumes 2 * 1200 = 2400
+    };
+
+    // Before deactivating: total consumed = 2700, available = 200 - 2700 = -2500
+    expect(calcTotalEnergyConsumed(skills)).toBe(2700);
+    expect(calcAvailableEnergy(skills)).toBe(-2500);
+
+    // Deactivate kreuzer
+    const disabledKreuzer = { kreuzer: true };
+    expect(calcTotalEnergyConsumed(skills, disabledKreuzer)).toBe(300);
+    expect(calcAvailableEnergy(skills, disabledKreuzer)).toBe(-100);
+
+    // Deactivate both kreuzer and planetary_defense -> 0 consumed, all 200 available
+    const disabledBoth = { kreuzer: true, planetary_defense: true };
+    expect(calcTotalEnergyConsumed(skills, disabledBoth)).toBe(0);
+    expect(calcAvailableEnergy(skills, disabledBoth)).toBe(200);
+  });
+
+  it('should pause production and combat strength for deactivated entities', () => {
+    const skills = {
+      solarkraftwerk: 10,
+      eisenmine: 5,
+      silbermine: 3,
+      kreuzer: 4,
+      planetary_defense: 2,
+    };
+
+    // When all active and hasPower = true (availableEnergy = 500)
+    const activeRates = buildResourceRates(skills, 500, {});
+    expect(activeRates.eisen).toBeGreaterThan(0);
+    expect(activeRates.silber).toBeGreaterThan(0);
+
+    const activeFleetStrength = calcPlayerFleetStrength(skills, {});
+    expect(activeFleetStrength).toBe(4 * 600); // 2400
+
+    const activeDefStrength = calcPlanetaryDefenseStrength(skills, {});
+    expect(activeDefStrength).toBeGreaterThan(0);
+
+    // Deactivate eisenmine, kreuzer, and planetary_defense
+    const disabled = { eisenmine: true, kreuzer: true, planetary_defense: true };
+    const pausedRates = buildResourceRates(skills, 500, disabled);
+    expect(pausedRates.eisen).toBe(0); // Eisenmine produces 0
+    expect(pausedRates.silber).toBeGreaterThan(0); // Silbermine still active!
+
+    const pausedFleetStrength = calcPlayerFleetStrength(skills, disabled);
+    expect(pausedFleetStrength).toBe(0); // Kreuzer deactivated -> 0 strength
+
+    const pausedDefStrength = calcPlanetaryDefenseStrength(skills, disabled);
+    expect(pausedDefStrength).toBe(0); // Planetary defense deactivated -> 0 defense
+  });
 });
+
+

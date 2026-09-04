@@ -1,4 +1,4 @@
-<article class="skill-node" [class.locked]="locked" [attr.aria-label]="title + ' node'">
+<article class="skill-node" [class.locked]="locked" [class.is-deactivated]="isDeactivated" [attr.aria-label]="title + ' node'">
   <div class="glow-border"></div>
 
   <figure class="node-image-wrap">
@@ -17,7 +17,12 @@
   </figure>
 
   <div class="node-details">
-    <h2 class="node-title">{{ title }}</h2>
+    <div class="node-header-row">
+      <h2 class="node-title">{{ title }}</h2>
+      @if (isDeactivated) {
+        <span class="offline-indicator" title="Dieses Gebäude ist stromlos und pausiert">OFFLINE</span>
+      }
+    </div>
     <p class="node-level" [attr.aria-label]="'Level ' + level">Level: {{ level }}</p>
 
     @if (effectText) {
@@ -37,8 +42,33 @@
 
     @if (energyDelta > 0) {
       <div class="node-energy" aria-label="Energiekosten">
-        <span class="energy-label">Energiekosten:</span>
-        <span class="energy-val">{{ energyDelta | compactNumber }}</span>
+        <div class="energy-info">
+          <span class="energy-label">Energiekosten:</span>
+          <span class="energy-val">{{ energyDelta | compactNumber }}</span>
+        </div>
+
+        @if (canTogglePower) {
+          <button
+            type="button"
+            class="energy-toggle-btn"
+            [class.off]="isDeactivated"
+            (click)="onTogglePower($event)"
+            [attr.aria-label]="isDeactivated ? 'Gebäude aktivieren' : 'Gebäude deaktivieren (Energie sparen)'"
+            [attr.aria-pressed]="!isDeactivated"
+            [title]="isDeactivated ? 'Deaktiviert – Klicken zum Einschalten' : 'Aktiv – Klicken zum Abschalten (spart Energie)'"
+          >
+            @if (isDeactivated) {
+              <svg class="toggle-svg off" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z" fill="currentColor" opacity="0.35" />
+                <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+              </svg>
+            } @else {
+              <svg class="toggle-svg on" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z" fill="currentColor" />
+              </svg>
+            }
+          </button>
+        }
       </div>
     }
 

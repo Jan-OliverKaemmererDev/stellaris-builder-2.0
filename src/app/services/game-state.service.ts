@@ -46,36 +46,39 @@ export class GameStateService {
   /** Whether the user has seen the rules page. */
   hasSeenRules = signal<boolean>(false);
 
+  /** Map of building or ship IDs that are temporarily powered off to save energy. */
+  disabledBuildings = signal<Record<string, boolean>>({});
+
   /** Total energy capacity produced by all power plants. */
   energyProduced = computed<number>(() => {
     return MathUtils.calcTotalEnergyProduced(this.skills());
   });
 
-  /** Total energy consumed by all buildings and ships. */
+  /** Total energy consumed by all active buildings and ships. */
   energyConsumed = computed<number>(() => {
-    return MathUtils.calcTotalEnergyConsumed(this.skills());
+    return MathUtils.calcTotalEnergyConsumed(this.skills(), this.disabledBuildings());
   });
 
   /** Remaining energy capacity (produced minus consumed). */
   availableEnergy = computed<number>(() => this.energyProduced() - this.energyConsumed());
 
-  /** Hourly production rates for each resource based on current skills and energy state. */
-  productionRates = computed<GameResources>(() => MathUtils.buildResourceRates(this.skills(), this.availableEnergy()));
+  /** Hourly production rates for each resource based on current skills, energy state, and power toggles. */
+  productionRates = computed<GameResources>(() => MathUtils.buildResourceRates(this.skills(), this.availableEnergy(), this.disabledBuildings()));
 
   /** Maximum storage capacity for each resource. */
-  maxStorage = computed<GameResources>(() => MathUtils.buildMaxStorage(this.skills()));
+  maxStorage = computed<GameResources>(() => MathUtils.buildMaxStorage(this.skills(), this.disabledBuildings()));
 
-  /** Total number of battle ships owned. */
-  totalBattleShips = computed<number>(() => MathUtils.calcTotalBattleShips(this.skills()));
+  /** Total number of active battle ships owned. */
+  totalBattleShips = computed<number>(() => MathUtils.calcTotalBattleShips(this.skills(), this.disabledBuildings()));
 
-  /** Total offensive fleet combat power. */
-  fleetStrength = computed<number>(() => MathUtils.calcPlayerFleetStrength(this.skills()));
+  /** Total offensive fleet combat power of active ships. */
+  fleetStrength = computed<number>(() => MathUtils.calcPlayerFleetStrength(this.skills(), this.disabledBuildings()));
 
   /** Total defensive power of Planetary Defense and its sub-upgrades. */
-  planetaryDefenseStrength = computed<number>(() => MathUtils.calcPlanetaryDefenseStrength(this.skills()));
+  planetaryDefenseStrength = computed<number>(() => MathUtils.calcPlanetaryDefenseStrength(this.skills(), this.disabledBuildings()));
 
   /** Percentage of resource losses mitigated by Planetary Defense during attacks (0 to 0.85). */
-  defenseDamageReduction = computed<number>(() => MathUtils.calcDefenseDamageReduction(this.skills()));
+  defenseDamageReduction = computed<number>(() => MathUtils.calcDefenseDamageReduction(this.skills(), this.disabledBuildings()));
 
   private userSub: Subscription | null = null;
   private stateSub: (() => void) | null = null;
@@ -137,6 +140,7 @@ export class GameStateService {
     await setDoc(stateRef, initialState, { merge: true });
     this.resources.set(initialState.resources);
     this.skills.set(initialState.skills);
+    this.disabledBuildings.set({});
     this.isInitialized = true;
     this.router.navigate(['/bridge/spielregeln']);
   }
@@ -157,6 +161,7 @@ export class GameStateService {
     this.isInitialized = true;
     this.resources.set(state.resources || DEFAULT_STATE.resources);
     this.skills.set(state.skills || {});
+    this.disabledBuildings.set(state.disabledBuildings || {});
     this.activeMission.set(state.activeMission || null);
     this.activeBattle.set(state.activeBattle || null);
     this.enemyActivated.set(state.enemyActivated ?? false);
@@ -197,11 +202,11 @@ export class GameStateService {
    */
   private async processOfflineProgress(state: GameState, hours: number, now: number, ref: ReturnType<typeof doc>): Promise<GameState> {
     const s = state.skills || {};
-    const generated = MathUtils.calculateOfflineGenerated(MathUtils.buildResourceRates(s), hours);
+    const generated = MathUtils.calculateOfflineGenerated(MathUtils.buildResourceRates(s, undefined, state.disabledBuildings), hours);
     if (!MathUtils.hasSignificantEarnings(generated)) return state;
 
     this.offlineEarnings.set(generated);
-    const updated = MathUtils.applyOfflineEarnings(state.resources, generated, MathUtils.buildMaxStorage(s));
+    const updated = MathUtils.applyOfflineEarnings(state.resources, generated, MathUtils.buildMaxStorage(s, state.disabledBuildings));
     await updateDoc(ref, { resources: updated, lastUpdate: now });
     return { ...state, resources: updated, lastUpdate: now };
   }
@@ -213,6 +218,7 @@ export class GameStateService {
     this.isInitialized = false;
     this.resources.set(DEFAULT_STATE.resources);
     this.skills.set({});
+    this.disabledBuildings.set({});
     this.activeMission.set(null);
     this.activeBattle.set(null);
     this.enemyActivated.set(false);
@@ -589,12 +595,46 @@ export class GameStateService {
 
     this.resources.set(freshState.resources);
     this.skills.set({});
+    this.disabledBuildings.set({});
     this.activeMission.set(null);
     this.activeBattle.set(null);
     this.enemyActivated.set(false);
     this.lastEnemyAttack.set(0);
     this.activeBuilds.set({});
     this.offlineEarnings.set(null);
+  }
+
+  /**
+   * Checks whether a specific building or ship class is currently powered off.
+   * @param id - The building or ship identifier.
+   */
+  isDeactivated(id: string): boolean {
+    return !!this.disabledBuildings()[id];
+  }
+
+  /**
+   * Toggles power on or off for a building or ship class.
+   * Immediately frees up or resumes continuous energy consumption and persists to Firestore.
+   * @param id - The identifier of the building or ship class.
+   */
+  async togglePower(id: string): Promise<void> {
+    const current = { ...this.disabledBuildings() };
+    if (current[id]) {
+      delete current[id];
+    } else {
+      current[id] = true;
+    }
+    this.disabledBuildings.set(current);
+
+    const user = this.auth.currentUser;
+    if (user) {
+      try {
+        const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+        await updateDoc(stateRef, { disabledBuildings: current });
+      } catch (err) {
+        console.warn('Could not persist disabledBuildings to Firestore:', err);
+      }
+    }
   }
 }
 

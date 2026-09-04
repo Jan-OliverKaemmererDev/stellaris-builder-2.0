@@ -433,6 +433,23 @@ figure.ship-img-wrap {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--space-sm);
+
+  .ship-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+}
+
+.offline-indicator {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
 }
 
 .ship-title {
@@ -493,8 +510,15 @@ ul.cost-list {
 .ship-energy {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-xs);
   margin-bottom: var(--space-md);
+
+  .energy-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
 
   .energy-label {
     font-size: 0.8rem;
@@ -509,6 +533,67 @@ ul.cost-list {
     border: 1px solid rgba(250, 204, 21, 0.25);
     padding: 2px 8px;
     border-radius: var(--radius-sm);
+  }
+}
+
+.energy-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  background: rgba(250, 204, 21, 0.1);
+  color: var(--color-energie);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(250, 204, 21, 0.25);
+    border-color: var(--color-energie);
+    transform: scale(1.08);
+    box-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.off {
+    background: rgba(148, 163, 184, 0.08);
+    border-color: rgba(148, 163, 184, 0.25);
+    color: #94a3b8;
+
+    &:hover {
+      background: rgba(148, 163, 184, 0.18);
+      border-color: #cbd5e1;
+      color: #cbd5e1;
+      transform: scale(1.08);
+      box-shadow: 0 0 6px rgba(148, 163, 184, 0.3);
+    }
+  }
+
+  .toggle-svg {
+    display: block;
+    transition: transform 0.2s ease;
+
+    &.on {
+      filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.7));
+    }
+
+    &.off {
+      filter: none;
+    }
+  }
+}
+
+.ship-card.is-deactivated {
+  border-color: rgba(100, 116, 139, 0.4);
+
+  .ship-img {
+    filter: grayscale(35%) opacity(0.85);
   }
 }
 

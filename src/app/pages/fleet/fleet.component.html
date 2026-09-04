@@ -172,7 +172,7 @@
 
 
   <ng-template #shipCard let-ship>
-    <article class="ship-card" role="listitem">
+    <article class="ship-card" [class.is-deactivated]="isShipDeactivated(ship.id)" role="listitem">
       <figure class="ship-img-wrap" aria-hidden="true">
         @if (ship.imagePath.startsWith('css-icon-')) {
           <app-icon
@@ -192,7 +192,12 @@
       
       <div class="ship-details">
         <header class="ship-header">
-          <h3 class="ship-title">{{ ship.title }}</h3>
+          <div class="ship-title-wrap">
+            <h3 class="ship-title">{{ ship.title }}</h3>
+            @if (isShipDeactivated(ship.id)) {
+              <span class="offline-indicator" title="Diese Schiffsklasse ist im Hangar deaktiviert">OFFLINE</span>
+            }
+          </div>
           <span class="ship-count" aria-label="Owned amount">Besitz: {{ getShipCount(ship.id) }}</span>
         </header>
         
@@ -212,8 +217,33 @@
 
         @if (getShipEnergyUpkeep(ship.id) > 0) {
           <div class="ship-energy" aria-label="Energiekosten">
-            <span class="energy-label">Energiekosten:</span>
-            <span class="energy-val">{{ getShipEnergyUpkeep(ship.id) | compactNumber }}</span>
+            <div class="energy-info">
+              <span class="energy-label">Energiekosten:</span>
+              <span class="energy-val">{{ getShipEnergyUpkeep(ship.id) | compactNumber }}</span>
+            </div>
+
+            @if (getShipCount(ship.id) > 0) {
+              <button
+                type="button"
+                class="energy-toggle-btn"
+                [class.off]="isShipDeactivated(ship.id)"
+                (click)="toggleShipPower(ship.id)"
+                [attr.aria-label]="isShipDeactivated(ship.id) ? 'Schiffe aktivieren' : 'Schiffe deaktivieren (Energie sparen)'"
+                [attr.aria-pressed]="!isShipDeactivated(ship.id)"
+                [title]="isShipDeactivated(ship.id) ? 'Deaktiviert – Klicken zum Einschalten' : 'Aktiv – Klicken zum Abschalten (spart Energie)'"
+              >
+                @if (isShipDeactivated(ship.id)) {
+                  <svg class="toggle-svg off" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <path d="M7 2v11h3v9l7-12h-4l4-8z" fill="currentColor" opacity="0.35" />
+                    <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                  </svg>
+                } @else {
+                  <svg class="toggle-svg on" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                    <path d="M7 2v11h3v9l7-12h-4l4-8z" fill="currentColor" />
+                  </svg>
+                }
+              </button>
+            }
           </div>
         }
         

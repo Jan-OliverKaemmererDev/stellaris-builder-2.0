@@ -19,6 +19,9 @@
             )
           "
           [energyDelta]="getEnergyDelta(mine.id)"
+          [isDeactivated]="gameState.isDeactivated(mine.id)"
+          [canTogglePower]="getSkillLevel(mine.id) > 0"
+          (powerToggled)="gameState.togglePower(mine.id)"
           [canAfford]="
             canAfford(getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)))
           "

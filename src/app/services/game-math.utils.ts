@@ -82,12 +82,15 @@ export function calcTotalEnergyProduced(s: Record<string, number>): number {
 
 /**
  * Calculates total energy consumed by all active buildings and ships.
+ * Deactivated buildings/ships consume 0 energy.
  * @param s - A record containing the current skill levels of the player.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns Total energy consumption.
  */
-export function calcTotalEnergyConsumed(s: Record<string, number>): number {
+export function calcTotalEnergyConsumed(s: Record<string, number>, disabled?: Record<string, boolean>): number {
   return Object.entries(s).reduce((total, [id, level]) => {
     if (!ENERGY_UPKEEP[id]) return total;
+    if (disabled?.[id]) return total;
     return total + (SHIP_IDS.includes(id) ? ENERGY_UPKEEP[id] * level : calcCumulativeUpkeep(ENERGY_UPKEEP[id], level));
   }, 0);
 }
@@ -95,10 +98,11 @@ export function calcTotalEnergyConsumed(s: Record<string, number>): number {
 /**
  * Calculates available energy (produced minus consumed).
  * @param s - A record containing the current skill levels of the player.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns Remaining energy capacity.
  */
-export function calcAvailableEnergy(s: Record<string, number>): number {
-  return calcTotalEnergyProduced(s) - calcTotalEnergyConsumed(s);
+export function calcAvailableEnergy(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  return calcTotalEnergyProduced(s) - calcTotalEnergyConsumed(s, disabled);
 }
 
 /**
@@ -125,72 +129,90 @@ export function calcBuildingEnergyUpkeep(buildingId: string, level: number): num
   return calcCumulativeUpkeep(base, level);
 }
 
-export function getKiGlobalBonus(s: Record<string, number>): number {
+export function getKiGlobalBonus(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['ki_automatisierung']) return 1;
   return 1 + ((s['ki_automatisierung'] || 0) * 0.02) +
     ((s['ki_neuronale_netze'] || 0) + (s['ki_quanten_prozessoren'] || 0) + (s['ki_selbstlernend'] || 0) + (s['ki_bewusstsein'] || 0)) * 0.01;
 }
 
-export function getRefineryBonus(s: Record<string, number>): number {
+export function getRefineryBonus(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['refinery']) return 1;
   return 1 + ((s['refinery_thermalschmelze'] || 0) + (s['refinery_katalytische_konverter'] || 0) + (s['refinery_plasma_extraktion'] || 0) + (s['refinery_antimaterie_anreicherung'] || 0)) * 0.05;
 }
 
-export function getTradePostBonus(s: Record<string, number>): number {
+export function getTradePostBonus(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['trading_post']) return 1;
   return 1 + ((s['trade_lokale_gilden'] || 0) + (s['trade_frachtdrohnen'] || 0) + (s['trade_schwarzmarkt'] || 0) + (s['trade_planetarer_zoll'] || 0)) * 0.05;
 }
 
-export function getMarketBonus(s: Record<string, number>): number {
+export function getMarketBonus(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['interstellar_market']) return 1;
   return 1 + ((s['market_kartographierung'] || 0) + (s['market_subraum_komm'] || 0) + (s['market_geleitschutz'] || 0) + (s['market_banken'] || 0)) * 0.05;
 }
 
-export function getExchangeBonus(s: Record<string, number>): number {
+export function getExchangeBonus(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['galactic_exchange']) return 1;
   return 1 + ((s['exchange_hft'] || 0) + (s['exchange_megakonzern'] || 0) + (s['exchange_monopol'] || 0) + (s['exchange_waehrungsamt'] || 0)) * 0.05;
 }
 
-export function getBioBonus(s: Record<string, number>): number {
+export function getBioBonus(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['biolabor']) return 1;
   return 1 + ((s['bio_gen_sequenzierer'] || 0) + (s['bio_hydroponik'] || 0) + (s['bio_zell_regeneration'] || 0) + (s['bio_klon_vat'] || 0)) * 0.05;
 }
 
-export function getStationBonus(s: Record<string, number>): number {
+export function getStationBonus(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['large_station']) return 1;
   return 1 + ((s['station_verstaerkte_huelle'] || 0) + (s['station_hydroponische_gaerten'] || 0) + (s['station_kommerz_hub'] || 0) + (s['station_orbitaler_verteidigungsring'] || 0)) * 0.05;
 }
 
 /**
  * Builds the full resource production rates per hour based on current skill and building levels.
  * When energy is depleted (availableEnergy <= 0), mines shut down and produce 0.
+ * When a building or ship is deactivated, its production or bonus is paused.
  * @param s - A record containing the current skill levels of the player.
  * @param availableEnergy - Optional precomputed available energy value.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns A `GameResources` object containing the hourly production rates.
  */
-export function buildResourceRates(s: Record<string, number>, availableEnergy?: number): GameResources {
-  const hasPower = (availableEnergy !== undefined ? availableEnergy : calcAvailableEnergy(s)) > 0;
+export function buildResourceRates(
+  s: Record<string, number>,
+  availableEnergy?: number,
+  disabled?: Record<string, boolean>
+): GameResources {
+  const hasPower = (availableEnergy !== undefined ? availableEnergy : calcAvailableEnergy(s, disabled)) > 0;
 
-  const kiGlobalBonus = getKiGlobalBonus(s);
-  const refineryBonus = getRefineryBonus(s);
-  const tradePostBonus = getTradePostBonus(s);
-  const marketBonus = getMarketBonus(s);
-  const exchangeBonus = getExchangeBonus(s);
-  const bioBonus = getBioBonus(s);
-  const stationBonus = getStationBonus(s);
+  const kiGlobalBonus = getKiGlobalBonus(s, disabled);
+  const refineryBonus = getRefineryBonus(s, disabled);
+  const tradePostBonus = getTradePostBonus(s, disabled);
+  const marketBonus = getMarketBonus(s, disabled);
+  const exchangeBonus = getExchangeBonus(s, disabled);
+  const bioBonus = getBioBonus(s, disabled);
+  const stationBonus = getStationBonus(s, disabled);
 
-  // Mines produce only if empire has positive available energy
-  const eisenHourly = hasPower ? Math.floor((calcExponential(150, s['eisenmine'] || 0) * getMineBonus('eisenmine', s) + (s['transportschiffe'] || 0) * 150) * kiGlobalBonus) : 0;
-  const silberHourly = hasPower ? Math.floor((calcExponential(80, s['silbermine'] || 0) * getMineBonus('silbermine', s)) * kiGlobalBonus) : 0;
-  const goldHourly = hasPower ? Math.floor((calcExponential(30, s['goldmine'] || 0) * getMineBonus('goldmine', s)) * kiGlobalBonus) : 0;
-  const xenonitHourly = hasPower ? Math.floor(calcExponential(10, s['refinery'] || 0) * refineryBonus * kiGlobalBonus) : 0;
+  const transportCount = disabled?.['transportschiffe'] ? 0 : (s['transportschiffe'] || 0);
 
-  const creditsHourly = Math.floor(
-    (calcExponential(100, s['trading_post'] || 0) * tradePostBonus +
-     calcExponential(400, s['interstellar_market'] || 0) * marketBonus +
-     calcExponential(1500, s['galactic_exchange'] || 0) * exchangeBonus) * kiGlobalBonus
-  );
+  // Mines produce only if empire has positive available energy and the mine is active
+  const isEisenActive = hasPower && !disabled?.['eisenmine'];
+  const isSilberActive = hasPower && !disabled?.['silbermine'];
+  const isGoldActive = hasPower && !disabled?.['goldmine'];
+  const isRefineryActive = hasPower && !disabled?.['refinery'];
 
-  const nahrungHourly = Math.floor(
-    (calcExponential(200, s['biolabor'] || 0) * bioBonus + (s['transportschiffe'] || 0) * 200) * kiGlobalBonus
-  );
+  const eisenHourly = isEisenActive ? Math.floor((calcExponential(150, s['eisenmine'] || 0) * getMineBonus('eisenmine', s) + transportCount * 150) * kiGlobalBonus) : 0;
+  const silberHourly = isSilberActive ? Math.floor((calcExponential(80, s['silbermine'] || 0) * getMineBonus('silbermine', s)) * kiGlobalBonus) : 0;
+  const goldHourly = isGoldActive ? Math.floor((calcExponential(30, s['goldmine'] || 0) * getMineBonus('goldmine', s)) * kiGlobalBonus) : 0;
+  const xenonitHourly = isRefineryActive ? Math.floor(calcExponential(10, s['refinery'] || 0) * refineryBonus * kiGlobalBonus) : 0;
 
-  const personalHourly = Math.floor(
-    (calcExponential(5, s['large_station'] || 0) * stationBonus + (s['kolonisierungsschiffe'] || 0) * 10) * kiGlobalBonus
-  );
+  const tpVal = disabled?.['trading_post'] ? 0 : calcExponential(100, s['trading_post'] || 0) * tradePostBonus;
+  const mktVal = disabled?.['interstellar_market'] ? 0 : calcExponential(400, s['interstellar_market'] || 0) * marketBonus;
+  const exVal = disabled?.['galactic_exchange'] ? 0 : calcExponential(1500, s['galactic_exchange'] || 0) * exchangeBonus;
+  const creditsHourly = Math.floor((tpVal + mktVal + exVal) * kiGlobalBonus);
+
+  const bioVal = disabled?.['biolabor'] ? 0 : calcExponential(200, s['biolabor'] || 0) * bioBonus;
+  const nahrungHourly = Math.floor((bioVal + transportCount * 200) * kiGlobalBonus);
+
+  const stationVal = disabled?.['large_station'] ? 0 : calcExponential(5, s['large_station'] || 0) * stationBonus;
+  const colonyPersonal = disabled?.['kolonisierungsschiffe'] ? 0 : ((s['kolonisierungsschiffe'] || 0) * 10);
+  const personalHourly = Math.floor((stationVal + colonyPersonal) * kiGlobalBonus);
 
   return {
     eisen: eisenHourly,
@@ -208,18 +230,22 @@ export function getLagerSubBonus(s: Record<string, number>): number {
   return 1 + ((s['lager_erweiterte_ladebucht'] || 0) + (s['lager_automatisierte_logistik'] || 0) + (s['lager_quantenspeicher'] || 0) + (s['lager_subraum_kompression'] || 0)) * 0.05;
 }
 
-export function getLagerTotalMult(s: Record<string, number>): number {
-  return Math.pow(1.5, s['lager'] || 0) * getLagerSubBonus(s) * Math.pow(1.1, s['logistikschiff'] || 0);
+export function getLagerTotalMult(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  const lagerLvl = disabled?.['lager'] ? 0 : (s['lager'] || 0);
+  const logistikCount = disabled?.['logistikschiff'] ? 0 : (s['logistikschiff'] || 0);
+  return Math.pow(1.5, lagerLvl) * getLagerSubBonus(s) * Math.pow(1.1, logistikCount);
 }
 
 /**
  * Builds the maximum storage capacity for all resources based on storage buildings and logistics.
+ * Deactivated storage buildings or logistics ships do not provide storage multipliers.
  * @param s - A record containing the current skill levels of the player.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns A `GameResources` object containing the maximum limits for each resource.
  */
-export function buildMaxStorage(s: Record<string, number>): GameResources {
-  const mult = getLagerTotalMult(s);
-  const kol = (s['kolonisierungsschiffe'] || 0) * 1000;
+export function buildMaxStorage(s: Record<string, number>, disabled?: Record<string, boolean>): GameResources {
+  const mult = getLagerTotalMult(s, disabled);
+  const kol = disabled?.['kolonisierungsschiffe'] ? 0 : ((s['kolonisierungsschiffe'] || 0) * 1000);
   return {
     eisen: Math.floor(10000 * mult), silber: Math.floor(5000 * mult),
     gold: Math.floor(3000 * mult), xenonit: Math.floor(1000 * mult), energie: 0,
@@ -343,26 +369,30 @@ export function getBuyRate(resourceId: string, s: Record<string, number>): numbe
   return Math.max(1, Math.floor(base * (1 - discount)));
 }
 
-export function getNanoDiscount(skills: Record<string, number>): number {
+export function getNanoDiscount(skills: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['nano_bots']) return 0;
   const nanoLvl = skills['nano_bots'] || 0;
   const nanoSubBonus = ((skills['nano_krabbler'] || 0) + (skills['nano_schweisser'] || 0) + (skills['nano_reparatur'] || 0) + (skills['nano_replikator'] || 0)) * 0.005;
   return Math.min(0.5, nanoLvl * 0.01 + nanoSubBonus);
 }
 
-export function getEngineSpeedMultiplier(s: Record<string, number>): number {
+export function getEngineSpeedMultiplier(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['antriebstechnik']) return 1;
   const antriebLvl = s['antriebstechnik'] || 0;
   const antriebSub = ((s['antrieb_ionen'] || 0) + (s['antrieb_plasma'] || 0) + (s['antrieb_hyperraum'] || 0) + (s['antrieb_sprungtor'] || 0)) * 0.05;
   return 1 + antriebLvl * 0.05 + antriebSub;
 }
 
-export function getShipyardDiscount(s: Record<string, number>): number {
+export function getShipyardDiscount(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['orbital_shipyard']) return 0;
   const shipyardLvl = s['orbital_shipyard'] || 0;
   if (shipyardLvl <= 0) return 0;
   const subBonus = ((s['shipyard_montage_drohnen'] || 0) + (s['shipyard_modulare_werftdocks'] || 0) + (s['shipyard_ki_konstruktion'] || 0) + (s['shipyard_naniten_fabrikation'] || 0)) * 0.025;
   return Math.min(0.75, shipyardLvl * 0.02 + subBonus);
 }
 
-export function getShipyardSpeedMultiplier(s: Record<string, number>): number {
+export function getShipyardSpeedMultiplier(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['orbital_shipyard']) return 1;
   const shipyardLvl = s['orbital_shipyard'] || 0;
   const subBonus = ((s['shipyard_montage_drohnen'] || 0) + (s['shipyard_modulare_werftdocks'] || 0) + (s['shipyard_ki_konstruktion'] || 0) + (s['shipyard_naniten_fabrikation'] || 0)) * 0.05;
   return 1 + shipyardLvl * 0.05 + subBonus;
@@ -375,18 +405,20 @@ export function getShipyardSpeedMultiplier(s: Record<string, number>): number {
  * @param multiplier - The multiplicative cost scaling factor per level.
  * @param currentLevel - The current level of the skill/building.
  * @param skills - A record containing the current skill levels of the player.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns A `GameResources` object representing the discounted cost.
  */
 export function calculateCost(
   baseCost: Partial<GameResources>,
   multiplier: number,
   currentLevel: number,
-  skills: Record<string, number>
+  skills: Record<string, number>,
+  disabled?: Record<string, boolean>
 ): Partial<GameResources> {
   const cost: Partial<GameResources> = {};
   const mult = Math.pow(multiplier, currentLevel);
   
-  const discount = getNanoDiscount(skills);
+  const discount = getNanoDiscount(skills, disabled);
 
   for (const [key, val] of Object.entries(baseCost)) {
     if (val !== undefined) {
@@ -403,32 +435,46 @@ export function calculateCost(
 /**
  * Calculates the total number of battle ships owned by the player.
  * @param s - Skills map.
- * @returns Total count of all combat ships.
+ * @param disabled - Optional map of deactivated building or ship IDs.
+ * @returns Total count of all active combat ships.
  */
-export function calcTotalBattleShips(s: Record<string, number>): number {
-  return (s['leichter_jaeger'] || 0) + (s['schwerer_jaeger'] || 0) + (s['zerstoerer'] || 0) + (s['kreuzer'] || 0);
+export function calcTotalBattleShips(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  const lj = disabled?.['leichter_jaeger'] ? 0 : (s['leichter_jaeger'] || 0);
+  const sj = disabled?.['schwerer_jaeger'] ? 0 : (s['schwerer_jaeger'] || 0);
+  const ze = disabled?.['zerstoerer'] ? 0 : (s['zerstoerer'] || 0);
+  const kr = disabled?.['kreuzer'] ? 0 : (s['kreuzer'] || 0);
+  return lj + sj + ze + kr;
 }
 
 /**
  * Calculates the total offensive attack strength of all owned battle ships.
+ * Deactivated ships provide 0 combat strength.
  * @param s - Skills map.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns Combined fleet combat strength.
  */
-export function calcPlayerFleetStrength(s: Record<string, number>): number {
+export function calcPlayerFleetStrength(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  const lj = disabled?.['leichter_jaeger'] ? 0 : (s['leichter_jaeger'] || 0);
+  const sj = disabled?.['schwerer_jaeger'] ? 0 : (s['schwerer_jaeger'] || 0);
+  const ze = disabled?.['zerstoerer'] ? 0 : (s['zerstoerer'] || 0);
+  const kr = disabled?.['kreuzer'] ? 0 : (s['kreuzer'] || 0);
   return (
-    (s['leichter_jaeger'] || 0) * 10 +
-    (s['schwerer_jaeger'] || 0) * 35 +
-    (s['zerstoerer'] || 0) * 150 +
-    (s['kreuzer'] || 0) * 600
+    lj * 10 +
+    sj * 35 +
+    ze * 150 +
+    kr * 600
   );
 }
 
 /**
  * Calculates the total defensive power of Planetary Defense and its sub-upgrades.
+ * Deactivated planetary defense provides 0 defense power.
  * @param s - Skills map.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns Combined planetary defense rating.
  */
-export function calcPlanetaryDefenseStrength(s: Record<string, number>): number {
+export function calcPlanetaryDefenseStrength(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['planetary_defense']) return 0;
   const baseDefense = (s['planetary_defense'] || 0) * 100;
   const subBonus =
     1 +
@@ -442,10 +488,13 @@ export function calcPlanetaryDefenseStrength(s: Record<string, number>): number 
 
 /**
  * Calculates the percentage of resource losses mitigated by Planetary Defense during a defeat.
+ * Deactivated planetary defense provides 0% damage reduction.
  * @param s - Skills map.
+ * @param disabled - Optional map of deactivated building or ship IDs.
  * @returns Fraction between 0 and 0.85 (e.g., 0.60 = 60% damage reduction).
  */
-export function calcDefenseDamageReduction(s: Record<string, number>): number {
+export function calcDefenseDamageReduction(s: Record<string, number>, disabled?: Record<string, boolean>): number {
+  if (disabled?.['planetary_defense']) return 0;
   const pdLvl = s['planetary_defense'] || 0;
   if (pdLvl <= 0) return 0;
   const baseRed = pdLvl * 0.05;

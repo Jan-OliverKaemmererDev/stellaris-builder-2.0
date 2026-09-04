@@ -57,6 +57,10 @@ export class SkillNodeComponent {
   @Input() placeholderChar: string = '';
   /** If this node is currently being built, contains the active build data. */
   @Input() activeBuild: ActiveBuild | null = null;
+  /** Whether the building is currently turned off to save energy. */
+  @Input() isDeactivated: boolean = false;
+  /** Whether power can be toggled (true when level > 0 and building has energy upkeep). */
+  @Input() canTogglePower: boolean = false;
 
   /** Emits when the node image is clicked (to open the lightbox). */
   @Output() imageClicked = new EventEmitter<void>();
@@ -64,6 +68,8 @@ export class SkillNodeComponent {
   @Output() buildStarted = new EventEmitter<void>();
   /** Emits when the build process completes (after progress bar reaches 100%). */
   @Output() upgradeCompleted = new EventEmitter<void>();
+  /** Emits when the power toggle icon is clicked. */
+  @Output() powerToggled = new EventEmitter<void>();
 
   startBuild(): void {
     if (this.locked || !this.canAfford || this.activeBuild) return;
@@ -72,6 +78,11 @@ export class SkillNodeComponent {
 
   onBuildComplete(): void {
     this.upgradeCompleted.emit();
+  }
+
+  onTogglePower(event: Event): void {
+    event.stopPropagation();
+    this.powerToggled.emit();
   }
 }
 

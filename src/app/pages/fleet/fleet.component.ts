@@ -298,11 +298,22 @@ export class FleetComponent implements OnInit, OnDestroy {
 
   /** Mining ships not currently deployed on a mission. */
   get availableMiningShips(): number {
+    if (this.gameState.isDeactivated('mining_ship')) return 0;
     const m = this.activeMission();
     if (m && m.type === 'asteroid_mining') {
-      return this.miningShipCount - m.shipCount;
+      return Math.max(0, this.miningShipCount - m.shipCount);
     }
     return this.miningShipCount;
+  }
+
+  /** Checks whether a ship class is currently powered off to save energy. */
+  isShipDeactivated(shipId: string): boolean {
+    return this.gameState.isDeactivated(shipId);
+  }
+
+  /** Toggles power for a ship class on or off. */
+  async toggleShipPower(shipId: string): Promise<void> {
+    await this.gameState.togglePower(shipId);
   }
 
   /** Starts an asteroid mining mission with all available mining ships. */

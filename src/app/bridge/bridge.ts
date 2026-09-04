@@ -130,7 +130,7 @@ export class Bridge {
     const breakdown = groups.map(g => {
       const val = g.ids.reduce((sum, id) => {
         const level = s[id] || 0;
-        if (!level || !ENERGY_UPKEEP[id]) return sum;
+        if (!level || !ENERGY_UPKEEP[id] || this.gameState.isDeactivated(id)) return sum;
         return sum + (SHIP_IDS.includes(id) ? ENERGY_UPKEEP[id] * level : MathUtils.calcCumulativeUpkeep(ENERGY_UPKEEP[id], level));
       }, 0);
       return { label: g.label, value: val, color: g.color };

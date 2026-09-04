@@ -67,6 +67,8 @@ export interface GameState {
   activeBattle?: MissionState | null;
   /** Timestamp in ms of the last enemy attack. */
   lastEnemyAttack?: number;
+  /** Dictionary of building or ship IDs that are temporarily powered off to save energy. */
+  disabledBuildings?: Record<string, boolean>;
   /** The Unix timestamp of the last state update, used for offline progress calculation. */
   lastUpdate?: number;
 }
@@ -87,6 +89,7 @@ export const DEFAULT_STATE: GameState = {
     personal: 100,
   },
   skills: {},
+  disabledBuildings: {},
   hasSeenRules: false,
   enemyActivated: false,
 };
