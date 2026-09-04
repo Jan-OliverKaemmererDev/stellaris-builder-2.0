@@ -35,6 +35,13 @@
       </ul>
     </div>
 
+    @if (energyDelta > 0) {
+      <div class="node-energy" aria-label="Energiekosten">
+        <span class="energy-label">Energiekosten:</span>
+        <span class="energy-val">{{ energyDelta | compactNumber }}</span>
+      </div>
+    }
+
     @if (activeBuild) {
       <app-pixel-progress-bar
         [finishTime]="activeBuild.finishTime"

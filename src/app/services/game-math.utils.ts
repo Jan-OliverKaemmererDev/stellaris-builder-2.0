@@ -101,6 +101,30 @@ export function calcAvailableEnergy(s: Record<string, number>): number {
   return calcTotalEnergyProduced(s) - calcTotalEnergyConsumed(s);
 }
 
+/**
+ * Calculates the additional energy consumption for upgrading a building to the next level.
+ * @param buildingId - The ID of the building.
+ * @param currentLevel - The current level of the building (0 = not yet built).
+ * @returns The additional energy that will be consumed when upgraded to currentLevel + 1.
+ */
+export function calcNextLevelEnergyDelta(buildingId: string, currentLevel: number): number {
+  const base = ENERGY_UPKEEP[buildingId];
+  if (!base) return 0;
+  return Math.floor(base * Math.pow(1.5, currentLevel));
+}
+
+/**
+ * Calculates the current energy upkeep for a building at a specific level.
+ * @param buildingId - The ID of the building.
+ * @param level - The current level of the building.
+ * @returns Total energy currently consumed by this building.
+ */
+export function calcBuildingEnergyUpkeep(buildingId: string, level: number): number {
+  const base = ENERGY_UPKEEP[buildingId];
+  if (!base || level <= 0) return 0;
+  return calcCumulativeUpkeep(base, level);
+}
+
 export function getKiGlobalBonus(s: Record<string, number>): number {
   return 1 + ((s['ki_automatisierung'] || 0) * 0.02) +
     ((s['ki_neuronale_netze'] || 0) + (s['ki_quanten_prozessoren'] || 0) + (s['ki_selbstlernend'] || 0) + (s['ki_bewusstsein'] || 0)) * 0.01;

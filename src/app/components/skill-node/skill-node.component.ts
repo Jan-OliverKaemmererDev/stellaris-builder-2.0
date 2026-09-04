@@ -45,6 +45,8 @@ export class SkillNodeComponent {
   @Input() effectText: string = '';
   /** Array of formatted cost entries to display. */
   @Input() costEntries: CostEntry[] = [];
+  /** Additional continuous energy consumed after the next upgrade. */
+  @Input() energyDelta: number = 0;
   /** Whether the player can afford the current upgrade cost. */
   @Input() canAfford: boolean = false;
   /** Label for the action button (e.g., 'Ausbauen', 'Erforschen', 'Kaufen'). */

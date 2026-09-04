@@ -2,7 +2,7 @@ import { Component, inject, computed, OnInit, OnDestroy, signal } from '@angular
 import { CommonModule } from '@angular/common';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 import { GameStateService } from '../../services/game-state.service';
-import { GameResources } from '../../services/game-state.types';
+import { GameResources, ENERGY_UPKEEP } from '../../services/game-state.types';
 import { calcExponential, calculateCost } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -220,6 +220,10 @@ export class FleetComponent implements OnInit, OnDestroy {
    */
   getShipCount(id: string): number {
     return this.gameState.skills()[id] || 0;
+  }
+
+  getShipEnergyUpkeep(shipId: string): number {
+    return ENERGY_UPKEEP[shipId] || 0;
   }
 
   /**

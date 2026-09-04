@@ -18,6 +18,7 @@
               getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id))
             )
           "
+          [energyDelta]="getEnergyDelta(mine.id)"
           [canAfford]="
             canAfford(getCurrentCost(mine.baseCost, mine.costMultiplier, getSkillLevel(mine.id)))
           "

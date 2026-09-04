@@ -209,6 +209,13 @@
             }
           </ul>
         </div>
+
+        @if (getShipEnergyUpkeep(ship.id) > 0) {
+          <div class="ship-energy" aria-label="Energiekosten">
+            <span class="energy-label">Energiekosten:</span>
+            <span class="energy-val">{{ getShipEnergyUpkeep(ship.id) | compactNumber }}</span>
+          </div>
+        }
         
         @if (gameState.activeBuilds()[ship.id]) {
           <app-pixel-progress-bar

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, getMineBonus, calculateCost, formatNumber } from '../../services/game-math.utils';
+import { calcExponential, getMineBonus, calculateCost, formatNumber, calcNextLevelEnergyDelta } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -241,6 +241,10 @@ export class MiningComponent {
       amount: amount as number,
       colorVar: this.resourceMeta[key].colorVar,
     }));
+  }
+
+  getEnergyDelta(id: string): number {
+    return calcNextLevelEnergyDelta(id, this.getSkillLevel(id));
   }
 
   /**

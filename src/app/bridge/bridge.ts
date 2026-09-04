@@ -121,9 +121,9 @@ export class Bridge {
     const s = this.gameState.skills();
     const groups = [
       { label: 'Minen & Anlagen', ids: ['eisenmine', 'silbermine', 'goldmine', 'lager', 'refinery'], color: '#a8b2c1' },
-      { label: 'Forschung & Tech', ids: ['biolabor', 'ki_automatisierung', 'antriebstechnik'], color: '#9b59b6' },
+      { label: 'Forschung & Tech', ids: ['biolabor', 'ki_automatisierung', 'nano_bots', 'antriebstechnik'], color: '#9b59b6' },
       { label: 'Wirtschaft', ids: ['trading_post', 'interstellar_market', 'galactic_exchange'], color: '#f1c40f' },
-      { label: 'Schiffswerften', ids: ['orbital_shipyard', 'large_station'], color: '#e67e22' },
+      { label: 'Infrastruktur & Werften', ids: ['orbital_shipyard', 'planetary_defense', 'large_station'], color: '#e67e22' },
       { label: 'Flotte', ids: ['kolonisierungsschiffe', 'logistikschiff', 'transportschiffe', 'mining_ship', 'leichter_jaeger', 'schwerer_jaeger', 'zerstoerer', 'kreuzer'], color: '#3498db' }
     ];
 

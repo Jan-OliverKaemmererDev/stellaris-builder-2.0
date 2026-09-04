@@ -111,8 +111,8 @@ export const BATTLE_SHIP_STATS: Record<string, { attackStrength: number; name: s
  */
 export const ENERGY_UPKEEP: Record<string, number> = {
   eisenmine: 10, silbermine: 20, goldmine: 50, lager: 10, refinery: 50,
-  orbital_shipyard: 200, large_station: 500, biolabor: 100,
-  ki_automatisierung: 300, antriebstechnik: 500, trading_post: 50,
+  orbital_shipyard: 200, planetary_defense: 300, large_station: 500, biolabor: 100,
+  nano_bots: 250, ki_automatisierung: 300, antriebstechnik: 500, trading_post: 50,
   interstellar_market: 200, galactic_exchange: 1000,
   kolonisierungsschiffe: 100, logistikschiff: 50, transportschiffe: 50, mining_ship: 20,
   leichter_jaeger: 10, schwerer_jaeger: 30, zerstoerer: 100, kreuzer: 300,

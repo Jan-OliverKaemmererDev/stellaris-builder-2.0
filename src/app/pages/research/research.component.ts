@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost, formatNumber, getBioBonus, getKiGlobalBonus, getNanoDiscount, getEngineSpeedMultiplier } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber, getBioBonus, getKiGlobalBonus, getNanoDiscount, getEngineSpeedMultiplier, calcNextLevelEnergyDelta } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -202,6 +202,10 @@ export class ResearchComponent {
     const reqItem = this.items.find((i) => i.id === item.requiredNode!.id);
     const title = reqItem ? reqItem.title : item.requiredNode.id;
     return `${title} Lvl ${item.requiredNode.level}`;
+  }
+
+  getEnergyDelta(id: string): number {
+    return calcNextLevelEnergyDelta(id, this.getSkillLevel(id));
   }
 
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {

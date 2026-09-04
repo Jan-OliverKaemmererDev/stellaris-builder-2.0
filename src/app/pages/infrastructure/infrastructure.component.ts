@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
 import { GameResources } from '../../services/game-state.types';
-import { calcExponential, calculateCost, formatNumber, getLagerTotalMult, getRefineryBonus, getKiGlobalBonus, getShipyardDiscount, calcPlanetaryDefenseStrength, getStationBonus } from '../../services/game-math.utils';
+import { calcExponential, calculateCost, formatNumber, getLagerTotalMult, getRefineryBonus, getKiGlobalBonus, getShipyardDiscount, calcPlanetaryDefenseStrength, getStationBonus, calcNextLevelEnergyDelta } from '../../services/game-math.utils';
 import { LightboxComponent, LightboxData } from '../../components/lightbox/lightbox.component';
 import { SkillNodeComponent, CostEntry } from '../../components/skill-node/skill-node.component';
 import { NanoBotsOverlayComponent } from '../../components/nano-bots-overlay/nano-bots-overlay.component';
@@ -253,6 +253,10 @@ export class InfrastructureComponent {
     const reqBuilding = this.buildings.find((b) => b.id === building.requiredNode!.id);
     const title = reqBuilding ? reqBuilding.title : building.requiredNode.id;
     return `${title} Lvl ${building.requiredNode.level}`;
+  }
+
+  getEnergyDelta(id: string): number {
+    return calcNextLevelEnergyDelta(id, this.getSkillLevel(id));
   }
 
   getCurrentCost(baseCost: Partial<GameResources>, multiplier: number, currentLevel: number): Partial<GameResources> {

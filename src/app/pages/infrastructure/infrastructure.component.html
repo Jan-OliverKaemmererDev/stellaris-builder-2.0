@@ -14,6 +14,7 @@
           [lockText]="getBuildingLockText(building)"
           [effectText]="building.effectFn(getSkillLevel(building.id), gameState.skills())"
           [costEntries]="getCostEntries(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
+          [energyDelta]="getEnergyDelta(building.id)"
           [canAfford]="canAfford(getCurrentCost(building.baseCost, building.costMultiplier, getSkillLevel(building.id)))"
           [buttonText]="'Ausbauen'"
           [activeBuild]="gameState.activeBuilds()[building.id]"

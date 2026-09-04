@@ -197,7 +197,7 @@ p.node-effect {
 /* ═══ Cost Section ═══ */
 
 .node-cost {
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .cost-label {
@@ -220,6 +220,30 @@ ul.cost-list {
   font-size: 0.8rem;
   font-weight: 600;
   background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* ═══ Energy Upkeep ═══ */
+
+.node-energy {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.energy-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.energy-val {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-energie);
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.25);
   padding: 2px 8px;
   border-radius: var(--radius-sm);
 }

@@ -17,6 +17,7 @@
               getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id))
             )
           "
+          [energyDelta]="getEnergyDelta(item.id)"
           [canAfford]="
             canAfford(getCurrentCost(item.baseCost, item.costMultiplier, getSkillLevel(item.id)))
           "
