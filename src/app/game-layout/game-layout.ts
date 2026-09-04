@@ -98,11 +98,12 @@ class Satellite {
  */
 import { IconComponent } from '../components/icon/icon.component';
 import { UserOverlayComponent } from '../components/user-overlay/user-overlay.component';
+import { SoundOverlayComponent } from '../components/sound-overlay/sound-overlay.component';
 
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent, IconComponent, UserOverlayComponent],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent, IconComponent, UserOverlayComponent, SoundOverlayComponent],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })
@@ -124,6 +125,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
   /** Signal holding the current visibility state of the user profile overlay. */
   userOverlayOpen = signal(false);
+
+  /** Signal holding the current visibility state of the sound configuration overlay. */
+  soundOverlayOpen = signal(false);
 
   /** Signal for immediate reactive commander name updates across the layout. */
   customCommanderName = signal<string | null>(null);
@@ -436,6 +440,21 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Opens the sound configuration overlay and closes dropdown.
+   */
+  openSoundOverlay(): void {
+    this.dropdownOpen.set(false);
+    this.soundOverlayOpen.set(true);
+  }
+
+  /**
+   * Closes the sound configuration overlay.
+   */
+  closeSoundOverlay(): void {
+    this.soundOverlayOpen.set(false);
+  }
+
+  /**
    * Updates the displayed commander name immediately after a successful save.
    */
   onCommanderNameChanged(newName: string): void {
@@ -470,6 +489,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
     this.dropdownOpen.set(false);
     this.navMenuOpen.set(false);
     this.userOverlayOpen.set(false);
+    this.soundOverlayOpen.set(false);
   }
 
   /**

@@ -14,6 +14,17 @@
       <!-- Front Face: Login -->
       <section class="planet-face front" aria-label="Login section">
         <div class="glass-panel form-wrapper">
+          <!-- Audio Toggle Button (Top Right Corner) -->
+          <button
+            type="button"
+            class="audio-toggle-btn"
+            (click)="toggleMusic()"
+            [attr.aria-label]="audioService.isMusicMuted() ? 'Musik einschalten' : 'Musik stummschalten'"
+            [title]="audioService.isMusicMuted() ? 'Musik einschalten' : 'Musik stummschalten'"
+          >
+            <app-icon [name]="audioService.isMusicMuted() ? 'speaker-muted' : 'speaker'" size="1.35em" />
+          </button>
+
           <header class="logo-container">
             <h1>Stellaris <span>Builder</span></h1>
             <p class="subtitle">Erschaffe dein Sternenreich</p>
@@ -110,6 +121,17 @@
       <!-- Back Face: Register -->
       <section class="planet-face back" aria-label="Registration section">
         <div class="glass-panel form-wrapper">
+          <!-- Audio Toggle Button (Top Right Corner) -->
+          <button
+            type="button"
+            class="audio-toggle-btn"
+            (click)="toggleMusic()"
+            [attr.aria-label]="audioService.isMusicMuted() ? 'Musik einschalten' : 'Musik stummschalten'"
+            [title]="audioService.isMusicMuted() ? 'Musik einschalten' : 'Musik stummschalten'"
+          >
+            <app-icon [name]="audioService.isMusicMuted() ? 'speaker-muted' : 'speaker'" size="1.35em" />
+          </button>
+
           <header class="logo-container">
             <h1>Stellaris <span>Builder</span></h1>
             <p class="subtitle">Rekrutierungsbüro</p>

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { GameResources, MissionState, GameState, DEFAULT_STATE, SHIP_IDS, ENERGY_UPKEEP, ActiveBuild } from './game-state.types';
 import * as MathUtils from './game-math.utils';
+import { AudioService } from './audio.service';
 
 /**
  * Central service that manages the entire game state lifecycle:
@@ -18,6 +19,7 @@ export class GameStateService {
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private router = inject(Router);
+  private audioService = inject(AudioService);
 
   /** Current resource amounts as a reactive signal. */
   resources = signal<GameResources>(DEFAULT_STATE.resources);
@@ -238,8 +240,23 @@ export class GameStateService {
       const now = Date.now();
       const deltaMs = now - this.lastTick;
       this.lastTick = now;
+      await this.checkBackgroundBuilds();
       secondsSinceLastSave = await this.executeTick(deltaMs, secondsSinceLastSave);
     }, 1000);
+  }
+
+  /**
+   * Checks for completed background builds across all pages and finishes them.
+   * Ensures completion sounds and upgrades occur even when user is on the bridge.
+   */
+  private async checkBackgroundBuilds(): Promise<void> {
+    const builds = this.activeBuilds();
+    const now = Date.now();
+    for (const [id, build] of Object.entries(builds)) {
+      if (build && build.finishTime <= now) {
+        await this.completeBuild(id);
+      }
+    }
   }
 
   /**
@@ -311,16 +328,27 @@ export class GameStateService {
 
   /**
    * Completes a building process, upgrades the skill, and removes the active build.
+   * Plays completion voice lines (ship vs building) if completed in real time.
    * @param skillId - The skill that finished building.
    */
   async completeBuild(skillId: string): Promise<void> {
     const user = this.auth.currentUser;
     if (!user) throw new Error('Not authenticated');
 
+    const currentBuilds = this.activeBuilds();
+    if (!currentBuilds[skillId]) return;
+
+    const isShip = SHIP_IDS.includes(skillId as any);
+    if (isShip) {
+      this.audioService.playShipCompleted();
+    } else {
+      this.audioService.playBuildingCompleted();
+    }
+
     const newLevel = (this.skills()[skillId] || 0) + 1;
     this.skills.set({ ...this.skills(), [skillId]: newLevel });
 
-    const newBuilds = { ...this.activeBuilds() };
+    const newBuilds = { ...currentBuilds };
     delete newBuilds[skillId];
     this.activeBuilds.set(newBuilds);
 

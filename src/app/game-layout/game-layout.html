@@ -214,6 +214,18 @@
               </div>
             }
 
+            <button
+              type="button"
+              class="dropdown-item"
+              (click)="openSoundOverlay()"
+              id="dropdown-sounds"
+              role="menuitem"
+              aria-label="Audio- & Sound-Einstellungen"
+            >
+              <span class="dropdown-icon" aria-hidden="true"><app-icon name="speaker" /></span>
+              Sounds
+            </button>
+
             <hr class="dropdown-divider" role="separator" />
             <a
               routerLink="/bridge/spielregeln"
@@ -280,5 +292,8 @@
   <app-enemy-attack-overlay></app-enemy-attack-overlay>
   @if (userOverlayOpen()) {
     <app-user-overlay (close)="closeUserOverlay()" (nameChanged)="onCommanderNameChanged($event)" />
+  }
+  @if (soundOverlayOpen()) {
+    <app-sound-overlay (close)="closeSoundOverlay()" />
   }
 </div>

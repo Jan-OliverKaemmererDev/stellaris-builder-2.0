@@ -1,0 +1,250 @@
+<div class="sound-overlay-backdrop" (click)="onClose()" role="dialog" aria-modal="true" aria-labelledby="sound-overlay-title">
+  <div class="sound-overlay-modal" (click)="$event.stopPropagation()">
+    <!-- Close Button -->
+    <button class="close-btn" (click)="onClose()" aria-label="Audio-Einstellungen schließen">
+      <img src="assets/icons/close.png" alt="" aria-hidden="true" />
+    </button>
+
+    <!-- Header -->
+    <header class="overlay-header">
+      <div class="header-badge">
+        <span class="status-dot"></span>
+        <span>KLANG-MATRIX // AUDIO-KONTROLLE</span>
+      </div>
+      <h2 id="sound-overlay-title" class="overlay-title">Audio & Sound-Einstellungen</h2>
+    </header>
+
+    <div class="overlay-content">
+      <!-- ═══ SECTION 1: Lautstärke & Mute Regler ═══ -->
+      <section class="sound-cards-grid" aria-label="Lautstärkeregler">
+        <!-- Musik-Kanal -->
+        <div class="sound-control-card" [class.is-muted]="audioService.isMusicMuted()">
+          <div class="card-top-row">
+            <div class="channel-info">
+              <span class="channel-label">Hintergrundmusik</span>
+              <span class="channel-status">
+                {{ audioService.isMusicMuted() ? 'STUMMGESCHALTET' : (audioService.isMusicPlaying() ? 'WIRD ABGESPIELT' : 'PAUSIERT') }}
+              </span>
+            </div>
+
+            <!-- Custom Mute Toggle Button -->
+            <button
+              type="button"
+              class="custom-toggle-btn"
+              (click)="audioService.toggleMusicMute()"
+              [class.muted]="audioService.isMusicMuted()"
+              [attr.aria-label]="audioService.isMusicMuted() ? 'Musik einschalten' : 'Musik stummschalten'"
+              [title]="audioService.isMusicMuted() ? 'Musik einschalten' : 'Musik stummschalten'"
+            >
+              <div
+                class="css-res-icon"
+                [ngClass]="audioService.isMusicMuted() ? 'css-icon-speaker-muted' : 'css-icon-speaker'"
+              ></div>
+            </button>
+          </div>
+
+          <div class="slider-row">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              [value]="musicPercent()"
+              (input)="onMusicVolumeChange($event)"
+              class="sci-slider"
+              [style.--fill-percent]="musicPercent() + '%'"
+              aria-label="Lautstärke Hintergrundmusik"
+            />
+            <span class="slider-value-badge">{{ musicPercent() }}%</span>
+          </div>
+        </div>
+
+        <!-- Sound-Effekte Kanal -->
+        <div class="sound-control-card" [class.is-muted]="audioService.isSfxMuted()">
+          <div class="card-top-row">
+            <div class="channel-info">
+              <span class="channel-label">Sound-Effekte (SFX)</span>
+              <span class="channel-status">
+                {{ audioService.isSfxMuted() ? 'STUMMGESCHALTET' : 'AKTIV' }}
+              </span>
+            </div>
+
+            <!-- Custom Mute Toggle Button -->
+            <button
+              type="button"
+              class="custom-toggle-btn"
+              (click)="audioService.toggleSfxMute()"
+              [class.muted]="audioService.isSfxMuted()"
+              [attr.aria-label]="audioService.isSfxMuted() ? 'SFX einschalten' : 'SFX stummschalten'"
+              [title]="audioService.isSfxMuted() ? 'SFX einschalten' : 'SFX stummschalten'"
+            >
+              <div
+                class="css-res-icon"
+                [ngClass]="audioService.isSfxMuted() ? 'css-icon-speaker-muted' : 'css-icon-speaker'"
+              ></div>
+            </button>
+          </div>
+
+          <div class="slider-row">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              [value]="sfxPercent()"
+              (input)="onSfxVolumeChange($event)"
+              class="sci-slider"
+              [style.--fill-percent]="sfxPercent() + '%'"
+              aria-label="Lautstärke Sound-Effekte"
+            />
+            <span class="slider-value-badge">{{ sfxPercent() }}%</span>
+          </div>
+
+          <div class="card-actions">
+            <button
+              type="button"
+              class="btn-test-sfx"
+              (click)="testSfx()"
+              [disabled]="audioService.isSfxMuted()"
+              title="Spielt einen Test-Sound ab"
+            >
+              <app-icon name="volume-high" size="1.1em"></app-icon>
+              <span>SFX Testen</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SECTION 2: Media Player ═══ -->
+      <section class="media-player-section" aria-label="Media Player">
+        <div class="player-deck">
+          <!-- Current Playing Header -->
+          <div class="now-playing-panel">
+            <div class="visualizer" [class.playing]="audioService.isMusicPlaying() && !audioService.isMusicMuted()">
+              <span class="bar bar-1"></span>
+              <span class="bar bar-2"></span>
+              <span class="bar bar-3"></span>
+              <span class="bar bar-4"></span>
+              <span class="bar bar-5"></span>
+            </div>
+
+            <div class="track-details">
+              <span class="track-now-label">AKTUELLER TITEL</span>
+              <h3 class="track-title">{{ audioService.currentTrack().title }}</h3>
+              <span class="track-artist">{{ audioService.currentTrack().artist }}</span>
+            </div>
+
+            <div class="loop-indicator" title="Dauerschleife aktiv">
+              <span class="pulse-dot"></span>
+              <span>LOOP</span>
+            </div>
+          </div>
+
+          <!-- Timeline Scrubber -->
+          <div class="timeline-row">
+            <span class="time-label">{{ formatTime(audioService.currentTime()) }}</span>
+            <input
+              type="range"
+              min="0"
+              [max]="audioService.duration() || 100"
+              [value]="audioService.currentTime()"
+              (input)="onSeek($event)"
+              class="timeline-slider"
+              [style.--fill-percent]="(audioService.duration() ? (audioService.currentTime() / audioService.duration()) * 100 : 0) + '%'"
+              aria-label="Audio Timeline"
+            />
+            <span class="time-label">{{ formatTime(audioService.duration()) }}</span>
+          </div>
+
+          <!-- Transport Controls -->
+          <div class="controls-row">
+            <button
+              type="button"
+              class="player-control-btn prev-btn"
+              (click)="audioService.prevTrack()"
+              title="Vorheriger Titel"
+              aria-label="Vorheriger Titel"
+            >
+              <div class="css-res-icon css-icon-skip-prev"></div>
+            </button>
+
+            <button
+              type="button"
+              class="player-control-btn play-btn"
+              (click)="audioService.togglePlayPause()"
+              [attr.aria-label]="audioService.isMusicPlaying() ? 'Pause' : 'Abspielen'"
+              [title]="audioService.isMusicPlaying() ? 'Pause' : 'Abspielen'"
+            >
+              <div
+                class="css-res-icon"
+                [ngClass]="audioService.isMusicPlaying() ? 'css-icon-pause' : 'css-icon-play'"
+              ></div>
+            </button>
+
+            <button
+              type="button"
+              class="player-control-btn next-btn"
+              (click)="audioService.nextTrack()"
+              title="Nächster Titel"
+              aria-label="Nächster Titel"
+            >
+              <div class="css-res-icon css-icon-skip-next"></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Track Selection / Playlist -->
+        <div class="playlist-panel">
+          <div class="playlist-header">
+            <div class="playlist-title">
+              <div class="css-res-icon css-icon-music"></div>
+              <span>TITELAUSWAHL // PLAYLIST ({{ audioService.tracks().length }})</span>
+            </div>
+            <span class="playlist-hint">Klicke auf einen Titel zum Wechseln</span>
+          </div>
+
+          <div class="playlist-items" role="listbox" aria-label="Verfügbare Musiktitel">
+            @for (track of audioService.tracks(); track track.id; let idx = $index) {
+              <div
+                class="playlist-item"
+                [class.is-active]="audioService.currentTrackIndex() === idx"
+                (click)="selectTrack(idx)"
+                role="option"
+                [attr.aria-selected]="audioService.currentTrackIndex() === idx"
+                tabindex="0"
+                (keydown.enter)="selectTrack(idx)"
+              >
+                <div class="item-left">
+                  <span class="item-index">#0{{ idx + 1 }}</span>
+                  <div class="item-icon">
+                    @if (audioService.currentTrackIndex() === idx && audioService.isMusicPlaying() && !audioService.isMusicMuted()) {
+                      <div class="mini-equalizer">
+                        <span></span><span></span><span></span>
+                      </div>
+                    } @else {
+                      <div class="css-res-icon css-icon-music"></div>
+                    }
+                  </div>
+                  <div class="item-meta">
+                    <span class="item-title">{{ track.title }}</span>
+                    <span class="item-artist">{{ track.artist }}</span>
+                  </div>
+                </div>
+
+                <div class="item-right">
+                  @if (audioService.currentTrackIndex() === idx) {
+                    <span class="item-badge active">
+                      {{ audioService.isMusicPlaying() && !audioService.isMusicMuted() ? 'WIEDERGABE' : 'AKTIV' }}
+                    </span>
+                  } @else {
+                    <button type="button" class="item-play-btn" aria-label="Titel abspielen">
+                      <div class="css-res-icon css-icon-play"></div>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

@@ -142,6 +142,18 @@ export function getResourceIconClass(key: string): string {
     warlord: 'css-icon-warlord',
     warning: 'css-icon-warning',
     alert: 'css-icon-warning',
+    speaker: 'css-icon-speaker',
+    'speaker-muted': 'css-icon-speaker-muted',
+    sound: 'css-icon-speaker',
+    sounds: 'css-icon-speaker',
+    'sound-off': 'css-icon-speaker-muted',
+    'sound-muted': 'css-icon-speaker-muted',
+    audio: 'css-icon-speaker',
+    music: 'css-icon-music',
+    play: 'css-icon-play',
+    pause: 'css-icon-pause',
+    'skip-next': 'css-icon-skip-next',
+    'skip-prev': 'css-icon-skip-prev',
   };
 
   if (aliasMap[normalized]) {

@@ -31,6 +31,7 @@ export interface ShipDef {
  * an asteroid mining mission system, and a space combat offensive system.
  */
 import { IconComponent } from '../../components/icon/icon.component';
+import { AudioService } from '../../services/audio.service';
 
 @Component({
   selector: 'app-fleet',
@@ -50,6 +51,9 @@ import { IconComponent } from '../../components/icon/icon.component';
 export class FleetComponent implements OnInit, OnDestroy {
   /** Injected game state service for resource management. */
   gameState = inject(GameStateService);
+
+  /** Injected audio service for sound effects. */
+  audioService = inject(AudioService);
 
   /** Controls visibility of the diplomacy negotiation overlay. */
   showDiplomacy = signal(false);
@@ -242,6 +246,10 @@ export class FleetComponent implements OnInit, OnDestroy {
   async startShipBuild(ship: ShipDef): Promise<void> {
     const cost = this.getDiscountedCost(ship.cost);
     if (!this.canAfford(cost)) return;
+
+    if (ship.id === 'schwerer_jaeger') {
+      this.audioService.playHeavyFighterBuild();
+    }
     
     try {
       const baseDurationMs = 60000 + (this.getShipCount(ship.id) * 10000);
@@ -320,6 +328,7 @@ export class FleetComponent implements OnInit, OnDestroy {
   async startMission(): Promise<void> {
     const available = this.availableMiningShips;
     if (available <= 0) return;
+    this.audioService.playStartMiningMission();
     const speedMult = MathUtils.getEngineSpeedMultiplier(this.gameState.skills());
     const durationMs = Math.max(10000, Math.round(60000 / speedMult));
     await this.gameState.startMission('asteroid_mining', available, durationMs);

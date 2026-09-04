@@ -5,6 +5,8 @@ import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updat
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Router, RouterLink } from '@angular/router';
 import { BlackHoleComponent } from '../components/black-hole/black-hole.component';
+import { IconComponent } from '../components/icon/icon.component';
+import { AudioService } from '../services/audio.service';
 import { DEFAULT_STATE } from '../services/game-state.types';
 
 /**
@@ -14,7 +16,7 @@ import { DEFAULT_STATE } from '../services/game-state.types';
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, BlackHoleComponent],
+  imports: [CommonModule, FormsModule, RouterLink, BlackHoleComponent, IconComponent],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss'],
 })
@@ -27,6 +29,13 @@ export class LandingPageComponent implements AfterViewInit {
   
   /** Firestore service for creating and updating user documents. */
   private firestore = inject(Firestore);
+
+  /** Audio service for background music and voice lines. */
+  audioService = inject(AudioService);
+
+  constructor() {
+    this.audioService.startBackgroundMusic();
+  }
 
   /** Whether the form is in login mode (`true`) or registration mode (`false`). */
   isLoginMode = signal(true);
@@ -80,6 +89,13 @@ export class LandingPageComponent implements AfterViewInit {
 
   toggleRegisterConfirmPassword(): void {
     this.showRegisterConfirmPassword.update(v => !v);
+  }
+
+  /**
+   * Toggles background music mute state.
+   */
+  toggleMusic(): void {
+    this.audioService.toggleMusicMute();
   }
 
   /**
@@ -181,6 +197,7 @@ export class LandingPageComponent implements AfterViewInit {
    */
   private async handleLogin(): Promise<void> {
     await signInWithEmailAndPassword(this.auth, this.email(), this.password());
+    this.audioService.playWelcomeCommander();
     this.router.navigate(['/bridge']);
   }
 
@@ -228,6 +245,7 @@ export class LandingPageComponent implements AfterViewInit {
     try {
       const cred = await signInAnonymously(this.auth);
       await this.createGuestDocument(cred.user.uid);
+      this.audioService.playWelcomeCommander();
       this.router.navigate(['/bridge']);
     } catch (error: unknown) {
       console.error(error);
