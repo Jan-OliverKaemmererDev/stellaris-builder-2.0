@@ -134,10 +134,18 @@
               <span class="track-artist">{{ audioService.currentTrack().artist }}</span>
             </div>
 
-            <div class="loop-indicator" title="Wiedergabe wiederholt sich automatisch">
-              <span class="loop-dot"></span>
-              <span>LOOP</span>
-            </div>
+            <button
+              type="button"
+              class="playback-mode-btn"
+              (click)="audioService.cyclePlaybackMode()"
+              [title]="getPlaybackModeTitle()"
+              [attr.aria-label]="getPlaybackModeAriaLabel()"
+            >
+              <div
+                class="css-res-icon"
+                [ngClass]="getPlaybackModeIconClass()"
+              ></div>
+            </button>
           </div>
 
           <!-- Timeline Scrubber -->

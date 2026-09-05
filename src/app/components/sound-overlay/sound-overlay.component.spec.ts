@@ -59,4 +59,33 @@ describe('SoundOverlayComponent', () => {
     expect(headerBadge.textContent).toContain('KLANG-MATRIX // AUDIO-KONTROLLE');
     expect(fixture.nativeElement.querySelector('.sync-badge')).toBeNull();
   });
+
+  it('should render playback mode button without text labels and cycle modes on click', () => {
+    const modeBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.playback-mode-btn');
+    expect(modeBtn).toBeTruthy();
+    // Verify no text description inside the button (only the icon)
+    expect(modeBtn.textContent?.trim()).toBe('');
+
+    // Default mode is loop
+    expect(audioService.playbackMode()).toBe('loop');
+    expect(component.getPlaybackModeIconClass()).toBe('css-icon-playback-loop');
+
+    // Click to cycle to shuffle
+    modeBtn.click();
+    fixture.detectChanges();
+    expect(audioService.playbackMode()).toBe('shuffle');
+    expect(component.getPlaybackModeIconClass()).toBe('css-icon-playback-shuffle');
+
+    // Click to cycle to sequential
+    modeBtn.click();
+    fixture.detectChanges();
+    expect(audioService.playbackMode()).toBe('sequential');
+    expect(component.getPlaybackModeIconClass()).toBe('css-icon-playback-sequential');
+
+    // Click to cycle back to loop
+    modeBtn.click();
+    fixture.detectChanges();
+    expect(audioService.playbackMode()).toBe('loop');
+    expect(component.getPlaybackModeIconClass()).toBe('css-icon-playback-loop');
+  });
 });

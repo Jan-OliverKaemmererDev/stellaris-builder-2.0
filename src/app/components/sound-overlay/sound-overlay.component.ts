@@ -90,6 +90,57 @@ export class SoundOverlayComponent {
   }
 
   /**
+   * Returns the CSS icon class for the current playback mode.
+   */
+  getPlaybackModeIconClass(): string {
+    const mode = this.audioService.playbackMode();
+    switch (mode) {
+      case 'sequential':
+        return 'css-icon-playback-sequential';
+      case 'loop':
+        return 'css-icon-playback-loop';
+      case 'shuffle':
+        return 'css-icon-playback-shuffle';
+      default:
+        return 'css-icon-playback-loop';
+    }
+  }
+
+  /**
+   * Returns tooltip title for the active playback mode.
+   */
+  getPlaybackModeTitle(): string {
+    const mode = this.audioService.playbackMode();
+    switch (mode) {
+      case 'sequential':
+        return 'Reihenfolge: Komplette Mediathek nacheinander abspielen';
+      case 'loop':
+        return 'Endlosschleife: Gesamte Liste wiederholen';
+      case 'shuffle':
+        return 'Zufallswiedergabe: Shuffle';
+      default:
+        return 'Wiedergabemodus wechseln';
+    }
+  }
+
+  /**
+   * Returns accessible aria-label for the active playback mode.
+   */
+  getPlaybackModeAriaLabel(): string {
+    const mode = this.audioService.playbackMode();
+    switch (mode) {
+      case 'sequential':
+        return 'Wiedergabemodus: Reihenfolge';
+      case 'loop':
+        return 'Wiedergabemodus: Endlosschleife Playlist';
+      case 'shuffle':
+        return 'Wiedergabemodus: Zufallswiedergabe';
+      default:
+        return 'Wiedergabemodus';
+    }
+  }
+
+  /**
    * Closes the overlay.
    */
   onClose(): void {

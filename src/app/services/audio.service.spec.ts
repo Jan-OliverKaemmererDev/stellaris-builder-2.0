@@ -107,6 +107,7 @@ describe('AudioService', () => {
       isMusicMuted: true,
       isSfxMuted: false,
       currentTrackIndex: 1,
+      playbackMode: 'loop',
     });
   });
 
@@ -117,6 +118,7 @@ describe('AudioService', () => {
       isMusicMuted: true,
       isSfxMuted: true,
       currentTrackIndex: 1,
+      playbackMode: 'shuffle',
     });
 
     expect(service.musicVolume()).toBe(1.0);
@@ -124,8 +126,56 @@ describe('AudioService', () => {
     expect(service.isMusicMuted()).toBe(true);
     expect(service.isSfxMuted()).toBe(true);
     expect(service.currentTrackIndex()).toBe(1);
+    expect(service.playbackMode()).toBe('shuffle');
     expect(localStorage.getItem('stellaris_music_volume')).toBe('1');
     expect(localStorage.getItem('stellaris_sfx_volume')).toBe('0');
+    expect(localStorage.getItem('stellaris_playback_mode')).toBe('shuffle');
+  });
+
+  it('should cycle through playback modes and persist to localStorage', () => {
+    expect(service.playbackMode()).toBe('loop');
+
+    service.cyclePlaybackMode();
+    expect(service.playbackMode()).toBe('shuffle');
+    expect(localStorage.getItem('stellaris_playback_mode')).toBe('shuffle');
+
+    service.cyclePlaybackMode();
+    expect(service.playbackMode()).toBe('sequential');
+    expect(localStorage.getItem('stellaris_playback_mode')).toBe('sequential');
+
+    service.cyclePlaybackMode();
+    expect(service.playbackMode()).toBe('loop');
+    expect(localStorage.getItem('stellaris_playback_mode')).toBe('loop');
+  });
+
+  it('should advance or stop correctly on track end based on playback mode', () => {
+    // 1. Loop mode: wraps around
+    service.selectTrack(1); // last track
+    (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
+    expect(service.currentTrackIndex()).toBe(0); // wrapped around
+
+    // 2. Sequential mode: stops at last track
+    service.cyclePlaybackMode(); // shuffle
+    service.cyclePlaybackMode(); // sequential
+    expect(service.playbackMode()).toBe('sequential');
+
+    service.selectTrack(0);
+    (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
+    expect(service.currentTrackIndex()).toBe(1);
+
+    // Last track in sequential mode should stop playing
+    (service as unknown as { isMusicPlaying: { set: (v: boolean) => void } }).isMusicPlaying.set(true);
+    (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
+    expect(service.isMusicPlaying()).toBe(false);
+
+    // 3. Shuffle mode: picks a random track
+    service.cyclePlaybackMode(); // loop
+    service.cyclePlaybackMode(); // shuffle
+    expect(service.playbackMode()).toBe('shuffle');
+
+    service.selectTrack(0);
+    (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
+    expect(service.currentTrackIndex()).toBe(1); // With 2 tracks, random pick is the other track
   });
 
   it('should debounce saving to Firebase when savePreferences is called', () => {

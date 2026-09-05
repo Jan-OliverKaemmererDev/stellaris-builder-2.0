@@ -3,12 +3,15 @@ import { Auth, user } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 
+export type PlaybackMode = 'sequential' | 'loop' | 'shuffle';
+
 export interface SoundSettings {
   musicVolume: number;
   sfxVolume: number;
   isMusicMuted: boolean;
   isSfxMuted: boolean;
   currentTrackIndex: number;
+  playbackMode?: PlaybackMode;
 }
 
 export interface MusicTrack {
@@ -86,6 +89,9 @@ export class AudioService implements OnDestroy {
 
   /** Total track duration in seconds. */
   readonly duration = signal<number>(0);
+
+  /** Playback mode: 'sequential' (through library, stops at end), 'loop' (loops full playlist), 'shuffle' (random). */
+  readonly playbackMode = signal<PlaybackMode>('loop');
 
   /** HTMLAudioElement instance for background music. */
   private musicAudio: HTMLAudioElement | null = null;
@@ -175,7 +181,7 @@ export class AudioService implements OnDestroy {
 
     this.musicAudio = new Audio();
     this.musicAudio.preload = 'auto';
-    this.musicAudio.loop = true;
+    this.musicAudio.loop = false;
 
     // Apply stored volume & mute
     this.applyMusicVolume();
@@ -195,10 +201,7 @@ export class AudioService implements OnDestroy {
 
     this.musicAudio.addEventListener('ended', () => {
       this.isMusicPlaying.set(false);
-      // Loop track seamlessly (or advance if loop is false)
-      if (this.musicAudio && !this.musicAudio.loop) {
-        this.nextTrack();
-      }
+      this.handleTrackEnded();
     });
 
     this.musicAudio.addEventListener('play', () => {
@@ -650,8 +653,13 @@ export class AudioService implements OnDestroy {
 
   /**
    * Switches to the next music track in the playlist.
+   * If in shuffle mode, picks a random track.
    */
   nextTrack(): void {
+    if (this.playbackMode() === 'shuffle') {
+      this.playRandomTrack();
+      return;
+    }
     const nextIndex = (this.currentTrackIndex() + 1) % this.tracks().length;
     this.selectTrack(nextIndex);
   }
@@ -662,6 +670,65 @@ export class AudioService implements OnDestroy {
   prevTrack(): void {
     const prevIndex = (this.currentTrackIndex() - 1 + this.tracks().length) % this.tracks().length;
     this.selectTrack(prevIndex);
+  }
+
+  /**
+   * Cycles through playback modes: sequential -> loop -> shuffle -> sequential.
+   */
+  cyclePlaybackMode(): void {
+    const current = this.playbackMode();
+    let next: PlaybackMode;
+    if (current === 'sequential') {
+      next = 'loop';
+    } else if (current === 'loop') {
+      next = 'shuffle';
+    } else {
+      next = 'sequential';
+    }
+    this.playbackMode.set(next);
+    this.savePreferences();
+  }
+
+  /**
+   * Automatically handles track progression when a song ends based on active playbackMode.
+   */
+  private handleTrackEnded(): void {
+    const mode = this.playbackMode();
+    const tracksList = this.tracks();
+    const currentIndex = this.currentTrackIndex();
+
+    if (mode === 'sequential') {
+      // In sequential mode: play next track; if it was the last track, stop.
+      if (currentIndex < tracksList.length - 1) {
+        this.selectTrack(currentIndex + 1);
+      } else {
+        this.isMusicPlaying.set(false);
+      }
+    } else if (mode === 'loop') {
+      // In loop mode: advance to next track, wrapping around infinitely
+      this.nextTrack();
+    } else if (mode === 'shuffle') {
+      // In shuffle mode: pick a random track (different from current if multiple tracks exist)
+      this.playRandomTrack();
+    }
+  }
+
+  /**
+   * Selects and plays a random track different from the current one (if multiple tracks exist).
+   */
+  private playRandomTrack(): void {
+    const tracksList = this.tracks();
+    if (tracksList.length <= 1) {
+      this.selectTrack(0);
+      return;
+    }
+
+    const currentIndex = this.currentTrackIndex();
+    let randomIndex = currentIndex;
+    while (randomIndex === currentIndex) {
+      randomIndex = Math.floor(Math.random() * tracksList.length);
+    }
+    this.selectTrack(randomIndex);
   }
 
   /**
@@ -827,6 +894,11 @@ export class AudioService implements OnDestroy {
           this.currentTrackIndex.set(idx);
         }
       }
+
+      const storedPlaybackMode = localStorage.getItem('stellaris_playback_mode') as PlaybackMode | null;
+      if (storedPlaybackMode && ['sequential', 'loop', 'shuffle'].includes(storedPlaybackMode)) {
+        this.playbackMode.set(storedPlaybackMode);
+      }
     } catch (e) {
       console.warn('Could not load audio preferences:', e);
     }
@@ -842,6 +914,7 @@ export class AudioService implements OnDestroy {
       isMusicMuted: this.isMusicMuted(),
       isSfxMuted: this.isSfxMuted(),
       currentTrackIndex: this.currentTrackIndex(),
+      playbackMode: this.playbackMode(),
     };
   }
 
@@ -924,6 +997,11 @@ export class AudioService implements OnDestroy {
 
     this.applyMusicVolume();
     this.applySfxVolume();
+
+    if (settings.playbackMode && ['sequential', 'loop', 'shuffle'].includes(settings.playbackMode)) {
+      this.playbackMode.set(settings.playbackMode);
+    }
+
     this.saveLocalStorage();
   }
 
@@ -947,6 +1025,7 @@ export class AudioService implements OnDestroy {
       localStorage.setItem('stellaris_music_muted', this.isMusicMuted().toString());
       localStorage.setItem('stellaris_sfx_muted', this.isSfxMuted().toString());
       localStorage.setItem('stellaris_music_track_index', this.currentTrackIndex().toString());
+      localStorage.setItem('stellaris_playback_mode', this.playbackMode());
     } catch (e) {
       console.warn('Could not save audio preferences to localStorage:', e);
     }
