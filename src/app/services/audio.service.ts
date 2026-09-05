@@ -784,7 +784,14 @@ export class AudioService implements OnDestroy {
    */
   private applyMusicVolume(): void {
     if (!this.musicAudio) return;
-    this.musicAudio.volume = this.isMusicMuted() ? 0 : this.musicVolume();
+    
+    // iOS Safari ignores programmatic volume changes on HTMLMediaElement.
+    // To actually mute the audio on iOS, we MUST set the muted property.
+    this.musicAudio.muted = this.isMusicMuted();
+    
+    try {
+      this.musicAudio.volume = this.isMusicMuted() ? 0 : this.musicVolume();
+    } catch (e) {}
   }
 
   /**
