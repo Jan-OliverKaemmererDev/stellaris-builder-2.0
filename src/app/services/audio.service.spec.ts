@@ -343,7 +343,7 @@ describe('AudioService', () => {
     expect(mockPlay).not.toHaveBeenCalled();
   });
 
-  it('should pause music when window loses focus (e.g. mobile tab overview) and resume on focus', () => {
+  it('should pause music on pagehide (e.g. navigating away or app backgrounding) and resume on pageshow', () => {
     const mockPause = vi.fn();
     const mockPlay = vi.fn().mockResolvedValue(undefined);
     const mockAudio = {
@@ -355,14 +355,14 @@ describe('AudioService', () => {
 
     (service as unknown as { musicAudio: HTMLAudioElement }).musicAudio = mockAudio;
 
-    // Simulate opening tab overview (window blur)
-    window.dispatchEvent(new Event('blur'));
+    // Simulate pagehide
+    window.dispatchEvent(new Event('pagehide'));
     expect(mockPause).toHaveBeenCalled();
 
-    // Simulate returning to the tab (window focus)
+    // Simulate returning (pageshow)
     (mockAudio as { paused: boolean }).paused = true;
     Object.defineProperty(document, 'hidden', { value: false, configurable: true });
-    window.dispatchEvent(new Event('focus'));
+    window.dispatchEvent(new Event('pageshow'));
     expect(mockPlay).toHaveBeenCalled();
   });
 });

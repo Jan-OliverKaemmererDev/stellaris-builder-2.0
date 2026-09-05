@@ -136,60 +136,6 @@
   animation: pulseDot 2s infinite;
 }
 
-.badge-separator {
-  opacity: 0.4;
-  margin: 0 2px;
-}
-
-.sync-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.68rem;
-  letter-spacing: 1px;
-  color: #a7f3d0;
-  transition: all 0.25s ease;
-
-  &.saving {
-    color: #fde047;
-  }
-
-  &.error {
-    color: #fca5a5;
-  }
-}
-
-.sync-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: inline-block;
-
-  &.synced {
-    background: #34d399;
-    box-shadow: 0 0 6px rgba(52, 211, 153, 0.8);
-  }
-
-  &.error {
-    background: #f87171;
-    box-shadow: 0 0 6px rgba(248, 113, 113, 0.8);
-  }
-}
-
-.sync-spinner {
-  width: 8px;
-  height: 8px;
-  border: 1.5px solid rgba(253, 224, 71, 0.3);
-  border-top-color: #fde047;
-  border-radius: 50%;
-  display: inline-block;
-  animation: syncSpin 0.7s linear infinite;
-}
-
-@keyframes syncSpin {
-  to { transform: rotate(360deg); }
-}
-
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.85); }
@@ -293,10 +239,15 @@
   padding: 0;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 
   .css-res-icon {
     width: 1.4em;
     height: 1.4em;
+    pointer-events: none;
   }
 
   &:hover {
@@ -356,6 +307,8 @@
   outline: none;
   cursor: pointer;
   transition: background 0.15s ease;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -573,6 +526,8 @@
   );
   outline: none;
   cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -855,11 +810,17 @@
 }
 
 /* ================================================================
-   Mobile Responsiveness (Down to iPhone SE: 375px & 320px)
+   Mobile Responsiveness (Down to iPhone SE & iPhone 14: 390px / 375px / 320px)
    ================================================================ */
 
 @media (max-width: 640px) {
+  .sound-overlay-backdrop {
+    padding: max(18px, env(safe-area-inset-top) + 8px) 12px max(18px, env(safe-area-inset-bottom) + 8px) 12px;
+  }
+
   .sound-overlay-modal {
+    max-height: 82vh;
+    max-height: 82dvh;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
     -webkit-overflow-scrolling: touch;
@@ -874,13 +835,14 @@
 
 @media (max-width: 480px) {
   .sound-overlay-backdrop {
-    padding: 8px;
+    padding: max(22px, env(safe-area-inset-top) + 12px) 10px max(20px, env(safe-area-inset-bottom) + 12px) 10px;
   }
 
   .sound-overlay-modal {
-    padding: 20px 14px;
+    padding: 16px 12px 18px;
     border-radius: 16px;
-    max-height: 95vh;
+    max-height: 78vh;
+    max-height: 78dvh;
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
@@ -893,15 +855,28 @@
   }
 
   .close-btn {
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
+    top: 6px;
+    right: 6px;
+    width: 40px;
+    height: 40px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
   }
 
   .overlay-header {
-    margin-bottom: 16px;
-    padding: 0 24px;
+    margin-bottom: 12px;
+    padding: 0 46px 0 12px;
   }
 
   .header-badge {

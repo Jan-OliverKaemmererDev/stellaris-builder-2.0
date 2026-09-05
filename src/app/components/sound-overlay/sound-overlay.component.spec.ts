@@ -54,16 +54,9 @@ describe('SoundOverlayComponent', () => {
     expect(audioService.currentTrack().title).toBe('Chronometry');
   });
 
-  it('should reflect cloud sync status in header badge', () => {
-    const badgeElement: HTMLElement = fixture.nativeElement.querySelector('.sync-badge');
-    expect(badgeElement.textContent).toContain('CLOUD GESPEICHERT');
-
-    audioService.syncStatus.set('saving');
-    fixture.detectChanges();
-    expect(badgeElement.textContent).toContain('SPEICHERT...');
-
-    audioService.syncStatus.set('error');
-    fixture.detectChanges();
-    expect(badgeElement.textContent).toContain('LOKAL / OFFLINE');
+  it('should render clean header badge without sync badge', () => {
+    const headerBadge: HTMLElement = fixture.nativeElement.querySelector('.header-badge');
+    expect(headerBadge.textContent).toContain('KLANG-MATRIX // AUDIO-KONTROLLE');
+    expect(fixture.nativeElement.querySelector('.sync-badge')).toBeNull();
   });
 });

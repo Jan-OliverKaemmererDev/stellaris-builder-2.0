@@ -519,28 +519,14 @@ export class AudioService implements OnDestroy {
       }
     };
 
-    const onWindowBlur = () => {
-      handleBackground();
-    };
-
-    const onWindowFocus = () => {
-      if (!document.hidden) {
-        handleForeground();
-      }
-    };
-
     document.addEventListener('visibilitychange', onVisibilityChange);
     window.addEventListener('pagehide', onPageHide);
     window.addEventListener('pageshow', onPageShow);
-    window.addEventListener('blur', onWindowBlur);
-    window.addEventListener('focus', onWindowFocus);
 
     this.visibilityCleanup = () => {
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('pagehide', onPageHide);
       window.removeEventListener('pageshow', onPageShow);
-      window.removeEventListener('blur', onWindowBlur);
-      window.removeEventListener('focus', onWindowFocus);
       this.visibilityCleanup = null;
     };
   }

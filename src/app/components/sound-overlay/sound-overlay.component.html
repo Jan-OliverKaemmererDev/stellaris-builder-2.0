@@ -10,24 +10,6 @@
       <div class="header-badge">
         <span class="status-dot"></span>
         <span>KLANG-MATRIX // AUDIO-KONTROLLE</span>
-        <span class="badge-separator">|</span>
-        <span
-          class="sync-badge"
-          [class.saving]="audioService.syncStatus() === 'saving'"
-          [class.error]="audioService.syncStatus() === 'error'"
-          [title]="audioService.syncStatus() === 'saving' ? 'Wird in Firebase gespeichert...' : (audioService.syncStatus() === 'error' ? 'Lokaler Speicher aktiv' : 'In Firebase Cloud gespeichert')"
-        >
-          @if (audioService.syncStatus() === 'saving') {
-            <span class="sync-spinner"></span>
-            <span>SPEICHERT...</span>
-          } @else if (audioService.syncStatus() === 'error') {
-            <span class="sync-dot error"></span>
-            <span>LOKAL / OFFLINE</span>
-          } @else {
-            <span class="sync-dot synced"></span>
-            <span>CLOUD GESPEICHERT</span>
-          }
-        </span>
       </div>
       <h2 id="sound-overlay-title" class="overlay-title">Audio & Sound-Einstellungen</h2>
     </header>
@@ -68,6 +50,7 @@
               max="100"
               [value]="musicPercent()"
               (input)="onMusicVolumeChange($event)"
+              (change)="onMusicVolumeChange($event)"
               class="sci-slider"
               [style.--fill-percent]="musicPercent() + '%'"
               aria-label="Lautstärke Hintergrundmusik"
@@ -109,6 +92,7 @@
               max="100"
               [value]="sfxPercent()"
               (input)="onSfxVolumeChange($event)"
+              (change)="onSfxVolumeChange($event)"
               class="sci-slider"
               [style.--fill-percent]="sfxPercent() + '%'"
               aria-label="Lautstärke Sound-Effekte"
@@ -150,8 +134,8 @@
               <span class="track-artist">{{ audioService.currentTrack().artist }}</span>
             </div>
 
-            <div class="loop-indicator" title="Dauerschleife aktiv">
-              <span class="pulse-dot"></span>
+            <div class="loop-indicator" title="Wiedergabe wiederholt sich automatisch">
+              <span class="loop-dot"></span>
               <span>LOOP</span>
             </div>
           </div>
@@ -165,6 +149,7 @@
               [max]="audioService.duration() || 100"
               [value]="audioService.currentTime()"
               (input)="onSeek($event)"
+              (change)="onSeek($event)"
               class="timeline-slider"
               [style.--fill-percent]="(audioService.duration() ? (audioService.currentTime() / audioService.duration()) * 100 : 0) + '%'"
               aria-label="Audio Timeline"
