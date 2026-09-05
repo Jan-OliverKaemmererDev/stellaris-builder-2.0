@@ -196,7 +196,10 @@ export class LandingPageComponent implements AfterViewInit {
    * @returns A promise that resolves when login is successful.
    */
   private async handleLogin(): Promise<void> {
-    await signInWithEmailAndPassword(this.auth, this.email(), this.password());
+    const cred = await signInWithEmailAndPassword(this.auth, this.email(), this.password());
+    if (cred.user) {
+      await this.audioService.loadUserPreferences(cred.user.uid);
+    }
     this.audioService.playWelcomeCommander();
     this.router.navigate(['/bridge']);
   }
@@ -227,6 +230,7 @@ export class LandingPageComponent implements AfterViewInit {
     const userDocRef = doc(this.firestore, `users/${uid}`);
     const data = {
       uid, email: this.email(), commanderName: this.commanderName(),
+      soundSettings: this.audioService.getCurrentSettings(),
       createdAt: new Date().toISOString(),
     };
     await setDoc(userDocRef, data, { merge: true });
@@ -245,6 +249,7 @@ export class LandingPageComponent implements AfterViewInit {
     try {
       const cred = await signInAnonymously(this.auth);
       await this.createGuestDocument(cred.user.uid);
+      await this.audioService.loadUserPreferences(cred.user.uid);
       this.audioService.playWelcomeCommander();
       this.router.navigate(['/bridge']);
     } catch (error: unknown) {
@@ -265,6 +270,7 @@ export class LandingPageComponent implements AfterViewInit {
     const data = {
       uid, email: null, isGuest: true,
       commanderName: `Gast-${uid.substring(0, 5)}`,
+      soundSettings: this.audioService.getCurrentSettings(),
       createdAt: new Date().toISOString(),
     };
     await setDoc(userDocRef, data, { merge: true });

@@ -136,6 +136,60 @@
   animation: pulseDot 2s infinite;
 }
 
+.badge-separator {
+  opacity: 0.4;
+  margin: 0 2px;
+}
+
+.sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  letter-spacing: 1px;
+  color: #a7f3d0;
+  transition: all 0.25s ease;
+
+  &.saving {
+    color: #fde047;
+  }
+
+  &.error {
+    color: #fca5a5;
+  }
+}
+
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.synced {
+    background: #34d399;
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.8);
+  }
+
+  &.error {
+    background: #f87171;
+    box-shadow: 0 0 6px rgba(248, 113, 113, 0.8);
+  }
+}
+
+.sync-spinner {
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid rgba(253, 224, 71, 0.3);
+  border-top-color: #fde047;
+  border-radius: 50%;
+  display: inline-block;
+  animation: syncSpin 0.7s linear infinite;
+}
+
+@keyframes syncSpin {
+  to { transform: rotate(360deg); }
+}
+
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.85); }

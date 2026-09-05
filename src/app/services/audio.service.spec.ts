@@ -93,4 +93,276 @@ describe('AudioService', () => {
     service.playShipCompleted();
     expect(playSoundSpy).toHaveBeenCalledWith('sounds/glados-voice/ship-construction-completed.mp3');
   });
+
+  it('should return the current sound settings as an object', () => {
+    service.setMusicVolume(0.35);
+    service.setSfxVolume(0.85);
+    service.toggleMusicMute();
+    service.selectTrack(1);
+
+    const settings = service.getCurrentSettings();
+    expect(settings).toEqual({
+      musicVolume: 0.35,
+      sfxVolume: 0.85,
+      isMusicMuted: true,
+      isSfxMuted: false,
+      currentTrackIndex: 1,
+    });
+  });
+
+  it('should apply sound settings correctly and clamp invalid volume values', () => {
+    service.applySoundSettings({
+      musicVolume: 1.5,
+      sfxVolume: -0.2,
+      isMusicMuted: true,
+      isSfxMuted: true,
+      currentTrackIndex: 1,
+    });
+
+    expect(service.musicVolume()).toBe(1.0);
+    expect(service.sfxVolume()).toBe(0.0);
+    expect(service.isMusicMuted()).toBe(true);
+    expect(service.isSfxMuted()).toBe(true);
+    expect(service.currentTrackIndex()).toBe(1);
+    expect(localStorage.getItem('stellaris_music_volume')).toBe('1');
+    expect(localStorage.getItem('stellaris_sfx_volume')).toBe('0');
+  });
+
+  it('should debounce saving to Firebase when savePreferences is called', () => {
+    vi.useFakeTimers();
+    const saveSpy = vi.spyOn(service, 'saveSoundSettingsToFirestore').mockResolvedValue();
+
+    // Directly set user ID to simulate authenticated session
+    (service as unknown as { currentUserId: string }).currentUserId = 'test-user-123';
+    (service as unknown as { firestore: unknown }).firestore = {};
+
+    service.savePreferences(300);
+    service.savePreferences(300);
+    service.savePreferences(300);
+
+    // Should not have fired immediately
+    expect(saveSpy).not.toHaveBeenCalled();
+    expect(service.syncStatus()).toBe('saving');
+
+    // Fast-forward past debounce time
+    vi.advanceTimersByTime(350);
+
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).toHaveBeenCalledWith('test-user-123', expect.objectContaining({
+      musicVolume: 0.5,
+      sfxVolume: 0.7,
+    }));
+
+    vi.useRealTimers();
+  });
+
+  it('should handle error when loading user preferences from Firebase fails', async () => {
+    (service as unknown as { firestore: unknown }).firestore = {};
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await service.loadUserPreferences('invalid-user');
+
+    expect(service.syncStatus()).toBe('error');
+    warnSpy.mockRestore();
+  });
+
+  it('should unlock AudioContext when unlockAudioContext is called', () => {
+    const mockResume = vi.fn().mockResolvedValue(undefined);
+    const mockCreateBuffer = vi.fn().mockReturnValue({} as AudioBuffer);
+    const mockSource = { buffer: null, connect: vi.fn(), start: vi.fn() };
+    const mockCreateBufferSource = vi.fn().mockReturnValue(mockSource);
+
+    (service as unknown as { audioCtx: unknown }).audioCtx = {
+      state: 'suspended',
+      resume: mockResume,
+      createBuffer: mockCreateBuffer,
+      createBufferSource: mockCreateBufferSource,
+      destination: {},
+    };
+
+    service.unlockAudioContext();
+
+    expect(mockResume).toHaveBeenCalled();
+    expect(mockCreateBufferSource).toHaveBeenCalled();
+    expect(mockSource.start).toHaveBeenCalledWith(0);
+  });
+
+  it('should play building and ship completion sounds via Web Audio API when available', async () => {
+    const mockBuffer = {} as AudioBuffer;
+    const getBufferSpy = vi.spyOn(service, 'getAudioBuffer').mockResolvedValue(mockBuffer);
+    const mockSource = { buffer: null, connect: vi.fn(), start: vi.fn() };
+    const mockCreateBufferSource = vi.fn().mockReturnValue(mockSource);
+    const mockGainNode = {
+      gain: { setValueAtTime: vi.fn(), value: 0.7 },
+      connect: vi.fn(),
+    };
+
+    (service as unknown as { audioCtx: unknown }).audioCtx = {
+      state: 'running',
+      currentTime: 1.5,
+      createBufferSource: mockCreateBufferSource,
+      destination: {},
+    };
+    (service as unknown as { sfxGainNode: unknown }).sfxGainNode = mockGainNode;
+
+    // Test building completion sound
+    service.playBuildingCompleted();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(getBufferSpy).toHaveBeenCalledWith('sounds/glados-voice/building-construction-completed.mp3');
+    expect(mockCreateBufferSource).toHaveBeenCalled();
+    expect(mockSource.connect).toHaveBeenCalledWith(mockGainNode);
+    expect(mockSource.start).toHaveBeenCalledWith(0);
+
+    // Test ship completion sound
+    mockCreateBufferSource.mockClear();
+    service.playShipCompleted();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(getBufferSpy).toHaveBeenCalledWith('sounds/glados-voice/ship-construction-completed.mp3');
+    expect(mockCreateBufferSource).toHaveBeenCalled();
+    expect(mockSource.start).toHaveBeenCalledWith(0);
+  });
+
+  it('should update GainNode volume when sfx volume is adjusted or muted', () => {
+    const mockSetValueAtTime = vi.fn();
+    const mockGainNode = {
+      gain: { setValueAtTime: mockSetValueAtTime, value: 0.7 },
+      connect: vi.fn(),
+    };
+
+    (service as unknown as { audioCtx: unknown }).audioCtx = {
+      currentTime: 2.0,
+      destination: {},
+    };
+    (service as unknown as { sfxGainNode: unknown }).sfxGainNode = mockGainNode;
+
+    service.setSfxVolume(0.3);
+    expect(mockSetValueAtTime).toHaveBeenCalledWith(0.3, 2.0);
+
+    service.toggleSfxMute();
+    expect(mockSetValueAtTime).toHaveBeenCalledWith(0, 2.0);
+
+    service.toggleSfxMute();
+    expect(mockSetValueAtTime).toHaveBeenCalledWith(0.3, 2.0);
+  });
+
+  it('should unlock audio playback when user clicks anywhere on the window', async () => {
+    let playResolve: () => void = () => {};
+    const playPromise = new Promise<void>((resolve) => {
+      playResolve = resolve;
+    });
+
+    const mockPlay = vi.fn().mockReturnValue(playPromise);
+    const mockAudio = {
+      paused: true,
+      src: 'sounds/music/Paradigm.mp3',
+      volume: 0.5,
+      play: mockPlay,
+      pause: vi.fn(),
+    } as unknown as HTMLAudioElement;
+
+    (service as unknown as { musicAudio: HTMLAudioElement }).musicAudio = mockAudio;
+    // Re-attach unlocker to test explicit click handling
+    (service as unknown as { autoplayUnlockAttached: boolean }).autoplayUnlockAttached = false;
+    (service as unknown as { attachAutoplayUnlocker: () => void }).attachAutoplayUnlocker();
+
+    // Simulate user click anywhere on the page/window
+    window.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+    expect(mockPlay).toHaveBeenCalled();
+
+    // Resolve the play promise to simulate successful playback start
+    playResolve();
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(service.isMusicPlaying()).toBe(true);
+  });
+
+  it('should pause music and suspend AudioContext when tab becomes hidden or loses focus', () => {
+    const mockPause = vi.fn();
+    const mockPlay = vi.fn().mockResolvedValue(undefined);
+    const mockAudio = {
+      paused: false,
+      volume: 0.5,
+      play: mockPlay,
+      pause: mockPause,
+    } as unknown as HTMLAudioElement;
+
+    const mockAudioCtx = {
+      state: 'running' as AudioContextState,
+      suspend: vi.fn().mockImplementation(async () => {
+        (mockAudioCtx as { state: AudioContextState }).state = 'suspended';
+      }),
+      resume: vi.fn().mockImplementation(async () => {
+        (mockAudioCtx as { state: AudioContextState }).state = 'running';
+      }),
+    } as unknown as AudioContext;
+
+    (service as unknown as { musicAudio: HTMLAudioElement }).musicAudio = mockAudio;
+    (service as unknown as { audioCtx: AudioContext }).audioCtx = mockAudioCtx;
+
+    // Simulate switching to background (visibilitychange to hidden)
+    Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+    Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+
+    expect(mockPause).toHaveBeenCalledTimes(1);
+    expect(mockAudioCtx.suspend).toHaveBeenCalledTimes(1);
+
+    // Simulate switching back to foreground (visibilitychange to visible)
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+    Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+    (mockAudio as { paused: boolean }).paused = true; // Audio is paused right now
+    document.dispatchEvent(new Event('visibilitychange'));
+
+    expect(mockAudioCtx.resume).toHaveBeenCalledTimes(1);
+    expect(mockPlay).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not resume music when returning to foreground if it was already paused before backgrounding', () => {
+    const mockPause = vi.fn();
+    const mockPlay = vi.fn().mockResolvedValue(undefined);
+    const mockAudio = {
+      paused: true, // Already paused by the user
+      volume: 0.5,
+      play: mockPlay,
+      pause: mockPause,
+    } as unknown as HTMLAudioElement;
+
+    (service as unknown as { musicAudio: HTMLAudioElement }).musicAudio = mockAudio;
+
+    // Tab hidden
+    Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+
+    // Tab visible
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+
+    expect(mockPlay).not.toHaveBeenCalled();
+  });
+
+  it('should pause music when window loses focus (e.g. mobile tab overview) and resume on focus', () => {
+    const mockPause = vi.fn();
+    const mockPlay = vi.fn().mockResolvedValue(undefined);
+    const mockAudio = {
+      paused: false,
+      volume: 0.5,
+      play: mockPlay,
+      pause: mockPause,
+    } as unknown as HTMLAudioElement;
+
+    (service as unknown as { musicAudio: HTMLAudioElement }).musicAudio = mockAudio;
+
+    // Simulate opening tab overview (window blur)
+    window.dispatchEvent(new Event('blur'));
+    expect(mockPause).toHaveBeenCalled();
+
+    // Simulate returning to the tab (window focus)
+    (mockAudio as { paused: boolean }).paused = true;
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+    window.dispatchEvent(new Event('focus'));
+    expect(mockPlay).toHaveBeenCalled();
+  });
 });
