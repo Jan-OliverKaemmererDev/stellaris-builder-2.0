@@ -22,6 +22,11 @@ export interface MusicTrack {
   duration?: number;
 }
 
+export interface SoundPlayOptions {
+  /** Duration in seconds over which the sound should fade out to silence at the end of playback. */
+  fadeOutDuration?: number;
+}
+
 export const DEFAULT_MUSIC_TRACKS: MusicTrack[] = [
   {
     id: 'paradigm',
@@ -34,6 +39,12 @@ export const DEFAULT_MUSIC_TRACKS: MusicTrack[] = [
     title: 'Chronometry',
     artist: 'Stellaris Soundscape',
     src: 'sounds/music/Chronometry.mp3',
+  },
+  {
+    id: 'galactic',
+    title: 'Galactic',
+    artist: 'Stellaris Soundscape',
+    src: 'sounds/music/Galactic.mp3',
   },
 ];
 
@@ -744,22 +755,23 @@ export class AudioService implements OnDestroy {
    * Plays a one-shot sound effect. Uses Web Audio API for zero-latency, mobile-compatible
    * playback from background timers, and falls back to HTMLAudioElement when unavailable.
    * @param src Path to audio file (e.g. 'sounds/glados-voice/building-construction-completed.mp3')
+   * @param options Optional configuration such as fadeOutDuration.
    */
-  playSound(src: string): void {
+  playSound(src: string, options?: SoundPlayOptions): void {
     if (typeof window === 'undefined') return;
     if (this.isSfxMuted()) return;
 
     if (this.audioCtx && this.sfxGainNode) {
-      this.playWebAudio(src);
+      this.playWebAudio(src, options);
     } else {
-      this.playHtmlAudio(src);
+      this.playHtmlAudio(src, options);
     }
   }
 
   /**
-   * Plays sound via Web Audio API AudioBufferSourceNode.
+   * Plays sound via Web Audio API AudioBufferSourceNode with optional fade-out ramp.
    */
-  private playWebAudio(src: string): void {
+  private playWebAudio(src: string, options?: SoundPlayOptions): void {
     if (!this.audioCtx || !this.sfxGainNode) return;
 
     if (this.audioCtx.state === 'suspended') {
@@ -770,18 +782,41 @@ export class AudioService implements OnDestroy {
 
     this.getAudioBuffer(src).then((buffer) => {
       if (!buffer || !this.audioCtx || !this.sfxGainNode) {
-        this.playHtmlAudio(src);
+        this.playHtmlAudio(src, options);
         return;
       }
 
       try {
         const sourceNode = this.audioCtx.createBufferSource();
         sourceNode.buffer = buffer;
-        sourceNode.connect(this.sfxGainNode);
+
+        if (options?.fadeOutDuration && options.fadeOutDuration > 0) {
+          const soundGainNode = this.audioCtx.createGain();
+          const now = this.audioCtx.currentTime;
+          const totalDuration = buffer.duration;
+          const fadeDuration = Math.min(options.fadeOutDuration, totalDuration);
+          const fadeStart = now + Math.max(0, totalDuration - fadeDuration);
+
+          soundGainNode.gain.setValueAtTime(1, now);
+          soundGainNode.gain.setValueAtTime(1, fadeStart);
+          soundGainNode.gain.linearRampToValueAtTime(0, now + totalDuration);
+
+          sourceNode.connect(soundGainNode);
+          soundGainNode.connect(this.sfxGainNode);
+
+          sourceNode.onended = () => {
+            try {
+              soundGainNode.disconnect();
+            } catch {}
+          };
+        } else {
+          sourceNode.connect(this.sfxGainNode);
+        }
+
         sourceNode.start(0);
       } catch (e) {
         console.warn('Web Audio playback error, falling back to HTMLAudio:', e);
-        this.playHtmlAudio(src);
+        this.playHtmlAudio(src, options);
       }
     });
   }
@@ -789,11 +824,46 @@ export class AudioService implements OnDestroy {
   /**
    * Fallback to HTMLAudioElement playback when Web Audio API is unavailable.
    */
-  private playHtmlAudio(src: string): void {
+  private playHtmlAudio(src: string, options?: SoundPlayOptions): void {
     try {
       const sfx = new Audio(src);
       sfx.volume = this.sfxVolume();
       this.safePlay(sfx);
+
+      if (options?.fadeOutDuration && options.fadeOutDuration > 0) {
+        const fadeOut = options.fadeOutDuration;
+        const startFadeTimer = () => {
+          const dur = sfx.duration;
+          if (!dur || isNaN(dur) || dur <= 0) return;
+          const fadeStart = Math.max(0, dur - fadeOut);
+
+          const interval = setInterval(() => {
+            if (sfx.paused || sfx.ended) {
+              clearInterval(interval);
+              return;
+            }
+            if (sfx.currentTime >= fadeStart) {
+              const remaining = dur - sfx.currentTime;
+              const factor = Math.max(0, remaining / fadeOut);
+              try {
+                sfx.volume = this.sfxVolume() * factor;
+              } catch {}
+              if (remaining <= 0.05) {
+                try {
+                  sfx.volume = 0;
+                } catch {}
+                clearInterval(interval);
+              }
+            }
+          }, 50);
+        };
+
+        if (sfx.readyState >= 1) {
+          startFadeTimer();
+        } else {
+          sfx.addEventListener('loadedmetadata', startFadeTimer, { once: true });
+        }
+      }
     } catch (e) {
       console.warn('SFX playback error:', e);
     }
@@ -817,10 +887,11 @@ export class AudioService implements OnDestroy {
 
   /**
    * Plays the sound effect when starting an asteroid mining mission:
-   * 'sounds/fleet/start-mining-mission.mp3'
+   * 'sounds/fleet/start-mining-mission.mp3' with a smooth fade-out at the end.
+   * @param fadeOutDuration - Fade-out duration in seconds (defaults to 2.5s).
    */
-  playStartMiningMission(): void {
-    this.playSound('sounds/fleet/start-mining-mission.mp3');
+  playStartMiningMission(fadeOutDuration: number = 2.5): void {
+    this.playSound('sounds/fleet/start-mining-mission.mp3', { fadeOutDuration });
   }
 
   /**

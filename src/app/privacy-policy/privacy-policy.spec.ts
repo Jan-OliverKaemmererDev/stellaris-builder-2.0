@@ -27,4 +27,12 @@ describe('PrivacyPolicy', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render the YouTube link for Galactic', () => {
+    const galacticLink: HTMLAnchorElement | null = fixture.nativeElement.querySelector(
+      'a[href="https://www.youtube.com/watch?v=rzgR40IceRM"]'
+    );
+    expect(galacticLink).toBeTruthy();
+    expect(galacticLink?.textContent).toContain('YouTube-Video (Galactic)');
+  });
 });

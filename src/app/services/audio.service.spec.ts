@@ -85,7 +85,7 @@ describe('AudioService', () => {
     expect(playSoundSpy).toHaveBeenCalledWith('sounds/fleet/schwerer-jaeger.mp3');
 
     service.playStartMiningMission();
-    expect(playSoundSpy).toHaveBeenCalledWith('sounds/fleet/start-mining-mission.mp3');
+    expect(playSoundSpy).toHaveBeenCalledWith('sounds/fleet/start-mining-mission.mp3', { fadeOutDuration: 2.5 });
 
     service.playBuildingCompleted();
     expect(playSoundSpy).toHaveBeenCalledWith('sounds/glados-voice/building-construction-completed.mp3');
@@ -149,8 +149,10 @@ describe('AudioService', () => {
   });
 
   it('should advance or stop correctly on track end based on playback mode', () => {
-    // 1. Loop mode: wraps around
-    service.selectTrack(1); // last track
+    const lastIndex = service.tracks().length - 1;
+
+    // 1. Loop mode: wraps around from last track
+    service.selectTrack(lastIndex);
     (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
     expect(service.currentTrackIndex()).toBe(0); // wrapped around
 
@@ -159,23 +161,23 @@ describe('AudioService', () => {
     service.cyclePlaybackMode(); // sequential
     expect(service.playbackMode()).toBe('sequential');
 
-    service.selectTrack(0);
+    service.selectTrack(lastIndex - 1);
     (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
-    expect(service.currentTrackIndex()).toBe(1);
+    expect(service.currentTrackIndex()).toBe(lastIndex);
 
     // Last track in sequential mode should stop playing
     (service as unknown as { isMusicPlaying: { set: (v: boolean) => void } }).isMusicPlaying.set(true);
     (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
     expect(service.isMusicPlaying()).toBe(false);
 
-    // 3. Shuffle mode: picks a random track
+    // 3. Shuffle mode: picks a random track different from current
     service.cyclePlaybackMode(); // loop
     service.cyclePlaybackMode(); // shuffle
     expect(service.playbackMode()).toBe('shuffle');
 
     service.selectTrack(0);
     (service as unknown as { handleTrackEnded: () => void }).handleTrackEnded();
-    expect(service.currentTrackIndex()).toBe(1); // With 2 tracks, random pick is the other track
+    expect(service.currentTrackIndex()).not.toBe(0);
   });
 
   it('should debounce saving to Firebase when savePreferences is called', () => {
@@ -272,6 +274,44 @@ describe('AudioService', () => {
     expect(getBufferSpy).toHaveBeenCalledWith('sounds/glados-voice/ship-construction-completed.mp3');
     expect(mockCreateBufferSource).toHaveBeenCalled();
     expect(mockSource.start).toHaveBeenCalledWith(0);
+  });
+
+  it('should apply gain ramp for fade out when fadeOutDuration is specified', async () => {
+    const mockBuffer = { duration: 15 } as AudioBuffer;
+    vi.spyOn(service, 'getAudioBuffer').mockResolvedValue(mockBuffer);
+    const mockSource = { buffer: null, connect: vi.fn(), start: vi.fn() };
+    const mockCreateBufferSource = vi.fn().mockReturnValue(mockSource);
+
+    const mockSoundGain = {
+      gain: { setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() },
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+    };
+    const mockCreateGain = vi.fn().mockReturnValue(mockSoundGain);
+
+    const mockMasterGain = {
+      gain: { setValueAtTime: vi.fn(), value: 0.7 },
+      connect: vi.fn(),
+    };
+
+    (service as unknown as { audioCtx: unknown }).audioCtx = {
+      state: 'running',
+      currentTime: 2.0,
+      createBufferSource: mockCreateBufferSource,
+      createGain: mockCreateGain,
+      destination: {},
+    };
+    (service as unknown as { sfxGainNode: unknown }).sfxGainNode = mockMasterGain;
+
+    service.playStartMiningMission(2.5);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(mockCreateGain).toHaveBeenCalled();
+    expect(mockSource.connect).toHaveBeenCalledWith(mockSoundGain);
+    expect(mockSoundGain.connect).toHaveBeenCalledWith(mockMasterGain);
+    expect(mockSoundGain.gain.setValueAtTime).toHaveBeenCalledWith(1, 2.0);
+    expect(mockSoundGain.gain.setValueAtTime).toHaveBeenCalledWith(1, 2.0 + 15 - 2.5);
+    expect(mockSoundGain.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, 2.0 + 15);
   });
 
   it('should update GainNode volume when sfx volume is adjusted or muted', () => {
