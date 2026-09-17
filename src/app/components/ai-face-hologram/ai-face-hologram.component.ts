@@ -48,12 +48,27 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
   private headGroup!: THREE.Group;
 
   private facePoints!: THREE.Points;
+  private circuitPoints!: THREE.Points;
   private dispersionPoints!: THREE.Points;
 
   private basePositions!: Float32Array;
   private mouthWeights!: Float32Array;
   private eyeWeights!: Float32Array;
   private smileWeights!: Float32Array;
+
+  // Dynamic cybernetic circuit traces (Leiterbahnen)
+  private circuitBaseColors!: Float32Array;
+  private circuitNodes: { pathId: number; t: number; isVia: boolean; index: number }[] = [];
+  private pathExits: [number, number, number][] = [];
+  private circuitPulses: {
+    pathId: number;
+    progress: number;
+    speed: number;
+    width: number;
+    intensity: number;
+    hasDischarged: boolean;
+  }[] = [];
+  private nextPulseTime = 0;
 
   // Dispersion particles state
   private dispersionPositions!: Float32Array;
@@ -122,6 +137,7 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initThree();
     this.initFaceGeometry();
+    this.initCircuitGeometry();
     this.initDispersionGeometry();
 
     if (typeof window !== 'undefined') {
@@ -149,6 +165,11 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
       (this.facePoints.material as THREE.Material).dispose();
     }
 
+    if (this.circuitPoints) {
+      this.circuitPoints.geometry.dispose();
+      (this.circuitPoints.material as THREE.Material).dispose();
+    }
+
     if (this.dispersionPoints) {
       this.dispersionPoints.geometry.dispose();
       (this.dispersionPoints.material as THREE.Material).dispose();
@@ -168,9 +189,9 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
 
     this.scene = new THREE.Scene();
 
-    // Closer camera for large, prominent face presence
+    // Camera positioned for balanced face scale
     this.camera = new THREE.PerspectiveCamera(42, 1, 0.1, 50);
-    this.camera.position.set(0, 0, 2.18);
+    this.camera.position.set(0, 0, 2.32);
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -227,6 +248,7 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
     const colBrightCyan = new THREE.Color(0.65, 0.95, 0.99); // #a5f3fc
     const colElectricCyan = new THREE.Color(0.22, 0.74, 0.97); // #38bdf8
     const colSoftCyan = new THREE.Color(0.12, 0.55, 0.85); // Deeper tone
+    const colDeepCyan = new THREE.Color(0.06, 0.32, 0.55); // Subtle ambient tone
 
     const addPoint = (
       x: number,
@@ -244,15 +266,15 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
       sWeights.push(smileWeight);
     };
 
-    // 1. CRANIUM & FOREHEAD (Airy holographic dome)
-    for (let phi = 0.2; phi <= Math.PI * 0.46; phi += 0.09) {
+    // 1. CRANIUM & FOREHEAD (Airy ambient dome - complete volume, no holes)
+    for (let phi = 0.22; phi <= Math.PI * 0.46; phi += 0.11) {
       const y = 0.22 + Math.sin(phi) * 0.78;
       const radiusAtY = Math.cos(phi) * 0.62;
-      const step = 0.12 / Math.max(0.25, Math.cos(phi));
+      const step = 0.15 / Math.max(0.25, Math.cos(phi));
       for (let theta = -Math.PI * 0.45; theta <= Math.PI * 0.45; theta += step) {
         const x = Math.sin(theta) * radiusAtY;
         const z = Math.cos(theta) * radiusAtY * 0.82 - 0.05;
-        const col = (phi > Math.PI * 0.38) ? colSoftCyan : colElectricCyan;
+        const col = phi > Math.PI * 0.38 ? colDeepCyan : colSoftCyan;
         addPoint(x, y, z, col, 0, 0, 0);
       }
     }
@@ -391,6 +413,290 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
 
     this.facePoints = new THREE.Points(geometry, material);
     this.headGroup.add(this.facePoints);
+  }
+
+  /**
+   * Builds the cybernetic Leiterbahnen (circuit traces) that run across the forehead,
+   * crown, and rear skull, leading directly into the background dispersing particles.
+   */
+  private initCircuitGeometry(): void {
+    const colDeepCyan = new THREE.Color(0.05, 0.22, 0.42); // Subtle idle trace glow
+    const colSoftCyan = new THREE.Color(0.12, 0.45, 0.75); // Idle via pad glow
+
+    const cPositions: number[] = [];
+    const cColors: number[] = [];
+    this.circuitNodes = [];
+    this.pathExits = [];
+
+    // Helper: Map (x, y, isBack) onto the 3D skull surface
+    const getSkullPoint = (x: number, y: number, isBack: boolean = false): [number, number, number] => {
+      const sinPhi = Math.max(0, Math.min(1, (y - 0.22) / 0.76));
+      const phi = Math.asin(sinPhi);
+      const radiusAtY = Math.cos(phi) * 0.62;
+      const clampedX = Math.max(-radiusAtY * 0.94, Math.min(radiusAtY * 0.94, x));
+      const radialRem = Math.sqrt(Math.max(0.001, radiusAtY * radiusAtY - clampedX * clampedX));
+      const z = isBack
+        ? -radialRem * 0.88 - 0.05
+        : radialRem * 0.82 - 0.04;
+      return [clampedX, y, z];
+    };
+
+    // Waypoint paths from forehead/temple, over the crown, to the back dispersing cloud
+    // Each waypoint: [x, y, isBack, isVia]
+    type Waypoint = [number, number, boolean, boolean];
+
+    const rawPaths: Waypoint[][] = [];
+
+    [-1, 1].forEach((side) => {
+      // 1. Paramedian Bus (Forehead over top apex to rear dispersion exit)
+      rawPaths.push([
+        [side * 0.06, 0.36, false, true],
+        [side * 0.06, 0.58, false, false],
+        [side * 0.13, 0.65, false, true],
+        [side * 0.13, 0.88, false, false],
+        [side * 0.08, 0.95, false, true],
+        [side * 0.08, 0.82, true, false],
+        [side * 0.14, 0.70, true, true],
+        [side * 0.14, 0.46, true, true], // Exit into dispersion
+      ]);
+
+      // 2. Mid-Parietal Bus (Temple/brow over crown to mid-rear dispersion)
+      rawPaths.push([
+        [side * 0.18, 0.34, false, true],
+        [side * 0.18, 0.48, false, false],
+        [side * 0.25, 0.56, false, true],
+        [side * 0.25, 0.76, false, false],
+        [side * 0.20, 0.88, false, true],
+        [side * 0.20, 0.72, true, false],
+        [side * 0.26, 0.62, true, true],
+        [side * 0.26, 0.40, true, true], // Exit into dispersion
+      ]);
+
+      // 3. Temple-to-Occipital Bus (Outer temple around crest to lower-rear dispersion)
+      rawPaths.push([
+        [side * 0.30, 0.32, false, true],
+        [side * 0.30, 0.44, false, false],
+        [side * 0.36, 0.52, false, true],
+        [side * 0.36, 0.66, false, false],
+        [side * 0.32, 0.74, true, true],
+        [side * 0.32, 0.56, true, false],
+        [side * 0.28, 0.42, true, true], // Exit into dispersion
+      ]);
+    });
+
+    // 4. Sagittal Center Bus (Center forehead over crown to rear dispersion)
+    rawPaths.push([
+      [0.0, 0.42, false, true],
+      [0.0, 0.70, false, false],
+      [0.0, 0.96, false, true],
+      [0.0, 0.78, true, false],
+      [0.06, 0.64, true, true],
+      [0.06, 0.44, true, true], // Exit into dispersion
+    ]);
+
+    // 5. Sagittal Center Bus - Left Rear Branch
+    rawPaths.push([
+      [0.0, 0.42, false, true],
+      [0.0, 0.70, false, false],
+      [0.0, 0.96, false, true],
+      [0.0, 0.78, true, false],
+      [-0.06, 0.64, true, true],
+      [-0.06, 0.44, true, true], // Exit into dispersion
+    ]);
+
+    // Discretize all paths into points
+    let pointIndex = 0;
+    rawPaths.forEach((wayPoints) => {
+      // Calculate total 3D path length
+      const projectedWps: { pt: [number, number, number]; isVia: boolean }[] = wayPoints.map((wp) => ({
+        pt: getSkullPoint(wp[0], wp[1], wp[2]),
+        isVia: wp[3],
+      }));
+
+      let totalDist = 0;
+      for (let i = 0; i < projectedWps.length - 1; i++) {
+        const pA = projectedWps[i].pt;
+        const pB = projectedWps[i + 1].pt;
+        totalDist += Math.hypot(pB[0] - pA[0], pB[1] - pA[1], pB[2] - pA[2]);
+      }
+
+      // Store exit coordinate for this path (where it reaches the dispersing particles)
+      const lastPt = projectedWps[projectedWps.length - 1].pt;
+      this.pathExits.push([lastPt[0], lastPt[1], lastPt[2]]);
+
+      // Interpolate along segments
+      let accumDist = 0;
+      for (let i = 0; i < projectedWps.length - 1; i++) {
+        const pA = projectedWps[i].pt;
+        const pB = projectedWps[i + 1].pt;
+        const isViaA = projectedWps[i].isVia;
+        const segDist = Math.hypot(pB[0] - pA[0], pB[1] - pA[1], pB[2] - pA[2]);
+        const steps = Math.max(1, Math.round(segDist / 0.022));
+
+        for (let s = 0; s < steps; s++) {
+          const u = s / steps;
+          const x = pA[0] + (pB[0] - pA[0]) * u;
+          const y = pA[1] + (pB[1] - pA[1]) * u;
+          const z = pA[2] + (pB[2] - pA[2]) * u;
+
+          const currentDist = accumDist + segDist * u;
+          const t = Math.min(1.0, currentDist / Math.max(0.001, totalDist));
+          const isVia = s === 0 && isViaA;
+
+          cPositions.push(x, y, z);
+          const baseCol = isVia ? colSoftCyan : colDeepCyan;
+          cColors.push(baseCol.r, baseCol.g, baseCol.b);
+
+          this.circuitNodes.push({
+            pathId: this.pathExits.length - 1,
+            t,
+            isVia,
+            index: pointIndex++,
+          });
+        }
+        accumDist += segDist;
+      }
+
+      // Final terminal via
+      cPositions.push(lastPt[0], lastPt[1], lastPt[2]);
+      cColors.push(colSoftCyan.r, colSoftCyan.g, colSoftCyan.b);
+      this.circuitNodes.push({
+        pathId: this.pathExits.length - 1,
+        t: 1.0,
+        isVia: true,
+        index: pointIndex++,
+      });
+    });
+
+    this.circuitBaseColors = new Float32Array(cColors);
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(cPositions), 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(cColors), 3));
+
+    const mat = new THREE.PointsMaterial({
+      size: 0.078,
+      map: this.createGlowDotTexture(),
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.96,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
+    this.circuitPoints = new THREE.Points(geo, mat);
+    this.headGroup.add(this.circuitPoints);
+  }
+
+  /**
+   * Updates dynamic glowing pulses running along the Leiterbahnen across the skull
+   * and discharging into the dispersing background pixel stream.
+   */
+  private updateCircuitPulses(now: number, dt: number, isSpeaking: boolean): void {
+    if (!this.circuitPoints || !this.circuitBaseColors) return;
+
+    // 1. Random pulse generation across different paths
+    if (now > this.nextPulseTime) {
+      const pulseCount = Math.random() < 0.45 ? 2 : 1;
+      for (let c = 0; c < pulseCount; c++) {
+        const pathId = Math.floor(Math.random() * this.pathExits.length);
+        const speed = 0.50 + Math.random() * 0.45; // ~1.5 - 2s per transit
+        const width = 0.12 + Math.random() * 0.06;
+        this.circuitPulses.push({
+          pathId,
+          progress: 0,
+          speed,
+          width,
+          intensity: 0.90 + Math.random() * 0.10,
+          hasDischarged: false,
+        });
+      }
+      const delay = isSpeaking ? 120 + Math.random() * 200 : 250 + Math.random() * 450;
+      this.nextPulseTime = now + delay;
+    }
+
+    // 2. Advance active pulses and discharge into dispersion particles at skull exit
+    for (let i = this.circuitPulses.length - 1; i >= 0; i--) {
+      const p = this.circuitPulses[i];
+      p.progress += dt * p.speed;
+
+      // When pulse hits the back of the head, discharge into the dispersing pixel stream!
+      if (p.progress >= 0.98 && !p.hasDischarged) {
+        p.hasDischarged = true;
+        const exit = this.pathExits[p.pathId];
+        if (exit) {
+          this.triggerDispersionPulseExit(exit[0], exit[1], exit[2]);
+        }
+      }
+
+      // Remove after passing through exit
+      if (p.progress >= 1.15) {
+        this.circuitPulses.splice(i, 1);
+      }
+    }
+
+    // 3. Compute dynamic colors for all circuit points
+    const colAttr = this.circuitPoints.geometry.attributes['color'] as THREE.BufferAttribute;
+    const colors = colAttr.array as Float32Array;
+    const base = this.circuitBaseColors;
+    const total = this.circuitNodes.length;
+
+    // Reset to base idle colors (dimmed in sleep mode)
+    const dimFactor = 1.0 - this.sleepAmount * 0.5;
+    for (let i = 0; i < total * 3; i++) {
+      colors[i] = base[i] * dimFactor;
+    }
+
+    // Illuminate points along active pulse wavefronts
+    for (const p of this.circuitPulses) {
+      for (const node of this.circuitNodes) {
+        if (node.pathId !== p.pathId) continue;
+        const dist = Math.abs(node.t - p.progress);
+        if (dist < p.width) {
+          const norm = 1.0 - dist / p.width;
+          const boost = Math.pow(norm, 1.8) * p.intensity;
+          const idx = node.index * 3;
+
+          // Leading edge / core is radiant white, tail is glowing cyan
+          const isCore = norm > 0.65;
+          const r = isCore ? 1.0 : 0.65;
+          const g = isCore ? 1.0 : 0.95;
+          const b = 0.99;
+
+          colors[idx] = Math.min(1.0, colors[idx] + r * boost);
+          colors[idx + 1] = Math.min(1.0, colors[idx + 1] + g * boost);
+          colors[idx + 2] = Math.min(1.0, colors[idx + 2] + b * boost);
+
+          // Via nodes flare brightly when energized
+          if (node.isVia && norm > 0.35) {
+            colors[idx] = 1.0;
+            colors[idx + 1] = 1.0;
+            colors[idx + 2] = 1.0;
+          }
+        }
+      }
+    }
+
+    colAttr.needsUpdate = true;
+  }
+
+  /**
+   * Spawns / boosts a dispersing pixel particle right at the circuit trace exit point.
+   */
+  private triggerDispersionPulseExit(x: number, y: number, z: number): void {
+    if (!this.dispersionPositions || !this.dispersionVelocities || !this.dispersionLifes) return;
+    const i = Math.floor(Math.random() * this.DISPERSION_COUNT);
+    const idx = i * 3;
+
+    this.dispersionPositions[idx] = x + (Math.random() - 0.5) * 0.03;
+    this.dispersionPositions[idx + 1] = y + (Math.random() - 0.5) * 0.03;
+    this.dispersionPositions[idx + 2] = z - 0.02;
+
+    const speed = 0.22 + Math.random() * 0.28;
+    this.dispersionVelocities[idx] = (Math.random() - 0.5) * 0.35 + Math.sign(x) * 0.25;
+    this.dispersionVelocities[idx + 1] = 0.20 + Math.random() * 0.45;
+    this.dispersionVelocities[idx + 2] = -0.30 - Math.random() * 0.50;
+    this.dispersionLifes[i] = 1.0;
   }
 
   /**
@@ -674,11 +980,12 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
     this.headGroup.rotation.z = swayZ;
 
     // ─────────────────────────────────────────────────────────────
-    // 5. UPDATE BACKGROUND DISPERSION PARTICLES
+    // 5. UPDATE BACKGROUND DISPERSION PARTICLES & LEITERBAHNEN
     // ─────────────────────────────────────────────────────────────
     // Slow down dispersion speed in sleep mode
     const dispersionSpeed = 1.0 - this.sleepAmount * 0.55;
     this.updateDispersionParticles(dt, dispersionSpeed);
+    this.updateCircuitPulses(now, dt, isSpeaking);
 
     // ─────────────────────────────────────────────────────────────
     // 6. AUDIO-REACTIVE LIP SYNC & DEFORMATION
