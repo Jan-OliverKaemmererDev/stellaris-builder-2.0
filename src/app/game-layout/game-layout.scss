@@ -78,8 +78,19 @@
   .hud-reticle {
     width: 20px;
     height: 20px;
-    opacity: 0.8;
+    opacity: 0.9;
     flex-shrink: 0;
+    background-color: #38bdf8;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.75));
+    transition: all 0.3s ease;
+
+    /* Mask setup matching navigator .menu-icon */
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
   }
 
   .header-page-title {

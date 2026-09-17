@@ -162,6 +162,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   /** Current page title derived from the active route. */
   pageTitle = signal('BRÜCKE');
 
+  /** Current page icon class derived from the active route (matching navigator icons). */
+  pageIconClass = signal('icon-bridge');
+
   /** Orb Canvas */
   @ViewChild('orbCanvas') orbCanvas!: ElementRef<HTMLCanvasElement>;
 
@@ -192,14 +195,31 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   private updateTitle(url: string): void {
-    if (url.includes('/mining')) this.pageTitle.set('ROHSTOFF\u00ADABBAU');
-    else if (url.includes('/energy')) this.pageTitle.set('ENERGIENETZ');
-    else if (url.includes('/research')) this.pageTitle.set('FORSCHUNGS\u00ADZENTRUM');
-    else if (url.includes('/infrastructure')) this.pageTitle.set('INFRA\u00ADSTRUKTUR');
-    else if (url.includes('/trade')) this.pageTitle.set('HANDEL & WIRTSCHAFT');
-    else if (url.includes('/fleet')) this.pageTitle.set('FLOTTE');
-    else if (url.includes('/spielregeln')) this.pageTitle.set('SPIELREGELN');
-    else this.pageTitle.set('BRÜCKE');
+    if (url.includes('/mining')) {
+      this.pageTitle.set('ROHSTOFF\u00ADABBAU');
+      this.pageIconClass.set('icon-mining');
+    } else if (url.includes('/energy')) {
+      this.pageTitle.set('ENERGIENETZ');
+      this.pageIconClass.set('icon-energy');
+    } else if (url.includes('/research')) {
+      this.pageTitle.set('FORSCHUNGS\u00ADZENTRUM');
+      this.pageIconClass.set('icon-research');
+    } else if (url.includes('/infrastructure')) {
+      this.pageTitle.set('INFRA\u00ADSTRUKTUR');
+      this.pageIconClass.set('icon-infrastructure');
+    } else if (url.includes('/trade')) {
+      this.pageTitle.set('HANDEL & WIRTSCHAFT');
+      this.pageIconClass.set('icon-trade');
+    } else if (url.includes('/fleet')) {
+      this.pageTitle.set('FLOTTE');
+      this.pageIconClass.set('icon-fleet');
+    } else if (url.includes('/spielregeln')) {
+      this.pageTitle.set('SPIELREGELN');
+      this.pageIconClass.set('icon-rules');
+    } else {
+      this.pageTitle.set('BRÜCKE');
+      this.pageIconClass.set('icon-bridge');
+    }
   }
 
   ngAfterViewInit() {
