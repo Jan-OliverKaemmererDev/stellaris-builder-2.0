@@ -2,7 +2,12 @@ import { GameResources, ENERGY_UPKEEP, SHIP_IDS } from './game-state.types';
 
 /**
  * Formats a number into a compact, human-readable string using K, M, B suffixes.
- * Numbers below 1000 are returned as-is (whole integers).
+ * Uses adaptive precision:
+ * - < 1000: exact integer (e.g. 999)
+ * - >= 100 in unit: 0 decimals (e.g. 493080 → "493K", 100000 → "100K")
+ * - >= 10 in unit: 1 decimal (e.g. 49308 → "49.3K")
+ * - < 10 in unit: up to 2 decimals (e.g. 4930 → "4.93K", 1230500 → "1.23M")
+ *
  * Examples: 100000 → "100K", 1230500 → "1.23M", 999 → "999".
  * @param value - The numeric value to format.
  * @returns A compact string representation of the number.
@@ -12,15 +17,30 @@ export function formatNumber(value: number): string {
   const sign = value < 0 ? '-' : '';
 
   if (abs >= 1_000_000_000) {
-    return sign + parseFloat((abs / 1_000_000_000).toFixed(2)) + 'B';
+    return sign + formatCompact(abs / 1_000_000_000) + 'B';
   }
   if (abs >= 1_000_000) {
-    return sign + parseFloat((abs / 1_000_000).toFixed(2)) + 'M';
+    return sign + formatCompact(abs / 1_000_000) + 'M';
   }
   if (abs >= 1_000) {
-    return sign + parseFloat((abs / 1_000).toFixed(2)) + 'K';
+    return sign + formatCompact(abs / 1_000) + 'K';
   }
   return sign + Math.floor(abs).toString();
+}
+
+/**
+ * Formats a scaled value into a compact string with adaptive decimal precision.
+ * @param val - The scaled value (e.g. value / 1000).
+ * @returns A string representation with 0, 1, or 2 decimal places.
+ */
+function formatCompact(val: number): string {
+  if (val >= 100) {
+    return Math.floor(val).toString();
+  }
+  if (val >= 10) {
+    return parseFloat(val.toFixed(1)).toString();
+  }
+  return parseFloat(val.toFixed(2)).toString();
 }
 
 /**
