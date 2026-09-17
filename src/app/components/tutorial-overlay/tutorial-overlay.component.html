@@ -1,0 +1,145 @@
+<!-- Darkening Veil (Only dims the bridge area) -->
+<div class="tutorial-backdrop" (click)="onDialogClick()" aria-hidden="true"></div>
+
+<!-- Interactive UI Layer (Always on top of all cards) -->
+<div class="tutorial-ui-layer" role="dialog" aria-modal="true" aria-label="Interaktives Tutorial der Schiffs-KI">
+  <!-- Top-Right Skip Button -->
+  <aside class="tutorial-header-actions" aria-label="Tutorial Aktionen">
+    @if (!isSkipped()) {
+      <button
+        type="button"
+        class="tutorial-skip-btn"
+        (click)="skipTutorial(); $event.stopPropagation()"
+        aria-label="Tutorial überspringen"
+      >
+        <span class="skip-text">Tutorial überspringen</span>
+        <span class="skip-icon" aria-hidden="true">✕</span>
+      </button>
+    }
+  </aside>
+
+  <!-- Stage Track (Constrained within the 1200px bridge dashboard bounds) -->
+  <div class="tutorial-stage-track">
+    <!-- Dynamic Position Stage (shifts smoothly to avoid active card) -->
+    <section class="tutorial-stage" [ngStyle]="stageStyle()">
+
+    <!-- 3D Hologram Column -->
+    <div class="hologram-column">
+      <div class="hologram-projection-wrap">
+        <app-ai-face-hologram
+          [size]="faceSize()"
+          [isSpeaking]="isTyping()"
+          class="tutorial-ai-face"
+        ></app-ai-face-hologram>
+        <div class="hologram-emitter-ring" aria-hidden="true"></div>
+        <div class="hologram-glow-cone" aria-hidden="true"></div>
+      </div>
+      <span class="ai-callsign">A.U.R.A. // SCHIFFS-KI</span>
+    </div>
+
+    <!-- Dialogue Box Column -->
+    <div class="dialogue-card" (click)="onDialogClick()">
+      <!-- Card Cyber Header -->
+      <header class="card-cyber-header">
+        <div class="ai-status">
+          <span class="status-beacon" aria-hidden="true"></span>
+          <span class="status-label">SCHIFFS-KI // SYSTEM NOMINAL</span>
+        </div>
+
+        <div class="step-indicator" aria-label="Fortschritt">
+          @if (!isSkipped()) {
+            <span class="step-badge">Schritt {{ currentStep().stepNumber }} von {{ totalSteps }}</span>
+          } @else {
+            <span class="step-badge warning">Übersprungen</span>
+          }
+        </div>
+      </header>
+
+      <!-- Dialogue Content -->
+      <div class="dialogue-body">
+        <h2 class="dialogue-title">
+          {{ isSkipped() ? 'Tutorial übersprungen' : currentStep().title }}
+        </h2>
+
+        <p class="dialogue-speech" aria-live="polite">
+          {{ displayedText() }}<span class="terminal-cursor" [class.blink]="!isTyping()" aria-hidden="true">▌</span>
+        </p>
+
+        @if (!isSkipped() && currentStep().tip) {
+          <div class="tip-callout" role="note">
+            <span class="tip-icon" aria-hidden="true">✦</span>
+            <span class="tip-text">{{ currentStep().tip }}</span>
+          </div>
+        }
+
+        @if (isSkipped()) {
+          <div class="skip-notice-box" role="note">
+            <span class="notice-icon" aria-hidden="true">
+              <app-icon name="rules" />
+            </span>
+            <div class="notice-text">
+              <strong>Tipp für später:</strong> Sie finden alle <strong>Spielregeln</strong>, Berechnungsformeln und Verteidigungstaktiken jederzeit oben rechts im <strong>Benutzer-Menü (Profil-Icon &rarr; Spielregeln)</strong>.
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Dialogue Controls & Footer -->
+      <footer class="dialogue-footer">
+        @if (!isSkipped()) {
+          <button
+            type="button"
+            class="action-btn back-btn"
+            [disabled]="currentStepIndex() === 0"
+            (click)="prevStep(); $event.stopPropagation()"
+            aria-label="Vorheriger Schritt"
+          >
+            &larr; Zurück
+          </button>
+
+          <!-- Stepper Dots -->
+          <div class="stepper-dots" role="tablist" aria-label="Tutorial Schritte">
+            @for (step of steps; track step.id; let i = $index) {
+              <button
+                type="button"
+                class="stepper-dot"
+                [class.active]="i === currentStepIndex()"
+                [class.passed]="i < currentStepIndex()"
+                (click)="startStep(i); $event.stopPropagation()"
+                [attr.aria-label]="'Zu Schritt ' + (i + 1) + ' springen'"
+              ></button>
+            }
+          </div>
+
+          <button
+            type="button"
+            class="action-btn next-btn"
+            (click)="nextStep(); $event.stopPropagation()"
+            [attr.aria-label]="currentStepIndex() === totalSteps - 1 ? 'Tutorial beenden' : 'Nächster Schritt'"
+          >
+            @if (currentStepIndex() === totalSteps - 1) {
+              <span>Brücke betreten</span>
+              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            } @else {
+              <span>Weiter</span>
+              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            }
+          </button>
+        } @else {
+          <div class="skip-footer-actions">
+            <button
+              type="button"
+              class="action-btn next-btn confirm-btn"
+              (click)="finishTutorial(); $event.stopPropagation()"
+              aria-label="Verstanden, zur Brücke wechseln"
+            >
+              <span>Verstanden, zur Brücke</span>
+              <span class="btn-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+        }
+      </footer>
+    </div>
+  </section>
+  </div>
+</div>

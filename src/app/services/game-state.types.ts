@@ -61,6 +61,8 @@ export interface GameState {
   activeMission?: MissionState | null;
   /** Whether the user has seen the rules page on their first login. */
   hasSeenRules?: boolean;
+  /** Whether the user has completed or skipped the interactive first-login tutorial. */
+  hasCompletedTutorial?: boolean;
   /** Whether the enemy faction has been activated after player's first battle attack. */
   enemyActivated?: boolean;
   /** The currently running battle operation, or `null` if idle. */
@@ -91,6 +93,7 @@ export const DEFAULT_STATE: GameState = {
   skills: {},
   disabledBuildings: {},
   hasSeenRules: false,
+  hasCompletedTutorial: false,
   enemyActivated: false,
 };
 

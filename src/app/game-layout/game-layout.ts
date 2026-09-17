@@ -465,6 +465,15 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Resets and launches the interactive ship AI tutorial on the bridge.
+   */
+  replayTutorial(): void {
+    this.closeDropdown();
+    this.gameState.resetTutorial();
+    this.router.navigate(['/bridge']);
+  }
+
+  /**
    * Signs the current user out of the application and redirects to the landing page.
    * If the user is an anonymous guest, their Firestore data and Firebase Auth account
    * are deleted before redirecting.

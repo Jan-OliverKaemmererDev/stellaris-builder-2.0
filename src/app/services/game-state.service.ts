@@ -50,6 +50,9 @@ export class GameStateService {
   /** Whether the user has seen the rules page. */
   hasSeenRules = signal<boolean>(false);
 
+  /** Whether the user has completed or skipped the interactive tutorial. */
+  hasCompletedTutorial = signal<boolean>(false);
+
   /** Map of building or ship IDs that are temporarily powered off to save energy. */
   disabledBuildings = signal<Record<string, boolean>>({});
 
@@ -145,8 +148,10 @@ export class GameStateService {
     this.resources.set(initialState.resources);
     this.skills.set(initialState.skills);
     this.disabledBuildings.set({});
+    this.hasCompletedTutorial.set(false);
+    this.hasSeenRules.set(false);
     this.isInitialized = true;
-    this.router.navigate(['/bridge/spielregeln']);
+    this.router.navigate(['/bridge']);
   }
 
   /**
@@ -171,10 +176,7 @@ export class GameStateService {
     this.enemyActivated.set(state.enemyActivated ?? false);
     this.lastEnemyAttack.set(state.lastEnemyAttack || 0);
     this.hasSeenRules.set(state.hasSeenRules ?? false);
-    
-    if (isFirstLoad && !state.hasSeenRules) {
-      this.router.navigate(['/bridge/spielregeln']);
-    }
+    this.hasCompletedTutorial.set(state.hasCompletedTutorial ?? false);
     
     // Check for offline completed builds and update state if needed
     let builds = { ...(state.activeBuilds || {}) };
@@ -611,6 +613,29 @@ export class GameStateService {
     } catch (err) {
       console.warn('Could not persist hasSeenRules to Firestore:', err);
     }
+  }
+
+  /**
+   * Marks the first-login interactive tutorial as completed or skipped.
+   */
+  async markTutorialAsCompleted(): Promise<void> {
+    this.hasCompletedTutorial.set(true);
+    this.hasSeenRules.set(true);
+    const user = this.auth.currentUser;
+    if (!user) return;
+    try {
+      const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+      await updateDoc(stateRef, { hasCompletedTutorial: true, hasSeenRules: true });
+    } catch (err) {
+      console.warn('Could not persist hasCompletedTutorial to Firestore:', err);
+    }
+  }
+
+  /**
+   * Resets the tutorial state so it can be replayed from the menu.
+   */
+  resetTutorial(): void {
+    this.hasCompletedTutorial.set(false);
   }
 
   /**

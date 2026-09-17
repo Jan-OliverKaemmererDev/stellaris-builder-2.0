@@ -222,6 +222,18 @@
               Sounds
             </button>
 
+            <button
+              type="button"
+              class="dropdown-item"
+              (click)="replayTutorial()"
+              id="dropdown-tutorial"
+              role="menuitem"
+              aria-label="Schiffs-KI Tutorial wiederholen"
+            >
+              <span class="dropdown-icon" aria-hidden="true"><app-icon name="avatar" /></span>
+              KI-Tutorial wiederholen
+            </button>
+
             <hr class="dropdown-divider" role="separator" />
             <a
               routerLink="/bridge/spielregeln"

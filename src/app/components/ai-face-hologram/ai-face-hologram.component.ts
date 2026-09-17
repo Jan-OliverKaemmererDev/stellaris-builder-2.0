@@ -6,6 +6,8 @@ import {
   OnDestroy,
   NgZone,
   inject,
+  Input,
+  HostBinding,
   ChangeDetectionStrategy
 } from '@angular/core';
 import * as THREE from 'three';
@@ -38,6 +40,22 @@ import { AudioService } from '../../services/audio.service';
 export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
   @ViewChild('hologramCanvas', { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
+
+  /** Whether the AI is speaking (e.g. during typewriter dialog) to trigger synthetic lip movement. */
+  @Input() isSpeaking = false;
+
+  /** Display size in CSS pixels (default: 88px). */
+  @Input() size = 88;
+
+  @HostBinding('style.--ai-face-size.px')
+  get hostSize(): number {
+    return this.size;
+  }
+
+  @HostBinding('class.large')
+  get isLarge(): boolean {
+    return this.size > 100;
+  }
 
   private ngZone = inject(NgZone);
   private audioService = inject(AudioService);
@@ -135,18 +153,22 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.initThree();
-    this.initFaceGeometry();
-    this.initCircuitGeometry();
-    this.initDispersionGeometry();
+    try {
+      this.initThree();
+      this.initFaceGeometry();
+      this.initCircuitGeometry();
+      this.initDispersionGeometry();
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('pointermove', this.pointerMoveHandler, { passive: true });
+      if (typeof window !== 'undefined') {
+        window.addEventListener('pointermove', this.pointerMoveHandler, { passive: true });
+      }
+
+      this.ngZone.runOutsideAngular(() => {
+        this.animate();
+      });
+    } catch (e) {
+      console.warn('AiFaceHologram: WebGL initialization skipped or failed:', e);
     }
-
-    this.ngZone.runOutsideAngular(() => {
-      this.animate();
-    });
   }
 
   ngOnDestroy(): void {
@@ -183,9 +205,9 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
   private initThree(): void {
     const canvas = this.canvasRef.nativeElement;
     // Internal buffer size for crisp high-DPI rendering
-    const size = 200;
-    canvas.width = size;
-    canvas.height = size;
+    const internalSize = Math.max(200, Math.round(this.size * 2));
+    canvas.width = internalSize;
+    canvas.height = internalSize;
 
     this.scene = new THREE.Scene();
 
@@ -199,7 +221,7 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
       antialias: true,
       powerPreference: 'high-performance',
     });
-    this.renderer.setSize(size, size, false);
+    this.renderer.setSize(internalSize, internalSize, false);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
     this.headGroup = new THREE.Group();
@@ -859,7 +881,7 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
     const time = now * 0.001;
     const dt = 0.016;
 
-    const isSpeaking = this.audioService.isAiSpeaking();
+    const isSpeaking = this.audioService.isAiSpeaking() || this.isSpeaking;
     const idleTime = now - this.lastPointerMoveTime;
 
     // ─────────────────────────────────────────────────────────────
@@ -990,7 +1012,13 @@ export class AiFaceHologramComponent implements AfterViewInit, OnDestroy {
     // ─────────────────────────────────────────────────────────────
     // 6. AUDIO-REACTIVE LIP SYNC & DEFORMATION
     // ─────────────────────────────────────────────────────────────
-    const targetMouthOpen = this.audioService.getAiSpeechAmplitude();
+    let targetMouthOpen = this.audioService.getAiSpeechAmplitude();
+    if (this.isSpeaking && targetMouthOpen < 0.05) {
+      // Synthesize rhythmic speech lip movement while isSpeaking input is true
+      const speechTime = now * 0.015;
+      const syllable = Math.sin(speechTime * 1.5) * 0.4 + Math.sin(speechTime * 3.1) * 0.3 + 0.35;
+      targetMouthOpen = Math.max(0.08, Math.min(0.95, syllable));
+    }
     const mouthLerp = targetMouthOpen > this.mouthOpenAmount ? 0.35 : 0.18;
     this.mouthOpenAmount += (targetMouthOpen - this.mouthOpenAmount) * mouthLerp;
 

@@ -34,11 +34,20 @@ interface ShipType {
  * Displays a live resource overview, energy status, fleet summary, and a trading panel.
  */
 import { IconComponent } from '../components/icon/icon.component';
+import { TutorialOverlayComponent } from '../components/tutorial-overlay/tutorial-overlay.component';
 
 @Component({
   selector: 'app-bridge',
   standalone: true,
-  imports: [DecimalPipe, NgClass, AnimatedNumberComponent, RouterLink, CompactNumberPipe, IconComponent],
+  imports: [
+    DecimalPipe,
+    NgClass,
+    AnimatedNumberComponent,
+    RouterLink,
+    CompactNumberPipe,
+    IconComponent,
+    TutorialOverlayComponent,
+  ],
   templateUrl: './bridge.html',
   styleUrl: './bridge.scss',
 })
@@ -48,6 +57,23 @@ export class Bridge {
 
   /** Game state service to interact with resources, skills, and trading. */
   private gameState = inject(GameStateService);
+
+  /** Target component on the bridge highlighted by the active tutorial step. */
+  activeTutorialTarget = signal<'resources' | 'energy' | 'supply' | 'fleet' | null>(null);
+
+  /** Whether the interactive first-login tutorial should be displayed. */
+  showTutorial = computed<boolean>(() => !this.gameState.hasCompletedTutorial());
+
+  /** Handles completion or skipping of the tutorial. */
+  async onTutorialComplete(): Promise<void> {
+    this.activeTutorialTarget.set(null);
+    await this.gameState.markTutorialAsCompleted();
+  }
+
+  /** Updates the highlighted bridge card based on the active tutorial step. */
+  onTutorialHighlight(target: 'resources' | 'energy' | 'supply' | 'fleet' | null): void {
+    this.activeTutorialTarget.set(target);
+  }
 
   /**
    * Retrieves the display name for the current user.

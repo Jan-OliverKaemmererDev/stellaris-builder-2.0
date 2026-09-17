@@ -4,7 +4,12 @@
   <section class="dashboard-grid" aria-label="Dashboard overview">
 
     <!-- ═══ Resources Card ═══ -->
-    <article class="dash-card-wrapper resources-card" id="card-resources" aria-label="Resources overview">
+    <article
+      class="dash-card-wrapper resources-card"
+      [class.tutorial-highlight]="activeTutorialTarget() === 'resources'"
+      id="card-resources"
+      aria-label="Resources overview"
+    >
       <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title"><app-icon name="title-resources" style="margin-right: 6px;" /> Rohstoffe</h2>
@@ -54,7 +59,12 @@
     </article>
 
     <!-- ═══ Supply Card ═══ -->
-    <article class="dash-card-wrapper supply-card" id="card-supply" aria-label="Supply and personnel overview">
+    <article
+      class="dash-card-wrapper supply-card"
+      [class.tutorial-highlight]="activeTutorialTarget() === 'supply'"
+      id="card-supply"
+      aria-label="Supply and personnel overview"
+    >
       <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title"><app-icon name="title-supply" style="margin-right: 6px;" /> Versorgung &amp; Personal</h2>
@@ -104,7 +114,12 @@
     </article>
 
     <!-- ═══ Energy Card (Battery) ═══ -->
-    <article class="dash-card-wrapper energy-card" id="card-energy" aria-label="Energy grid status">
+    <article
+      class="dash-card-wrapper energy-card"
+      [class.tutorial-highlight]="activeTutorialTarget() === 'energy'"
+      id="card-energy"
+      aria-label="Energy grid status"
+    >
       <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title">
@@ -148,7 +163,12 @@
     </article>
 
     <!-- ═══ Colony Ships Card ═══ -->
-    <article class="dash-card-wrapper fleet-card" id="card-colony-ships" aria-label="Colony ships composition">
+    <article
+      class="dash-card-wrapper fleet-card"
+      [class.tutorial-highlight]="activeTutorialTarget() === 'fleet'"
+      id="card-colony-ships"
+      aria-label="Colony ships composition"
+    >
       <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title"><app-icon name="title-colony" style="margin-right: 6px;" /> Kolonieschiffe</h2>
@@ -171,7 +191,11 @@
     </article>
 
     <!-- ═══ Battle Ships Card ═══ -->
-    <article class="dash-card-wrapper fleet-card" id="card-battle-ships" aria-label="Battle ships composition">
+    <article
+      class="dash-card-wrapper fleet-card"
+      id="card-battle-ships"
+      aria-label="Battle ships composition"
+    >
       <div class="dash-card">
       <header class="card-header">
         <h2 class="card-title"><app-icon name="title-battle" style="margin-right: 6px;" /> Schlachtschiffe</h2>
@@ -267,4 +291,11 @@
     }
 
   </section>
+
+  @if (showTutorial()) {
+    <app-tutorial-overlay
+      (completed)="onTutorialComplete()"
+      (highlightChange)="onTutorialHighlight($event)"
+    ></app-tutorial-overlay>
+  }
 </main>

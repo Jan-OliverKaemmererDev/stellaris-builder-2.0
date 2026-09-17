@@ -1008,6 +1008,35 @@ export class AudioService implements OnDestroy {
   }
 
   /**
+   * Plays a subtle UI interaction click sound using the Web Audio API.
+   */
+  playUiClick(): void {
+    if (this.isSfxMuted()) return;
+    try {
+      if (!this.audioCtx) {
+        this.initWebAudio();
+      }
+      if (!this.audioCtx || !this.sfxGainNode) return;
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume().catch(() => {});
+      }
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, this.audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, this.audioCtx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.08, this.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(this.sfxGainNode);
+      osc.start();
+      osc.stop(this.audioCtx.currentTime + 0.05);
+    } catch {
+      // Ignore audio synthesis errors
+    }
+  }
+
+  /**
    * Dynamically adds a new track to the playlist.
    */
   addTrack(track: MusicTrack): void {

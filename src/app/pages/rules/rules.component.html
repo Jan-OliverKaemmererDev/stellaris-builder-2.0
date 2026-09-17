@@ -1,14 +1,12 @@
 <div class="rules-container">
-  @if (canGoBack()) {
-    <a
-      href="#"
-      (click)="goBack($event)"
-      class="back-button"
-      aria-label="Zurück zur vorherigen Seite"
-    >
-      <span class="back-arrow" aria-hidden="true">&larr;</span> Zurück
-    </a>
-  }
+  <a
+    href="#"
+    (click)="goBack($event)"
+    class="back-button"
+    aria-label="Zurück zur vorherigen Seite"
+  >
+    <span class="back-arrow" aria-hidden="true">&larr;</span> Zurück
+  </a>
 
   <header class="rules-header">
     <h1 class="page-title">Spielregeln</h1>

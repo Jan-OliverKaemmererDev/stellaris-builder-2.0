@@ -20,9 +20,6 @@ export class RulesComponent {
 
   isAcknowledging = signal(false);
 
-  /** Only show back button if the user has already acknowledged the rules (i.e. not the initial first-login view) */
-  canGoBack = computed(() => this.gameState.hasSeenRules());
-
   goBack(event: Event): void {
     event.preventDefault();
     if (typeof window !== 'undefined' && window.history.length > 1) {
