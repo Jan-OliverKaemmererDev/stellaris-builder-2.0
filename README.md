@@ -29,7 +29,7 @@
 
 **Stellaris Builder 2.0** ist ein immersives, browserbasiertes Sci-Fi-Aufbau- und Managementspiel. Es kombiniert klassische Idle-/Incremental-Mechaniken mit anspruchsvollem Ressourcenmanagement, Echtzeit-Flottenoperationen, Lastabwurf-Energiemanagement und einem dynamischen Kampfsystem.
 
-Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals & Modern Control Flow) umgesetzt und setzt auf visuell beeindruckende **Three.js WebGL-Shader** (inkl. interaktivem 3D-Schwarzen-Loch mit Gravitationslinse und Bloom-Effekt), responsive Sci-Fi-HUD-Grafiken, ein vollwertiges **Audio-System** mit Soundtrack und KI-Sprachausgabe sowie Cloud-Synchronisation über **Firebase**.
+Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals & Modern Control Flow) umgesetzt und setzt auf visuell beeindruckende **Three.js WebGL-Shader** (inkl. interaktivem 3D-Schwarzen-Loch mit Gravitationslinse und Bloom-Effekt, sowie einem holographischen 3D-KI-Gesicht mit Echtzeit-Lippensynchronisation), responsive Sci-Fi-HUD-Grafiken, ein vollwertiges **Audio-System** mit Soundtrack und KI-Sprachausgabe, ein **interaktives Onboarding-Tutorial** sowie Cloud-Synchronisation über **Firebase**.
 
 ---
 
@@ -81,9 +81,26 @@ Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals 
 * **Automatische Offline-Berechnung:** Beim Wiedereinloggen kalkuliert das System akkumulierte Ressourcen, fertiggestellte Gebäude und beendete Flottenmissionen präzise nach.
 * **Echtzeit-Synchronisation:** Nahtlose Speicherung aller Spielfortschritte in Google Cloud Firestore.
 
+### 🤖 Holographische Schiffs-KI (A.U.R.A.)
+* **3D-Hologramm-Gesicht (Three.js Point Cloud):** Ein ätherisches, weibliches Hologramm-Gesicht als Schiffs-KI, gerendert als animierte Partikelwolke über Three.js WebGL.
+* **Lebendige Animationen:** Natürliches Blinzeln, subtiles Cyber-Lächeln, Atmung, Gähnen bei Inaktivität (~16s) und Einschlafen (~32s) mit Aufwach-Reaktion bei Mausbewegung.
+* **Echtzeit-Lippensynchronisation:** Mundöffnung koppelt sich dynamisch an die GLaDOS-Sprachausgabe-Amplitude für glaubwürdiges Lip-Sync.
+* **Head-Tracking:** Das Gesicht folgt sanft (per Lerp) dem Mauszeiger mit Pitch- und Yaw-Rotation.
+* **Responsive Integration:** Auf Desktop als schwebendes Hologramm im HUD, auf Mobilgeräten als kompakter leuchtender Orb mit Scan-Animation.
+
+### 🎓 Interaktives Onboarding-Tutorial
+* **KI-geführte Einführung:** Beim ersten Login führt die Schiffs-KI A.U.R.A. den Commander in 7 interaktiven Schritten durch alle Spielmechaniken.
+* **Typewriter-Dialogsystem:** Text baut sich Buchstabe für Buchstabe auf, mit blinkendem Terminal-Cursor – per Klick sofort aufdeckbar.
+* **Intelligente Positionierung:** Die Tutorial-Dialogbox positioniert sich automatisch oberhalb oder unterhalb der jeweils hervorgehobenen Dashboard-Karte, zentriert und ohne Überlappung.
+* **Smooth-Glide-Animationen:** Sanfte Cubic-Bezier-Übergänge beim Wechsel zwischen Schritten statt ruckartiger Sprünge.
+* **Pulsierendes Highlighting:** Aktive Dashboard-Karten (Rohstoffe, Energie, Versorgung, Flotte) erhalten einen animierten Leucht-Rahmen.
+* **Überspringbar mit Wegweiser:** Tutorial kann jederzeit übersprungen werden – die KI zeigt dann, wo die Spielregeln im Benutzer-Menü zu finden sind.
+* **Keyboard-Shortcuts:** Navigation per Pfeiltasten, Enter (Weiter) und Escape (Überspringen).
+
 ### 🪐 Visuelle 3D-Effekte & Sci-Fi HUD
 * **3D-Schwarzes-Loch (Three.js):** Eigene GLSL-Shader für Akkretionsscheibe, Gravitationslinseneffekt (Lensing) und Post-Processing-Bloom (`UnrealBloomPass`).
 * **Mobiles & responsives HUD:** Optimierte HUD-Ansichten mit mobiler Ressourcenleiste, vertikalem Energiebalken und dynamischen Planeten- & Satelliten-Renderings mit verfeinerten Drop-Shadows.
+* **Dynamische Schaltkreis-Spuren:** Kybernetische Circuit-Traces im HUD-Hintergrund mit animiertem Partikelfluss.
 * **🎨 Zentralisiertes SVG-Icon-System:** CSS-basierte SVG-Masken mit Glow-Effekten für Ressourcen, Schiffsklassen und Aktionen (`_icons.scss`).
 
 ---
@@ -94,7 +111,7 @@ Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals 
 | :--- | :--- |
 | **Frontend Framework** | [Angular 21](https://angular.dev/) (Signals, Standalone Components, Modern Control Flow) |
 | **Programmiersprache** | [TypeScript 5.9](https://www.typescriptlang.org/) |
-| **3D Rendering & WebGL** | [Three.js 0.185](https://threejs.org/) (OrbitControls, EffectComposer, UnrealBloomPass, Custom GLSL) |
+| **3D Rendering & WebGL** | [Three.js 0.185](https://threejs.org/) (OrbitControls, EffectComposer, UnrealBloomPass, Custom GLSL, 3D Point Cloud AI-Hologramm) |
 | **Styling & UI** | SCSS, Custom Sci-Fi Theme & Design Tokens, Centralized SVG-Mask Icons (`_icons.scss`), Responsive HUD |
 | **Audio-Engine** | HTML5 Audio & Angular Signals `AudioService` (Soundtrack, SFX, GLaDOS-Sprachausgabe, Sound-Overlay) |
 | **Backend & Auth** | [Firebase 12](https://firebase.google.com/) (Firebase Auth: E-Mail/Passwort & Anonymer Gastzugang, Cloud Firestore) |
@@ -176,6 +193,7 @@ stellaris-builder-2.0/
 │   ├── app/
 │   │   ├── bridge/             # Kommandozentrale & Übersicht
 │   │   ├── components/         # Wiederverwendbare UI-, Audio- & 3D-Komponenten
+│   │   │   ├── ai-face-hologram/       # Three.js 3D holographisches KI-Gesicht (A.U.R.A.)
 │   │   │   ├── black-hole/             # Three.js 3D WebGL Schwarzes Loch
 │   │   │   ├── diplomacy-dialog/       # Diplomatie & Friedensverhandlungen
 │   │   │   ├── enemy-attack-overlay/   # Benachrichtigung bei Feindangriffen
@@ -186,6 +204,7 @@ stellaris-builder-2.0/
 │   │   │   ├── pixel-progress-bar/     # Sci-Fi Fortschrittsanzeige
 │   │   │   ├── skill-node/             # Gebäude-/Forschungs-Knoten mit Power-Toggle
 │   │   │   ├── sound-overlay/          # Audio-Dashboard (BGM, SFX, Voice, Lautstärke)
+│   │   │   ├── tutorial-overlay/       # Interaktives KI-geführtes Onboarding-Tutorial
 │   │   │   └── user-overlay/           # Spielerprofil, Sicherheit & Spielstand-Reset
 │   │   ├── constants/          # Ressourcen- & Icon-Konstanten
 │   │   ├── game-layout/        # Haupt-HUD, vertikaler Energiebalken & mobile Navigation
@@ -240,6 +259,40 @@ Beiträge, Fehlerberichte und Feature-Vorschläge sind jederzeit willkommen!
 3. Änderungen committen (`git commit -m 'feat: Neues Feature hinzufügen'`).
 4. Auf den Branch pushen (`git push origin feature/NeuesFeature`).
 5. Einen **Pull Request** erstellen.
+
+---
+
+## 📋 Changelog
+
+### 17.09.2026 – *Major Feature Update*
+
+#### 🤖 Holographische Schiffs-KI (A.U.R.A.)
+* Neues 3D-Hologramm-Gesicht als KI-Persönlichkeit, gerendert als animierte Point Cloud über Three.js WebGL.
+* Lebendige Idle-Animationen (Blinzeln, Atmen, Gähnen, Einschlafen) und Aufwach-Reaktion bei Interaktion.
+* Echtzeit-Lippensynchronisation mit der GLaDOS-Sprachausgabe-Amplitude.
+* Maus-Head-Tracking mit geglättetem Lerp für Pitch & Yaw.
+* Responsive Integration: Desktop-Hologramm im HUD, mobiler Leucht-Orb mit Scan-Animation.
+
+#### 🎓 Interaktives Onboarding-Tutorial
+* 7-Schritte KI-geführte Einführung in alle Spielmechaniken beim ersten Login.
+* Typewriter-Dialogsystem mit blinkendem Terminal-Cursor.
+* Intelligente Top/Bottom-Positionierung über oder unter der aktiven Dashboard-Karte.
+* Smooth-Glide-Animationen (Cubic-Bezier) zwischen Tutorial-Schritten.
+* Pulsierende Highlight-Rahmen auf aktiven Dashboard-Karten.
+* Überspringen-Funktion mit Hinweis auf Spielregeln im Benutzer-Menü.
+* Keyboard-Navigation (←/→, Enter, Escape).
+
+#### 🖥️ HUD & Layout Verbesserungen
+* Dynamische kybernetische Schaltkreis-Spuren im HUD-Hintergrund.
+* Verbesserte responsive Header-Layouts und Media Queries.
+* Erweiterte Ressourcenanzeige mit Prozentwerten.
+* Dynamische Seiten-Icons mit neuen Navigations-Icons.
+* Adaptive Zahlenformatierung mit Unit-Tests.
+
+#### ⚙️ Technische Verbesserungen
+* Neuer `CursorService` für dynamisches Cursor-Management mit Tests.
+* Erweiterte `AudioService`-API für Tutorial-Sprachausgabe und Web-Audio-Synthese.
+* Tutorial-State-Management (`hasCompletedTutorial`) in Firestore persistiert.
 
 ---
 
