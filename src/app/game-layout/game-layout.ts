@@ -12,31 +12,6 @@ import { GameStateService } from '../services/game-state.service';
 import { CompactNumberPipe } from '../pipes/compact-number.pipe';
 import { EnemyAttackOverlayComponent } from '../components/enemy-attack-overlay/enemy-attack-overlay.component';
 
-class Particle {
-  theta = Math.random() * Math.PI * 2;
-  phi = Math.acos((Math.random() * 2) - 1);
-  radius = 25; // Smaller radius for 60x60 canvas
-  x = 30;
-  y = 30;
-  size = 1.0;
-
-  update(time: number) {
-    const speed = time * 0.4;
-    const currentTheta = this.theta + speed;
-    const x3d = this.radius * Math.sin(this.phi) * Math.cos(currentTheta);
-    const y3d = this.radius * Math.cos(this.phi);
-    this.x = 30 + x3d;
-    this.y = 30 + y3d;
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = '#a5f3fc';
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
 interface SatelliteConfig {
   a: number;         // semi-major axis
   b: number;         // semi-minor axis
@@ -99,11 +74,12 @@ class Satellite {
 import { IconComponent } from '../components/icon/icon.component';
 import { UserOverlayComponent } from '../components/user-overlay/user-overlay.component';
 import { SoundOverlayComponent } from '../components/sound-overlay/sound-overlay.component';
+import { AiFaceHologramComponent } from '../components/ai-face-hologram/ai-face-hologram.component';
 
 @Component({
   selector: 'app-game-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent, IconComponent, UserOverlayComponent, SoundOverlayComponent],
+  imports: [RouterOutlet, RouterLink, SideMenu, OfflineProgressDialog, GalaxyBackgroundComponent, CompactNumberPipe, EnemyAttackOverlayComponent, IconComponent, UserOverlayComponent, SoundOverlayComponent, AiFaceHologramComponent],
   templateUrl: './game-layout.html',
   styleUrl: './game-layout.scss',
 })
@@ -165,19 +141,19 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   /** Current page icon class derived from the active route (matching navigator icons). */
   pageIconClass = signal('icon-bridge');
 
-  /** Orb Canvas */
-  @ViewChild('orbCanvas') orbCanvas!: ElementRef<HTMLCanvasElement>;
+  /** Orb Canvas (Mobile only) */
+  @ViewChild('orbCanvas') orbCanvas?: ElementRef<HTMLCanvasElement>;
 
   /** Main Content Wrapper for initial focus */
   @ViewChild('mainContent') mainContent!: ElementRef<HTMLElement>;
   
   private ngZone = inject(NgZone);
   private animationFrameId?: number;
-  private isMobile = false;
-  private particles: Particle[] = [];
+  readonly isMobile = signal<boolean>(false);
   private satellites: Satellite[] = [];
 
   constructor() {
+    this.isMobile.set(this.isMobileDevice);
     this.updateTitle(this.router.url);
 
     this.router.events.pipe(
@@ -223,7 +199,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.initOrb();
+    if (this.isMobile()) {
+      this.initOrb();
+    }
     if (this.mainContent && this.mainContent.nativeElement) {
       setTimeout(() => this.mainContent.nativeElement.focus({ preventScroll: true }), 0);
     }
@@ -237,7 +215,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   onVisibilityChange(): void {
     if (document.hidden) {
       this.stopOrbAnimation();
-    } else {
+    } else if (this.isMobile()) {
       this.startOrbAnimation();
     }
   }
@@ -250,7 +228,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   }
 
   private startOrbAnimation(): void {
-    if (this.animationFrameId || !this.orbCanvas) return;
+    if (this.animationFrameId || !this.orbCanvas || !this.isMobile()) return;
     const canvas = this.orbCanvas.nativeElement;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -259,13 +237,7 @@ export class GameLayout implements AfterViewInit, OnDestroy {
       const animate = (time: number) => {
         const timeSec = time * 0.001;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        if (this.isMobile) {
-          this.drawMobilePlanet(ctx, timeSec);
-        } else {
-          this.drawDesktopOrb(ctx, timeSec);
-        }
-
+        this.drawMobilePlanet(ctx, timeSec);
         this.animationFrameId = requestAnimationFrame(animate);
       };
       this.animationFrameId = requestAnimationFrame(animate);
@@ -332,16 +304,6 @@ export class GameLayout implements AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Renders the 3D Particle Orb for desktop screens.
-   */
-  private drawDesktopOrb(ctx: CanvasRenderingContext2D, timeSec: number): void {
-    for (let i = 0; i < this.particles.length; i++) {
-      this.particles[i].update(timeSec);
-      this.particles[i].draw(ctx);
-    }
-  }
-
   private get isMobileDevice(): boolean {
     if (typeof window === 'undefined') return false;
     const isTouchOnly = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
@@ -350,31 +312,21 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
   @HostListener('window:resize')
   onResize(): void {
-    if (!this.orbCanvas) return;
     const isMobile = this.isMobileDevice;
-    if (this.isMobile !== isMobile) {
-      this.initOrb();
+    if (this.isMobile() !== isMobile) {
+      this.isMobile.set(isMobile);
+      this.stopOrbAnimation();
+      if (isMobile) {
+        setTimeout(() => this.initOrb(), 0);
+      }
     }
   }
 
-  private initOrb() {
-    if (!this.orbCanvas) return;
-    this.isMobile = this.isMobileDevice;
-    this.particles = [];
-    this.satellites = [];
-
-    if (this.isMobile) {
-      // Create lightweight orbital satellite for mobile
-      this.satellites = [
-        new Satellite({ a: 28.5, b: 11.5, tilt: -0.28, speed: 0.48, phase: 0, size: 1.4, glowColor: 'rgba(125, 211, 252, 0.9)' })
-      ];
-    } else {
-      // 300 3D particle sphere for desktop
-      for (let i = 0; i < 300; i++) {
-        this.particles.push(new Particle());
-      }
-    }
-
+  private initOrb(): void {
+    if (!this.orbCanvas || !this.isMobile()) return;
+    this.satellites = [
+      new Satellite({ a: 28.5, b: 11.5, tilt: -0.28, speed: 0.48, phase: 0, size: 1.4, glowColor: 'rgba(125, 211, 252, 0.9)' })
+    ];
     this.startOrbAnimation();
   }
 

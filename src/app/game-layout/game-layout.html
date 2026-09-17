@@ -62,8 +62,13 @@
             </svg>
           </div>
 
-          <!-- Blue Orb Canvas (larger on mobile, in background of front ring) -->
-          <canvas #orbCanvas width="60" height="60" class="orb-canvas"></canvas>
+          @if (isMobile()) {
+            <!-- Blue Saturn Planet Canvas (Mobile) -->
+            <canvas #orbCanvas width="60" height="60" class="orb-canvas"></canvas>
+          } @else {
+            <!-- 3D AI Face Hologram (Desktop: GLaDOS / Ship AI) -->
+            <app-ai-face-hologram class="desktop-ai-hologram"></app-ai-face-hologram>
+          }
 
           <!-- Desktop Static Ticker Elements -->
           <span class="ticker-label">NAVIGATOR</span>

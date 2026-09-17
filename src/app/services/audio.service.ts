@@ -113,6 +113,16 @@ export class AudioService implements OnDestroy {
   /** Master GainNode for SFX volume control (enables hardware-independent volume on iOS). */
   private sfxGainNode: GainNode | null = null;
 
+  /** AnalyserNode specifically routed for GLaDOS voice lines to drive real-time lip-sync. */
+  private gladosAnalyser: AnalyserNode | null = null;
+  private gladosFreqData: Uint8Array<ArrayBuffer> | null = null;
+
+  /** Number of active GLaDOS voice lines currently playing. */
+  private activeGladosVoices = 0;
+
+  /** Signal indicating whether the GLaDOS / Ship AI is currently speaking. */
+  readonly isAiSpeaking = signal<boolean>(false);
+
   /** Cache of decoded AudioBuffers by sound path. */
   private sfxBufferCache = new Map<string, AudioBuffer>();
 
@@ -311,6 +321,16 @@ export class AudioService implements OnDestroy {
       this.sfxGainNode = this.audioCtx.createGain();
       this.sfxGainNode.gain.value = this.isSfxMuted() ? 0 : this.sfxVolume();
       this.sfxGainNode.connect(this.audioCtx.destination);
+
+      try {
+        this.gladosAnalyser = this.audioCtx.createAnalyser();
+        this.gladosAnalyser.fftSize = 64;
+        this.gladosAnalyser.smoothingTimeConstant = 0.35;
+        this.gladosFreqData = new Uint8Array(this.gladosAnalyser.frequencyBinCount);
+        this.gladosAnalyser.connect(this.sfxGainNode);
+      } catch (e) {
+        console.warn('GLaDOS AnalyserNode initialization failed:', e);
+      }
     } catch (e) {
       console.warn('Web Audio API not supported or initialization failed:', e);
     }
@@ -780,8 +800,17 @@ export class AudioService implements OnDestroy {
 
     this.applySfxVolume();
 
+    const isGlados = this.isGladosSound(src);
+    if (isGlados) {
+      this.activeGladosVoices++;
+      this.isAiSpeaking.set(true);
+    }
+
     this.getAudioBuffer(src).then((buffer) => {
       if (!buffer || !this.audioCtx || !this.sfxGainNode) {
+        if (isGlados) {
+          this.activeGladosVoices = Math.max(0, this.activeGladosVoices - 1);
+        }
         this.playHtmlAudio(src, options);
         return;
       }
@@ -789,6 +818,8 @@ export class AudioService implements OnDestroy {
       try {
         const sourceNode = this.audioCtx.createBufferSource();
         sourceNode.buffer = buffer;
+
+        const targetNode = (isGlados && this.gladosAnalyser) ? this.gladosAnalyser : this.sfxGainNode;
 
         if (options?.fadeOutDuration && options.fadeOutDuration > 0) {
           const soundGainNode = this.audioCtx.createGain();
@@ -802,20 +833,37 @@ export class AudioService implements OnDestroy {
           soundGainNode.gain.linearRampToValueAtTime(0, now + totalDuration);
 
           sourceNode.connect(soundGainNode);
-          soundGainNode.connect(this.sfxGainNode);
+          soundGainNode.connect(targetNode);
 
           sourceNode.onended = () => {
             try {
               soundGainNode.disconnect();
             } catch {}
+            if (isGlados) {
+              this.activeGladosVoices = Math.max(0, this.activeGladosVoices - 1);
+              if (this.activeGladosVoices === 0) {
+                this.isAiSpeaking.set(false);
+              }
+            }
           };
         } else {
-          sourceNode.connect(this.sfxGainNode);
+          sourceNode.connect(targetNode);
+          sourceNode.onended = () => {
+            if (isGlados) {
+              this.activeGladosVoices = Math.max(0, this.activeGladosVoices - 1);
+              if (this.activeGladosVoices === 0) {
+                this.isAiSpeaking.set(false);
+              }
+            }
+          };
         }
 
         sourceNode.start(0);
       } catch (e) {
         console.warn('Web Audio playback error, falling back to HTMLAudio:', e);
+        if (isGlados) {
+          this.activeGladosVoices = Math.max(0, this.activeGladosVoices - 1);
+        }
         this.playHtmlAudio(src, options);
       }
     });
@@ -828,6 +876,19 @@ export class AudioService implements OnDestroy {
     try {
       const sfx = new Audio(src);
       sfx.volume = this.sfxVolume();
+      const isGlados = this.isGladosSound(src);
+      if (isGlados) {
+        this.activeGladosVoices++;
+        this.isAiSpeaking.set(true);
+        const onSpeechEnd = () => {
+          this.activeGladosVoices = Math.max(0, this.activeGladosVoices - 1);
+          if (this.activeGladosVoices === 0) {
+            this.isAiSpeaking.set(false);
+          }
+        };
+        sfx.addEventListener('ended', onSpeechEnd, { once: true });
+        sfx.addEventListener('error', onSpeechEnd, { once: true });
+      }
       this.safePlay(sfx);
 
       if (options?.fadeOutDuration && options.fadeOutDuration > 0) {
@@ -867,6 +928,42 @@ export class AudioService implements OnDestroy {
     } catch (e) {
       console.warn('SFX playback error:', e);
     }
+  }
+
+  /**
+   * Checks whether the audio source belongs to a GLaDOS / AI voice line.
+   */
+  private isGladosSound(src: string): boolean {
+    return src.includes('glados-voice');
+  }
+
+  /**
+   * Returns the current speech amplitude [0.0 to 1.0] for AI hologram lip-sync animation.
+   * Leverages real-time Web Audio API frequency analysis if available,
+   * with seamless fallback to procedural syllabic speech modulation.
+   */
+  getAiSpeechAmplitude(): number {
+    if (!this.isAiSpeaking()) return 0;
+
+    if (this.gladosAnalyser && this.gladosFreqData) {
+      this.gladosAnalyser.getByteFrequencyData(this.gladosFreqData);
+      let sum = 0;
+      // Focus on vocal frequency range
+      const binCount = Math.min(this.gladosFreqData.length, 24);
+      for (let i = 0; i < binCount; i++) {
+        sum += this.gladosFreqData[i];
+      }
+      const avg = sum / (binCount * 255);
+      if (avg > 0.02) {
+        return Math.min(1.0, Math.pow(avg * 2.8, 1.2));
+      }
+    }
+
+    // Procedural speech modulation fallback (oscillation simulating syllables)
+    const now = performance.now() * 0.001;
+    const baseWave = Math.sin(now * 15) * 0.5 + 0.5;
+    const syllabic = Math.sin(now * 4.5) * 0.35 + 0.65;
+    return Math.max(0, Math.min(1.0, baseWave * syllabic));
   }
 
   /**

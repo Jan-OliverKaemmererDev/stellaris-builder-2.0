@@ -175,11 +175,19 @@
       color: #e2e8f0;
       letter-spacing: 2px;
       font-weight: 600;
+      position: relative;
+      z-index: 1;
     }
 
     .orb-canvas {
       pointer-events: none;
       margin-bottom: 2px;
+    }
+
+    .desktop-ai-hologram {
+      pointer-events: none;
+      position: relative;
+      z-index: 2;
     }
 
     .glowing-notch {
