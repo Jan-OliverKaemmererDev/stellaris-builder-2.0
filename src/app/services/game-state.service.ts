@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { GameResources, MissionState, GameState, DEFAULT_STATE, SHIP_IDS, ENERGY_UPKEEP, ActiveBuild } from './game-state.types';
 import * as MathUtils from './game-math.utils';
 import { AudioService } from './audio.service';
+import { CursorService } from './cursor.service';
 
 /**
  * Central service that manages the entire game state lifecycle:
@@ -20,6 +21,7 @@ export class GameStateService {
   private firestore = inject(Firestore);
   private router = inject(Router);
   private audioService = inject(AudioService);
+  private cursorService = inject(CursorService);
 
   /** Current resource amounts as a reactive signal. */
   resources = signal<GameResources>(DEFAULT_STATE.resources);
@@ -343,6 +345,11 @@ export class GameStateService {
       this.audioService.playShipCompleted();
     } else {
       this.audioService.playBuildingCompleted();
+    }
+
+    const category = this.cursorService.getCategoryForSkill(skillId);
+    if (category) {
+      this.cursorService.triggerCompletionCursor(category);
     }
 
     const newLevel = (this.skills()[skillId] || 0) + 1;

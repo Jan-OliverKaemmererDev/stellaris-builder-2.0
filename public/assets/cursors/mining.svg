@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Backdrop Chevron for contrast on light background -->
+  <path d="M 11 16 L 2 2 L 15 7" fill="none" stroke="#04080d" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Main Cyan Chevron (Hotspot at 2, 2) -->
+  <path d="M 11 16 L 2 2 L 15 7" fill="none" stroke="#48e5e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Mini HUD Badge -->
+  <circle cx="23" cy="18" r="7.5" fill="#09131d" stroke="#fbbf24" stroke-width="1.2"/>
+  <!-- Mining Crystal Icon -->
+  <path d="M11 2L2 12l10 10 10-10L12 2zm1 2.82l6.59 6.59-7.59 2.53V4.82zM4.41 11.59l4.59-4.59v5.9l-4.59-1.31zm6.59 7.59L4.41 12.59l4.59 1.31v5.28zm2-5.28l4.59-1.31-6.59 6.59v-5.28z" fill="#fbbf24" transform="translate(18, 13) scale(0.42)"/>
+</svg>

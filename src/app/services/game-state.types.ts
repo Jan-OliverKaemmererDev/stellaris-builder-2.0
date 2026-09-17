@@ -113,10 +113,10 @@ export const BATTLE_SHIP_STATS: Record<string, { attackStrength: number; name: s
  * Used to calculate the total energy consumption of the empire.
  */
 export const ENERGY_UPKEEP: Record<string, number> = {
-  eisenmine: 10, silbermine: 20, goldmine: 50, lager: 10, refinery: 50,
-  orbital_shipyard: 200, planetary_defense: 300, large_station: 500, biolabor: 100,
+  eisenmine: 10, silbermine: 20, goldmine: 50, lager: 40, refinery: 50,
+  orbital_shipyard: 200, planetary_defense: 300, large_station: 500, biolabor: 50,
   nano_bots: 250, ki_automatisierung: 300, antriebstechnik: 500, trading_post: 50,
-  interstellar_market: 200, galactic_exchange: 1000,
+  interstellar_market: 200, galactic_exchange: 500,
   kolonisierungsschiffe: 300, logistikschiff: 150, transportschiffe: 120, mining_ship: 40,
   leichter_jaeger: 30, schwerer_jaeger: 90, zerstoerer: 350, kreuzer: 1200,
 };

@@ -12,9 +12,12 @@ import {
 } from './game-math.utils';
 
 describe('Energy System & Upkeep Balancing', () => {
-  it('should include planetary_defense and nano_bots in ENERGY_UPKEEP', () => {
+  it('should include planetary_defense, nano_bots, lager, biolabor, and galactic_exchange in ENERGY_UPKEEP', () => {
     expect(ENERGY_UPKEEP['planetary_defense']).toBe(300);
     expect(ENERGY_UPKEEP['nano_bots']).toBe(250);
+    expect(ENERGY_UPKEEP['lager']).toBe(40);
+    expect(ENERGY_UPKEEP['biolabor']).toBe(50);
+    expect(ENERGY_UPKEEP['galactic_exchange']).toBe(500);
   });
 
   it('should calculate the correct next level energy delta for buildings', () => {
@@ -29,6 +32,22 @@ describe('Energy System & Upkeep Balancing', () => {
     expect(calcNextLevelEnergyDelta('nano_bots', 0)).toBe(250);
     expect(calcNextLevelEnergyDelta('nano_bots', 1)).toBe(375);
 
+    // Zentrallager (lager)
+    expect(calcNextLevelEnergyDelta('lager', 0)).toBe(40);
+    expect(calcNextLevelEnergyDelta('lager', 1)).toBe(60);
+    expect(calcNextLevelEnergyDelta('lager', 2)).toBe(90);
+    expect(calcNextLevelEnergyDelta('lager', 3)).toBe(135);
+
+    // Biolabor
+    expect(calcNextLevelEnergyDelta('biolabor', 0)).toBe(50);
+    expect(calcNextLevelEnergyDelta('biolabor', 1)).toBe(75);
+    expect(calcNextLevelEnergyDelta('biolabor', 2)).toBe(112);
+
+    // Galaktische Börse
+    expect(calcNextLevelEnergyDelta('galactic_exchange', 0)).toBe(500);
+    expect(calcNextLevelEnergyDelta('galactic_exchange', 1)).toBe(750);
+    expect(calcNextLevelEnergyDelta('galactic_exchange', 2)).toBe(1125);
+
     // Non-existent building
     expect(calcNextLevelEnergyDelta('non_existent_building', 0)).toBe(0);
   });
@@ -38,6 +57,23 @@ describe('Energy System & Upkeep Balancing', () => {
     expect(calcBuildingEnergyUpkeep('planetary_defense', 1)).toBe(300);
     expect(calcBuildingEnergyUpkeep('planetary_defense', 2)).toBe(750); // 300 + 450
     expect(calcBuildingEnergyUpkeep('planetary_defense', 3)).toBe(1425); // 750 + 675
+
+    expect(calcBuildingEnergyUpkeep('lager', 0)).toBe(0);
+    expect(calcBuildingEnergyUpkeep('lager', 1)).toBe(40);
+    expect(calcBuildingEnergyUpkeep('lager', 2)).toBe(100); // 40 + 60
+    expect(calcBuildingEnergyUpkeep('lager', 3)).toBe(190); // 100 + 90
+    expect(calcBuildingEnergyUpkeep('lager', 4)).toBe(325); // 190 + 135
+
+    expect(calcBuildingEnergyUpkeep('biolabor', 0)).toBe(0);
+    expect(calcBuildingEnergyUpkeep('biolabor', 1)).toBe(50);
+    expect(calcBuildingEnergyUpkeep('biolabor', 2)).toBe(125); // 50 + 75
+    expect(calcBuildingEnergyUpkeep('biolabor', 3)).toBe(237); // 125 + 112
+    expect(calcBuildingEnergyUpkeep('biolabor', 5)).toBe(658);
+
+    expect(calcBuildingEnergyUpkeep('galactic_exchange', 0)).toBe(0);
+    expect(calcBuildingEnergyUpkeep('galactic_exchange', 1)).toBe(500);
+    expect(calcBuildingEnergyUpkeep('galactic_exchange', 2)).toBe(1250); // 500 + 750
+    expect(calcBuildingEnergyUpkeep('galactic_exchange', 3)).toBe(2375); // 1250 + 1125
   });
 
   it('should correctly include ships and buildings in total energy consumed', () => {

@@ -90,6 +90,46 @@
 
   /* Cursors */
   --cursor-default: url('/assets/cursors/default.svg') 2 2, auto;
+  --cursor-energy: url('/assets/cursors/energy.svg') 2 2, auto;
+  --cursor-mining: url('/assets/cursors/mining.svg') 2 2, auto;
+  --cursor-research: url('/assets/cursors/research.svg') 2 2, auto;
+  --cursor-infrastructure: url('/assets/cursors/infrastructure.svg') 2 2, auto;
+  --cursor-trade: url('/assets/cursors/trade.svg') 2 2, auto;
+  --cursor-fleet: url('/assets/cursors/fleet.svg') 2 2, auto;
+}
+
+/* ================================================================
+   Completion Cursors (Global Override on Building/Ship Completion)
+   ================================================================ */
+
+body[data-active-cursor='energy'],
+body[data-active-cursor='energy'] * {
+  cursor: var(--cursor-energy) !important;
+}
+
+body[data-active-cursor='mining'],
+body[data-active-cursor='mining'] * {
+  cursor: var(--cursor-mining) !important;
+}
+
+body[data-active-cursor='research'],
+body[data-active-cursor='research'] * {
+  cursor: var(--cursor-research) !important;
+}
+
+body[data-active-cursor='infrastructure'],
+body[data-active-cursor='infrastructure'] * {
+  cursor: var(--cursor-infrastructure) !important;
+}
+
+body[data-active-cursor='trade'],
+body[data-active-cursor='trade'] * {
+  cursor: var(--cursor-trade) !important;
+}
+
+body[data-active-cursor='fleet'],
+body[data-active-cursor='fleet'] * {
+  cursor: var(--cursor-fleet) !important;
 }
 
 /* ================================================================

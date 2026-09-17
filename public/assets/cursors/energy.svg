@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Backdrop Chevron for contrast on light background -->
+  <path d="M 11 16 L 2 2 L 15 7" fill="none" stroke="#04080d" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Main Cyan Chevron (Hotspot at 2, 2) -->
+  <path d="M 11 16 L 2 2 L 15 7" fill="none" stroke="#48e5e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Mini HUD Badge -->
+  <circle cx="23" cy="18" r="7.5" fill="#09131d" stroke="#facc15" stroke-width="1.2"/>
+  <!-- Energy Lightning Icon from energy-toggle-btn -->
+  <path d="M7 2v11h3v9l7-12h-4l4-8z" fill="#facc15" transform="translate(16.8, 11.8) scale(0.52)"/>
+</svg>

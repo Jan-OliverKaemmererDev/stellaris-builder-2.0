@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Backdrop Chevron for contrast on light background -->
+  <path d="M 11 16 L 2 2 L 15 7" fill="none" stroke="#04080d" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+  <!-- Main Cyan Chevron (Hotspot at 2, 2) -->
+  <path d="M 11 16 L 2 2 L 15 7" fill="none" stroke="#48e5e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Mini HUD Badge -->
+  <circle cx="23" cy="18" r="7.5" fill="#09131d" stroke="#10b981" stroke-width="1.2"/>
+  <!-- Trade Arrows Icon -->
+  <path d="M16 11V7H5.83l2.59 2.59L7 11l-6-6 6-6 1.41 1.41L5.83 5H18v6h-2zM8 13v4h10.17l-2.59-2.59L17 13l6 6-6 6-1.41-1.41L18.17 21H6v-6h2z" fill="#34d399" transform="translate(18, 13) scale(0.42)"/>
+</svg>

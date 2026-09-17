@@ -132,7 +132,7 @@
             <div class="fleet-readiness">
               <p>Verfügbare Schlachtschiffe: <strong>{{ availableBattleShips }} / {{ totalBattleShipCount }}</strong> (Flottenstärke: <strong style="color: #38bdf8">{{ totalFleetStrength }}</strong>)</p>
               @if (planetaryDefenseLevel > 0) {
-                <p class="defense-status-note">🛡️ Planetare Verteidigung: Stufe {{ planetaryDefenseLevel }} (Schadensdämpfung: {{ (gameState.defenseDamageReduction() * 100).toFixed(0) }}%)</p>
+                <p class="defense-status-note">Planetare Verteidigung: Stufe {{ planetaryDefenseLevel }} (Schadensdämpfung: {{ (gameState.defenseDamageReduction() * 100).toFixed(0) }}%)</p>
               }
             </div>
 
