@@ -35,10 +35,13 @@
                 ></div>
               </div>
               <div class="resource-values">
-                <span class="resource-current">
-                  <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
-                </span>
-                <span class="resource-max">/ {{ res.max | compactNumber }}</span>
+                <div class="resource-amounts">
+                  <span class="resource-current">
+                    <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
+                  </span>
+                  <span class="resource-max">/ {{ res.max | compactNumber }}</span>
+                </div>
+                <span class="resource-percent">{{ getResourcePercent(res) | number:'1.0-0' }}%</span>
               </div>
             </div>
             <span class="resource-rate" [class.positive]="res.rate > 0">
@@ -82,10 +85,13 @@
                 ></div>
               </div>
               <div class="resource-values">
-                <span class="resource-current">
-                  <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
-                </span>
-                <span class="resource-max">/ {{ res.max | compactNumber }}</span>
+                <div class="resource-amounts">
+                  <span class="resource-current">
+                    <app-animated-number [value]="res.current" [duration]="800"></app-animated-number>
+                  </span>
+                  <span class="resource-max">/ {{ res.max | compactNumber }}</span>
+                </div>
+                <span class="resource-percent">{{ getResourcePercent(res) | number:'1.0-0' }}%</span>
               </div>
             </div>
             <span class="resource-rate" [class.positive]="res.rate > 0">
