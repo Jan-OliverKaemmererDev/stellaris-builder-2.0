@@ -46,11 +46,25 @@
           <span class="status-label">SCHIFFS-KI // SYSTEM NOMINAL</span>
         </div>
 
-        <div class="step-indicator" aria-label="Fortschritt">
+        <div class="header-right-actions">
+          <div class="step-indicator" aria-label="Fortschritt">
+            @if (!isSkipped()) {
+              <span class="step-badge">Schritt {{ currentStep().stepNumber }} von {{ totalSteps }}</span>
+            } @else {
+              <span class="step-badge warning">Übersprungen</span>
+            }
+          </div>
+
           @if (!isSkipped()) {
-            <span class="step-badge">Schritt {{ currentStep().stepNumber }} von {{ totalSteps }}</span>
-          } @else {
-            <span class="step-badge warning">Übersprungen</span>
+            <button
+              type="button"
+              class="card-header-skip-btn"
+              (click)="skipTutorial(); $event.stopPropagation()"
+              aria-label="Tutorial überspringen"
+            >
+              <span>Überspringen</span>
+              <span class="skip-icon" aria-hidden="true">✕</span>
+            </button>
           }
         </div>
       </header>

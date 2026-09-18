@@ -137,8 +137,13 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     }
   });
 
-  /** Consistent face size to prevent Three.js canvas recreation/resizing jumps. */
-  readonly faceSize = computed<number>(() => 135);
+  /** Consistent face size with optimized mobile scale. */
+  readonly faceSize = computed<number>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 640) {
+      return 70;
+    }
+    return 135;
+  });
 
   private typeTimer: any = null;
   private currentFullText = '';
@@ -171,17 +176,20 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
    */
   private scrollToTarget(target: string | null | undefined): void {
     if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth <= 900;
+
     if (!target) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       this.stageStyle.set({
-        'top': '10vh',
+        'top': isMobile ? '16px' : '8vh',
         'left': '50%',
         'transform': 'translateX(-50%)',
-        'width': '800px',
-        'max-width': '96%'
+        'width': isMobile ? 'calc(100% - 16px)' : '750px',
+        'max-width': isMobile ? 'calc(100% - 16px)' : '96%'
       });
       return;
     }
+
     let elId = '';
     if (target === 'resources') elId = 'card-resources';
     else if (target === 'energy') elId = 'card-energy';
@@ -198,18 +206,34 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
           
           const relTop = elRect.top - trackRect.top;
           const relLeft = elRect.left - trackRect.left;
-          const centerX = relLeft + (elRect.width / 2);
+          const centerX = isMobile ? (trackRect.width / 2) : (relLeft + (elRect.width / 2));
           
-          const isAbove = (elRect.top + elRect.height/2) > (window.innerHeight / 2);
+          let isAbove: boolean;
+          if (isMobile) {
+            // Mobile single column:
+            // resources (top card) always below
+            // fleet (bottom card) always above
+            // middle cards: below if in upper half of page, above if lower down
+            if (target === 'resources') {
+              isAbove = false;
+            } else if (target === 'fleet') {
+              isAbove = true;
+            } else {
+              isAbove = relTop > 450;
+            }
+          } else {
+            isAbove = (elRect.top + elRect.height / 2) > (window.innerHeight / 2);
+          }
           
           let topPos: number;
           let transform: string;
 
+          const gap = isMobile ? 12 : 25;
           if (isAbove) {
-            topPos = relTop - 25;
+            topPos = relTop - gap;
             transform = 'translate(-50%, -100%)';
           } else {
-            topPos = relTop + elRect.height + 25;
+            topPos = relTop + elRect.height + gap;
             transform = 'translate(-50%, 0)';
           }
           
@@ -217,15 +241,20 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
             'top': `${topPos}px`,
             'left': `${centerX}px`,
             'transform': transform,
-            'width': '750px',
-            'max-width': '96%'
+            'width': isMobile ? 'calc(100% - 16px)' : '750px',
+            'max-width': isMobile ? 'calc(100% - 16px)' : '96%'
           });
 
-          // Nehme das AI-Face und seine Erklärungen in den Fokus
+          // Smooth scroll to active element
           setTimeout(() => {
-            const stage = document.querySelector('.tutorial-stage');
-            if (stage) {
-              stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (isMobile && !isAbove) {
+              const cardTop = el.getBoundingClientRect().top + window.scrollY - 110;
+              window.scrollTo({ top: Math.max(0, cardTop), behavior: 'smooth' });
+            } else {
+              const stage = document.querySelector('.tutorial-stage');
+              if (stage) {
+                stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
             }
           }, 40);
         }
@@ -270,12 +299,13 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
     this.highlightChange.emit(null);
     this.isSkipped.set(true);
     
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 900;
     this.stageStyle.set({
-      'top': '10vh',
+      'top': isMobile ? '16px' : '8vh',
       'left': '50%',
       'transform': 'translateX(-50%)',
-      'width': '800px',
-      'max-width': '96%'
+      'width': isMobile ? 'calc(100% - 16px)' : '750px',
+      'max-width': isMobile ? 'calc(100% - 16px)' : '96%'
     });
 
     if (typeof window !== 'undefined') {
@@ -363,4 +393,11 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
       this.prevStep();
     }
   }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    const step = this.steps[this.currentStepIndex()];
+    this.scrollToTarget(this.isSkipped() ? null : step?.target);
+  }
 }
+
