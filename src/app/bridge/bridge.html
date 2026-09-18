@@ -6,7 +6,7 @@
     <!-- ═══ Resources Card ═══ -->
     <article
       class="dash-card-wrapper resources-card"
-      [class.tutorial-highlight]="activeTutorialTarget() === 'resources'"
+      [class.tutorial-highlight]="showTutorial() && activeTutorialTarget() === 'resources'"
       id="card-resources"
       aria-label="Resources overview"
     >
@@ -61,7 +61,7 @@
     <!-- ═══ Supply Card ═══ -->
     <article
       class="dash-card-wrapper supply-card"
-      [class.tutorial-highlight]="activeTutorialTarget() === 'supply'"
+      [class.tutorial-highlight]="showTutorial() && activeTutorialTarget() === 'supply'"
       id="card-supply"
       aria-label="Supply and personnel overview"
     >
@@ -116,7 +116,7 @@
     <!-- ═══ Energy Card (Battery) ═══ -->
     <article
       class="dash-card-wrapper energy-card"
-      [class.tutorial-highlight]="activeTutorialTarget() === 'energy'"
+      [class.tutorial-highlight]="showTutorial() && activeTutorialTarget() === 'energy'"
       id="card-energy"
       aria-label="Energy grid status"
     >
@@ -165,7 +165,7 @@
     <!-- ═══ Colony Ships Card ═══ -->
     <article
       class="dash-card-wrapper fleet-card"
-      [class.tutorial-highlight]="activeTutorialTarget() === 'fleet'"
+      [class.tutorial-highlight]="showTutorial() && activeTutorialTarget() === 'fleet'"
       id="card-colony-ships"
       aria-label="Colony ships composition"
     >

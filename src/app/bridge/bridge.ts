@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, effect, OnDestroy } from '@angular/core';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { CompactNumberPipe } from '../pipes/compact-number.pipe';
 import { RouterLink } from '@angular/router';
@@ -51,7 +51,7 @@ import { TutorialOverlayComponent } from '../components/tutorial-overlay/tutoria
   templateUrl: './bridge.html',
   styleUrl: './bridge.scss',
 })
-export class Bridge {
+export class Bridge implements OnDestroy {
   /** Authentication service to retrieve the current user. */
   private auth = inject(Auth);
 
@@ -63,6 +63,19 @@ export class Bridge {
 
   /** Whether the interactive first-login tutorial should be displayed. */
   showTutorial = computed<boolean>(() => !this.gameState.hasCompletedTutorial());
+
+  constructor() {
+    effect(() => {
+      // Whenever the tutorial overlay is not showing, guarantee that no bridge card keeps the pulsating highlight
+      if (!this.showTutorial()) {
+        this.activeTutorialTarget.set(null);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.activeTutorialTarget.set(null);
+  }
 
   /** Handles completion or skipping of the tutorial. */
   async onTutorialComplete(): Promise<void> {

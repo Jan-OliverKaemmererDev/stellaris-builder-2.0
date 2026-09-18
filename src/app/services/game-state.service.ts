@@ -206,10 +206,23 @@ export class GameStateService {
     this.enemyActivated.set(state.enemyActivated ?? false);
     this.lastEnemyAttack.set(state.lastEnemyAttack || 0);
     this.hasSeenRules.set(state.hasSeenRules ?? false);
-    this.hasCompletedTutorial.set(state.hasCompletedTutorial ?? false);
+
+    // Tutorial state protection:
+    // On first load, adopt the persisted tutorial state from Firestore.
+    // However, if the player is actively in the tutorial locally (!this.hasCompletedTutorial()),
+    // do not allow stale background snapshots (e.g. from background build completion,
+    // autosaves, or combat ticks) to abruptly cancel the tutorial.
+    if (isFirstLoad) {
+      this.hasCompletedTutorial.set(state.hasCompletedTutorial ?? false);
+    } else if (!this.hasCompletedTutorial() && state.hasCompletedTutorial) {
+      // Local tutorial is actively in progress. Preserve local false state.
+    } else {
+      this.hasCompletedTutorial.set(state.hasCompletedTutorial ?? false);
+    }
+
     if (typeof window !== 'undefined') {
       try {
-        if (state.hasCompletedTutorial) {
+        if (this.hasCompletedTutorial()) {
           localStorage.setItem('stellaris_tutorial_completed', 'true');
         } else {
           localStorage.removeItem('stellaris_tutorial_completed');
@@ -677,13 +690,22 @@ export class GameStateService {
 
   /**
    * Resets the tutorial state so it can be replayed from the menu.
+   * Synchronously resets local state and asynchronously persists the reset to Firestore.
    */
-  resetTutorial(): void {
+  async resetTutorial(): Promise<void> {
     this.hasCompletedTutorial.set(false);
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem('stellaris_tutorial_completed');
       } catch {}
+    }
+    const user = this.auth.currentUser;
+    if (!user) return;
+    try {
+      const stateRef = doc(this.firestore, `users/${user.uid}/game/state`);
+      await updateDoc(stateRef, { hasCompletedTutorial: false });
+    } catch (err) {
+      console.warn('Could not persist hasCompletedTutorial reset to Firestore:', err);
     }
   }
 

@@ -107,4 +107,10 @@ describe('TutorialOverlayComponent', () => {
 
     document.body.removeChild(mockHeader);
   });
+
+  it('should emit null highlightChange on destroy to clear active highlights', () => {
+    const highlightSpy = vi.spyOn(component.highlightChange, 'emit');
+    component.ngOnDestroy();
+    expect(highlightSpy).toHaveBeenCalledWith(null);
+  });
 });

@@ -168,6 +168,7 @@ export class TutorialOverlayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopTypewriter();
+    this.highlightChange.emit(null);
     if (this.particleAnimFrameId !== null) {
       cancelAnimationFrame(this.particleAnimFrameId);
       this.particleAnimFrameId = null;
