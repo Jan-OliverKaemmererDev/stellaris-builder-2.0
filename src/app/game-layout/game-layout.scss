@@ -184,10 +184,65 @@
       margin-bottom: 2px;
     }
 
+    .desktop-ai-wrapper {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
     .desktop-ai-hologram {
       pointer-events: none;
       position: relative;
       z-index: 2;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+      &.hidden-during-tutorial {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transform: scale(0.85);
+        pointer-events: none !important;
+      }
+
+      &.ai-materializing {
+        visibility: visible !important;
+        animation: aiFaceMaterializeBloom 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    }
+
+    /* ═══ Holographic Standby Projector Cradle (when AI is deployed on bridge) ═══ */
+    .ai-dock-standby {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 1;
+      animation: standbyFadeIn 0.4s ease-out forwards;
+
+      .dock-standby-ring {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1px dashed rgba(56, 189, 248, 0.5);
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.25), inset 0 0 8px rgba(56, 189, 248, 0.15);
+        animation: spinCradle 16s linear infinite;
+      }
+
+      .dock-standby-ring-outer {
+        position: absolute;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        border-top-color: rgba(56, 189, 248, 0.65);
+        border-bottom-color: rgba(56, 189, 248, 0.65);
+        animation: spinCradleReverse 12s linear infinite;
+      }
     }
 
     .glowing-notch {
@@ -1415,4 +1470,41 @@ $pixel-max-dist: ($pixel-cols - 1) + ($pixel-rows - 1);
   0% { transform: rotate(0deg); opacity: 0.8; }
   50% { transform: rotate(180deg); opacity: 1; filter: drop-shadow(0 0 6px #00f0ff); }
   100% { transform: rotate(360deg); opacity: 0.8; }
+}
+
+@keyframes spinCradle {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinCradleReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes standbyFadeIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes aiFaceMaterializeBloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+    filter: brightness(3.5) drop-shadow(0 0 28px #38bdf8);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.1);
+    filter: brightness(2.2) drop-shadow(0 0 22px #38bdf8);
+  }
+  70% {
+    transform: scale(0.96);
+    filter: brightness(1.3) drop-shadow(0 0 10px #38bdf8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 0 0px transparent);
+  }
 }

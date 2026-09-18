@@ -50,8 +50,38 @@ export class GameStateService {
   /** Whether the user has seen the rules page. */
   hasSeenRules = signal<boolean>(false);
 
+  /**
+   * Helper to check initial tutorial completion from localStorage to avoid UI flickers on reload.
+   */
+  private checkInitialTutorialCompleted(): boolean {
+    if (typeof window !== 'undefined') {
+      try {
+        return localStorage.getItem('stellaris_tutorial_completed') === 'true';
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  }
+
   /** Whether the user has completed or skipped the interactive tutorial. */
-  hasCompletedTutorial = signal<boolean>(false);
+  hasCompletedTutorial = signal<boolean>(this.checkInitialTutorialCompleted());
+
+  /** Signal holding whether the header AI face is currently playing the materialization sequence. */
+  aiFaceMaterializing = signal<boolean>(false);
+  private materializeTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Triggers the materialization glow animation on the header console AI face.
+   */
+  triggerAiMaterialize(): void {
+    if (this.materializeTimer) clearTimeout(this.materializeTimer);
+    this.aiFaceMaterializing.set(true);
+    this.materializeTimer = setTimeout(() => {
+      this.aiFaceMaterializing.set(false);
+      this.materializeTimer = null;
+    }, 1400);
+  }
 
   /** Map of building or ship IDs that are temporarily powered off to save energy. */
   disabledBuildings = signal<Record<string, boolean>>({});
@@ -177,6 +207,15 @@ export class GameStateService {
     this.lastEnemyAttack.set(state.lastEnemyAttack || 0);
     this.hasSeenRules.set(state.hasSeenRules ?? false);
     this.hasCompletedTutorial.set(state.hasCompletedTutorial ?? false);
+    if (typeof window !== 'undefined') {
+      try {
+        if (state.hasCompletedTutorial) {
+          localStorage.setItem('stellaris_tutorial_completed', 'true');
+        } else {
+          localStorage.removeItem('stellaris_tutorial_completed');
+        }
+      } catch {}
+    }
     
     // Check for offline completed builds and update state if needed
     let builds = { ...(state.activeBuilds || {}) };
@@ -621,6 +660,11 @@ export class GameStateService {
   async markTutorialAsCompleted(): Promise<void> {
     this.hasCompletedTutorial.set(true);
     this.hasSeenRules.set(true);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('stellaris_tutorial_completed', 'true');
+      } catch {}
+    }
     const user = this.auth.currentUser;
     if (!user) return;
     try {
@@ -636,6 +680,11 @@ export class GameStateService {
    */
   resetTutorial(): void {
     this.hasCompletedTutorial.set(false);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('stellaris_tutorial_completed');
+      } catch {}
+    }
   }
 
   /**

@@ -1037,6 +1037,59 @@ export class AudioService implements OnDestroy {
   }
 
   /**
+   * Plays a futuristic sci-fi hologram data transfer sound when A.U.R.A. transfers
+   * from the bridge dialogue projection into the header-center console.
+   */
+  playHologramTransfer(): void {
+    if (this.isSfxMuted()) return;
+    try {
+      if (!this.audioCtx) {
+        this.initWebAudio();
+      }
+      if (!this.audioCtx || !this.sfxGainNode) return;
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume().catch(() => {});
+      }
+      const now = this.audioCtx.currentTime;
+
+      // 1. Ascending carrier beam whoosh
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(780, now + 0.5);
+      osc.frequency.exponentialRampToValueAtTime(1400, now + 1.15);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.08, now + 0.25);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.35);
+
+      osc.connect(gain);
+      gain.connect(this.sfxGainNode);
+      osc.start(now);
+      osc.stop(now + 1.35);
+
+      // 2. Crystal console materialization chime at arrival
+      const chimeOsc = this.audioCtx.createOscillator();
+      const chimeGain = this.audioCtx.createGain();
+      chimeOsc.type = 'triangle';
+      chimeOsc.frequency.setValueAtTime(1174.66, now + 1.05); // D6
+      chimeOsc.frequency.exponentialRampToValueAtTime(1760, now + 1.2); // A6
+
+      chimeGain.gain.setValueAtTime(0.0001, now);
+      chimeGain.gain.setValueAtTime(0.07, now + 1.05);
+      chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.45);
+
+      chimeOsc.connect(chimeGain);
+      chimeGain.connect(this.sfxGainNode);
+      chimeOsc.start(now + 1.05);
+      chimeOsc.stop(now + 1.45);
+    } catch {
+      // Ignore audio synthesis errors
+    }
+  }
+
+  /**
    * Dynamically adds a new track to the playlist.
    */
   addTrack(track: MusicTrack): void {

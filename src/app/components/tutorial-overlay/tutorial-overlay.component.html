@@ -1,8 +1,11 @@
+<!-- Fullscreen Particle Transfer Canvas -->
+<canvas #particleCanvas class="tutorial-particle-canvas" aria-hidden="true"></canvas>
+
 <!-- Darkening Veil (Only dims the bridge area) -->
-<div class="tutorial-backdrop" (click)="onDialogClick()" aria-hidden="true"></div>
+<div class="tutorial-backdrop" [class.completing]="isCompleting()" (click)="onDialogClick()" aria-hidden="true"></div>
 
 <!-- Interactive UI Layer (Always on top of all cards) -->
-<div class="tutorial-ui-layer" role="dialog" aria-modal="true" aria-label="Interaktives Tutorial der Schiffs-KI">
+<div class="tutorial-ui-layer" [class.completing]="isCompleting()" role="dialog" aria-modal="true" aria-label="Interaktives Tutorial der Schiffs-KI">
   <!-- Top-Right Skip Button -->
   <aside class="tutorial-header-actions" aria-label="Tutorial Aktionen">
     @if (!isSkipped()) {
@@ -25,11 +28,12 @@
 
     <!-- 3D Hologram Column -->
     <div class="hologram-column">
-      <div class="hologram-projection-wrap">
+      <div class="hologram-projection-wrap" [class.dematerializing]="isCompleting()">
         <app-ai-face-hologram
           [size]="faceSize()"
           [isSpeaking]="isTyping()"
           class="tutorial-ai-face"
+          [class.dematerializing]="isCompleting()"
         ></app-ai-face-hologram>
         <div class="hologram-emitter-ring" aria-hidden="true"></div>
         <div class="hologram-glow-cone" aria-hidden="true"></div>

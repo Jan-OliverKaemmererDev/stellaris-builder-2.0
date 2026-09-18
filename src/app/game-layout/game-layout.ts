@@ -138,6 +138,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
   /** Current page title derived from the active route. */
   pageTitle = signal('BRÜCKE');
 
+  /** Whether the first-login ship AI tutorial is currently active. */
+  isTutorialActive = computed<boolean>(() => !this.gameState.hasCompletedTutorial());
+
   /** Current page icon class derived from the active route (matching navigator icons). */
   pageIconClass = signal('icon-bridge');
 

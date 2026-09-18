@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { TutorialOverlayComponent } from './tutorial-overlay.component';
 import { AudioService } from '../../services/audio.service';
+import { GameStateService } from '../../services/game-state.service';
 import { vi } from 'vitest';
 
 describe('TutorialOverlayComponent', () => {
@@ -9,8 +11,17 @@ describe('TutorialOverlayComponent', () => {
 
   const mockAudioService = {
     playUiClick: vi.fn(),
+    playHologramTransfer: vi.fn(),
     isAiSpeaking: vi.fn().mockReturnValue(false),
     getAiSpeechAmplitude: vi.fn().mockReturnValue(0),
+  };
+
+  const mockGameStateService = {
+    hasCompletedTutorial: signal(false),
+    aiFaceMaterializing: signal(false),
+    triggerAiMaterialize: vi.fn(),
+    markTutorialAsCompleted: vi.fn(),
+    resetTutorial: vi.fn(),
   };
 
   beforeEach(async () => {
@@ -18,6 +29,7 @@ describe('TutorialOverlayComponent', () => {
       imports: [TutorialOverlayComponent],
       providers: [
         { provide: AudioService, useValue: mockAudioService },
+        { provide: GameStateService, useValue: mockGameStateService },
       ],
     }).compileComponents();
 
@@ -67,5 +79,32 @@ describe('TutorialOverlayComponent', () => {
     component.finishTutorial();
 
     expect(completedSpy).toHaveBeenCalled();
+  });
+
+  it('should trigger particle flight and hologram transfer audio when header target exists', () => {
+    const mockHeader = document.createElement('div');
+    mockHeader.className = 'desktop-ai-hologram';
+    document.body.appendChild(mockHeader);
+
+    const canvas = fixture.nativeElement.querySelector('.tutorial-particle-canvas');
+    if (canvas) {
+      canvas.getContext = vi.fn().mockReturnValue({
+        scale: vi.fn(),
+        clearRect: vi.fn(),
+        beginPath: vi.fn(),
+        arc: vi.fn(),
+        fill: vi.fn(),
+        stroke: vi.fn(),
+        moveTo: vi.fn(),
+        lineTo: vi.fn(),
+      });
+    }
+
+    component.finishTutorial();
+
+    expect(component.isCompleting()).toBe(true);
+    expect(mockAudioService.playHologramTransfer).toHaveBeenCalled();
+
+    document.body.removeChild(mockHeader);
   });
 });

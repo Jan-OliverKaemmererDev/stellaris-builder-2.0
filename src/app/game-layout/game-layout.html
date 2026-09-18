@@ -66,8 +66,22 @@
             <!-- Blue Saturn Planet Canvas (Mobile) -->
             <canvas #orbCanvas width="60" height="60" class="orb-canvas"></canvas>
           } @else {
-            <!-- 3D AI Face Hologram (Desktop: GLaDOS / Ship AI) -->
-            <app-ai-face-hologram class="desktop-ai-hologram"></app-ai-face-hologram>
+            <div class="desktop-ai-wrapper">
+              <!-- 3D AI Face Hologram (Desktop: GLaDOS / Ship AI) -->
+              <app-ai-face-hologram
+                class="desktop-ai-hologram"
+                [class.hidden-during-tutorial]="isTutorialActive() && !gameState.aiFaceMaterializing()"
+                [class.ai-materializing]="gameState.aiFaceMaterializing()"
+              ></app-ai-face-hologram>
+
+              @if (isTutorialActive() && !gameState.aiFaceMaterializing()) {
+                <!-- Holographic Standby Projector Cradle while A.U.R.A. is active in tutorial -->
+                <div class="ai-dock-standby" aria-hidden="true">
+                  <div class="dock-standby-ring"></div>
+                  <div class="dock-standby-ring-outer"></div>
+                </div>
+              }
+            </div>
           }
 
           <!-- Desktop Static Ticker Elements -->
