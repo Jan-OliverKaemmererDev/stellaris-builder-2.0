@@ -50,6 +50,9 @@ export class GameStateService {
   /** Whether the user has seen the rules page. */
   hasSeenRules = signal<boolean>(false);
 
+  /** Start time of the active mission for which the completion voice line was already played. */
+  private lastMissionReturnedStartTime = 0;
+
   /**
    * Helper to check initial tutorial completion from localStorage to avoid UI flickers on reload.
    */
@@ -202,6 +205,9 @@ export class GameStateService {
     this.skills.set(state.skills || {});
     this.disabledBuildings.set(state.disabledBuildings || {});
     this.activeMission.set(state.activeMission || null);
+    if (state.activeMission && (Date.now() - state.activeMission.startTime >= state.activeMission.durationMs)) {
+      this.lastMissionReturnedStartTime = state.activeMission.startTime;
+    }
     this.activeBattle.set(state.activeBattle || null);
     this.enemyActivated.set(state.enemyActivated ?? false);
     this.lastEnemyAttack.set(state.lastEnemyAttack || 0);
@@ -297,6 +303,7 @@ export class GameStateService {
       const deltaMs = now - this.lastTick;
       this.lastTick = now;
       await this.checkBackgroundBuilds();
+      this.checkMissionCompletionSound();
       secondsSinceLastSave = await this.executeTick(deltaMs, secondsSinceLastSave);
     }, 1000);
   }
@@ -311,6 +318,23 @@ export class GameStateService {
     for (const [id, build] of Object.entries(builds)) {
       if (build && build.finishTime <= now) {
         await this.completeBuild(id);
+      }
+    }
+  }
+
+  /**
+   * Checks whether the active asteroid mining mission has finished and plays the GLaDOS announcement.
+   * Ensures the voice line is triggered only once per mission.
+   */
+  checkMissionCompletionSound(): void {
+    const m = this.activeMission();
+    if (!m || m.type !== 'asteroid_mining') return;
+
+    const elapsed = Date.now() - m.startTime;
+    if (elapsed >= m.durationMs) {
+      if (this.lastMissionReturnedStartTime !== m.startTime) {
+        this.lastMissionReturnedStartTime = m.startTime;
+        this.audioService.playMiningShipsReturned();
       }
     }
   }
@@ -498,6 +522,7 @@ export class GameStateService {
     const newRes = MathUtils.addRewardCapped(this.resources(), reward, this.maxStorage());
     this.resources.set(newRes);
     this.activeMission.set(null);
+    this.lastMissionReturnedStartTime = 0;
     await updateDoc(doc(this.firestore, `users/${user.uid}/game/state`), { resources: newRes, activeMission: null });
   }
 
@@ -728,6 +753,7 @@ export class GameStateService {
     this.skills.set({});
     this.disabledBuildings.set({});
     this.activeMission.set(null);
+    this.lastMissionReturnedStartTime = 0;
     this.activeBattle.set(null);
     this.enemyActivated.set(false);
     this.lastEnemyAttack.set(0);

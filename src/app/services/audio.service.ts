@@ -367,6 +367,9 @@ export class AudioService implements OnDestroy {
       'sounds/fleet/start-mining-mission.mp3',
       'sounds/glados-voice/building-construction-completed.mp3',
       'sounds/glados-voice/ship-construction-completed.mp3',
+      'sounds/glados-voice/mining-ships-have-returned-from-the-mission.mp3',
+      'sounds/glados-voice/the-attack-has-been-launched-commander.mp3',
+      'sounds/glados-voice/we-are-under-attack-commander.mp3',
     ];
     for (const src of commonSfx) {
       this.getAudioBuffer(src).catch(() => {});
@@ -1005,6 +1008,30 @@ export class AudioService implements OnDestroy {
    */
   playShipCompleted(): void {
     this.playSound('sounds/glados-voice/ship-construction-completed.mp3');
+  }
+
+  /**
+   * Plays the voice line when asteroid mining ships return:
+   * 'sounds/glados-voice/mining-ships-have-returned-from-the-mission.mp3'
+   */
+  playMiningShipsReturned(): void {
+    this.playSound('sounds/glados-voice/mining-ships-have-returned-from-the-mission.mp3');
+  }
+
+  /**
+   * Plays the voice line when the commander launches an attack offensive:
+   * 'sounds/glados-voice/the-attack-has-been-launched-commander.mp3'
+   */
+  playAttackLaunched(): void {
+    this.playSound('sounds/glados-voice/the-attack-has-been-launched-commander.mp3');
+  }
+
+  /**
+   * Plays the voice line when an enemy raid occurs:
+   * 'sounds/glados-voice/we-are-under-attack-commander.mp3'
+   */
+  playWeAreUnderAttack(): void {
+    this.playSound('sounds/glados-voice/we-are-under-attack-commander.mp3');
   }
 
   /**

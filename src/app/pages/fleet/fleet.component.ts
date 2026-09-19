@@ -342,6 +342,7 @@ export class FleetComponent implements OnInit, OnDestroy {
 
     const elapsed = Date.now() - m.startTime;
     if (elapsed >= m.durationMs) {
+      this.gameState.checkMissionCompletionSound();
       this.missionProgress.set(100);
       this.missionTimeLeft.set('Mission abgeschlossen!');
       
@@ -437,6 +438,7 @@ export class FleetComponent implements OnInit, OnDestroy {
   async startBattle(): Promise<void> {
     const available = this.availableBattleShips;
     if (!this.isBattleUnlocked || available <= 0) return;
+    this.audioService.playAttackLaunched();
     const speedMult = MathUtils.getEngineSpeedMultiplier(this.gameState.skills());
     const durationMs = Math.max(10000, Math.round(60000 / speedMult));
     await this.gameState.startBattle(available, durationMs);

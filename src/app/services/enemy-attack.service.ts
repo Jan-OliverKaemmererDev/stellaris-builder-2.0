@@ -1,5 +1,6 @@
 import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { GameStateService } from './game-state.service';
+import { AudioService } from './audio.service';
 import { GameResources } from './game-state.types';
 import * as MathUtils from './game-math.utils';
 
@@ -36,6 +37,7 @@ export interface EnemyAttackResult {
 })
 export class EnemyAttackService implements OnDestroy {
   private gameState = inject(GameStateService);
+  private audioService = inject(AudioService);
 
   /** Currently pending or active attack notification shown in the overlay. */
   currentAttack = signal<EnemyAttackResult | null>(null);
@@ -158,6 +160,7 @@ export class EnemyAttackService implements OnDestroy {
       loot,
     };
 
+    this.audioService.playWeAreUnderAttack();
     this.currentAttack.set(attackResult);
   }
 

@@ -92,6 +92,15 @@ describe('AudioService', () => {
 
     service.playShipCompleted();
     expect(playSoundSpy).toHaveBeenCalledWith('sounds/glados-voice/ship-construction-completed.mp3');
+
+    service.playMiningShipsReturned();
+    expect(playSoundSpy).toHaveBeenCalledWith('sounds/glados-voice/mining-ships-have-returned-from-the-mission.mp3');
+
+    service.playAttackLaunched();
+    expect(playSoundSpy).toHaveBeenCalledWith('sounds/glados-voice/the-attack-has-been-launched-commander.mp3');
+
+    service.playWeAreUnderAttack();
+    expect(playSoundSpy).toHaveBeenCalledWith('sounds/glados-voice/we-are-under-attack-commander.mp3');
   });
 
   it('should return the current sound settings as an object', () => {
