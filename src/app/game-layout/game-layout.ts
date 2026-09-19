@@ -75,6 +75,7 @@ import { IconComponent } from '../components/icon/icon.component';
 import { UserOverlayComponent } from '../components/user-overlay/user-overlay.component';
 import { SoundOverlayComponent } from '../components/sound-overlay/sound-overlay.component';
 import { AiFaceHologramComponent } from '../components/ai-face-hologram/ai-face-hologram.component';
+import { AudioService } from '../services/audio.service';
 
 @Component({
   selector: 'app-game-layout',
@@ -92,6 +93,9 @@ export class GameLayout implements AfterViewInit, OnDestroy {
 
   /** Firestore service for deleting guest user documents on logout. */
   private firestore = inject(Firestore);
+
+  /** Audio service for playing UI sound effects. */
+  private audioService = inject(AudioService);
 
   /** Settings service for toggling nanobots overlay. */
   settings = inject(SettingsService);
@@ -434,6 +438,13 @@ export class GameLayout implements AfterViewInit, OnDestroy {
    */
   onCommanderNameChanged(newName: string): void {
     this.customCommanderName.set(newName);
+  }
+
+  /**
+   * Plays the modern UI hover sound effect when the cursor enters a user dropdown menu item.
+   */
+  onDropdownItemHover(): void {
+    this.audioService.playMenuHover();
   }
 
   /**

@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AudioService } from '../services/audio.service';
 
 /** A navigation item in the side menu. */
 interface MenuItem {
@@ -22,6 +23,8 @@ interface MenuItem {
   styleUrl: './side-menu.scss',
 })
 export class SideMenu {
+  private audioService = inject(AudioService);
+
   /** Whether the drawer is currently open. */
   @Input() isOpen = false;
 
@@ -35,4 +38,12 @@ export class SideMenu {
     { iconClass: 'icon-trade', label: 'Handel & Wirtschaft', route: '/bridge/trade' },
     { iconClass: 'icon-fleet', label: 'Flotte', route: '/bridge/fleet' },
   ];
+
+  /**
+   * Plays the modern UI hover sound effect when the cursor enters a drawer menu item.
+   */
+  onMenuItemHover(): void {
+    if (!this.isOpen) return;
+    this.audioService.playMenuHover();
+  }
 }

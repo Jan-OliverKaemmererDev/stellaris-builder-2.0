@@ -2,6 +2,7 @@ import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
 import { GameStateService } from '../../services/game-state.service';
+import { AudioService } from '../../services/audio.service';
 
 import { IconComponent } from '../icon/icon.component';
 import { RESOURCE_LIST, ResourceDefinition } from '../../constants/resources.constant';
@@ -20,6 +21,7 @@ import { RESOURCE_LIST, ResourceDefinition } from '../../constants/resources.con
 export class OfflineProgressDialog {
   /** Service responsible for managing game state, resources, and offline calculations. */
   gameState = inject(GameStateService);
+  private audioService = inject(AudioService);
   isCollecting = false;
 
   /**
@@ -45,6 +47,7 @@ export class OfflineProgressDialog {
    * Dismisses the dialog by clearing the offline earnings signal in the game state service.
    */
   close(): void {
+    this.audioService.playConfirmSound();
     this.isCollecting = true;
     setTimeout(() => {
       this.gameState.clearOfflineEarnings();

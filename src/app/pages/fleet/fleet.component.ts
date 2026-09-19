@@ -398,6 +398,7 @@ export class FleetComponent implements OnInit, OnDestroy {
     if (!m || this.missionProgress() < 100 || !reward) return;
     
     try {
+      this.audioService.playConfirmSound();
       await this.gameState.completeMission(reward);
       this.generatedReward.set(null);
     } catch (e) {

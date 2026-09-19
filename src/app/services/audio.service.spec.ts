@@ -101,6 +101,12 @@ describe('AudioService', () => {
 
     service.playWeAreUnderAttack();
     expect(playSoundSpy).toHaveBeenCalledWith('sounds/glados-voice/we-are-under-attack-commander.mp3');
+
+    service.playMenuHover();
+    expect(playSoundSpy).toHaveBeenCalledWith('sounds/ui-click-menu-modern-interface-select.mp3');
+
+    service.playConfirmSound();
+    expect(playSoundSpy).toHaveBeenCalledWith('sounds/ui-alert-menu-modern-interface-confirm.mp3');
   });
 
   it('should return the current sound settings as an object', () => {

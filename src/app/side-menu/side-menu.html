@@ -13,6 +13,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         id="menu-bridge"
         [attr.aria-label]="menuItems[0].label"
+        (mouseenter)="onMenuItemHover()"
       >
         <div class="menu-icon" [class]="menuItems[0].iconClass" aria-hidden="true"></div>
         <span class="menu-label">{{ menuItems[0].label }}</span>
@@ -27,6 +28,7 @@
           routerLinkActive="active"
           [id]="'menu-' + item.route.split('/').pop()"
           [attr.aria-label]="item.label"
+          (mouseenter)="onMenuItemHover()"
         >
           <div class="menu-icon" [class]="item.iconClass" aria-hidden="true"></div>
           <span class="menu-label">{{ item.label }}</span>

@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
 import { Auth } from '@angular/fire/auth';
 import { GameStateService } from '../services/game-state.service';
+import { AudioService } from '../services/audio.service';
 import { ENERGY_UPKEEP, SHIP_IDS } from '../services/game-state.types';
 import * as MathUtils from '../services/game-math.utils';
 
@@ -57,6 +58,9 @@ export class Bridge implements OnDestroy {
 
   /** Game state service to interact with resources, skills, and trading. */
   private gameState = inject(GameStateService);
+
+  /** Audio service to play UI feedback sounds. */
+  private audioService = inject(AudioService);
 
   /** Target component on the bridge highlighted by the active tutorial step. */
   activeTutorialTarget = signal<'resources' | 'energy' | 'supply' | 'fleet' | null>(null);
@@ -356,6 +360,7 @@ export class Bridge implements OnDestroy {
   async sell(resId: string): Promise<void> {
     const amount = this.tradeMultiplier();
     if (!this.canSell(resId, amount)) return;
+    this.audioService.playConfirmSound();
     await this.gameState.sellResource(resId as any, amount);
   }
 
@@ -367,6 +372,7 @@ export class Bridge implements OnDestroy {
   async buy(resId: string): Promise<void> {
     const amount = this.tradeMultiplier();
     if (!this.canBuy(resId, amount)) return;
+    this.audioService.playConfirmSound();
     await this.gameState.buyResource(resId as any, amount);
   }
 }

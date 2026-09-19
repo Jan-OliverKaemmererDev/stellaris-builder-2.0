@@ -195,6 +195,7 @@
                 type="button"
                 class="dropdown-name-btn"
                 (click)="openUserOverlay()"
+                (mouseenter)="onDropdownItemHover()"
                 role="menuitem"
                 aria-label="Commander-Profil und Einstellungen öffnen"
                 title="Commander-Profil öffnen"
@@ -208,6 +209,7 @@
               <div
                 class="dropdown-item nanobots-dropdown-item"
                 (click)="$event.stopPropagation()"
+                (mouseenter)="onDropdownItemHover()"
                 role="menuitem"
               >
                 <span class="dropdown-icon" aria-hidden="true"><app-icon name="nanobots" /></span>
@@ -228,6 +230,7 @@
               type="button"
               class="dropdown-item"
               (click)="openSoundOverlay()"
+              (mouseenter)="onDropdownItemHover()"
               id="dropdown-sounds"
               role="menuitem"
               aria-label="Audio- & Sound-Einstellungen"
@@ -240,6 +243,7 @@
               type="button"
               class="dropdown-item"
               (click)="replayTutorial()"
+              (mouseenter)="onDropdownItemHover()"
               id="dropdown-tutorial"
               role="menuitem"
               aria-label="Schiffs-KI Tutorial wiederholen"
@@ -252,6 +256,7 @@
             <a
               routerLink="/bridge/spielregeln"
               (click)="closeDropdown()"
+              (mouseenter)="onDropdownItemHover()"
               class="dropdown-item"
               id="dropdown-rules"
               role="menuitem"
@@ -263,6 +268,7 @@
             <a
               routerLink="/privacy-policy"
               (click)="closeDropdown()"
+              (mouseenter)="onDropdownItemHover()"
               class="dropdown-item"
               id="dropdown-privacy"
               role="menuitem"
@@ -274,6 +280,7 @@
             <a
               routerLink="/legal-notice"
               (click)="closeDropdown()"
+              (mouseenter)="onDropdownItemHover()"
               class="dropdown-item"
               id="dropdown-legal"
               role="menuitem"
@@ -286,6 +293,7 @@
             <button
               class="dropdown-item logout"
               (click)="logout()"
+              (mouseenter)="onDropdownItemHover()"
               id="dropdown-logout"
               role="menuitem"
               aria-label="Log out"

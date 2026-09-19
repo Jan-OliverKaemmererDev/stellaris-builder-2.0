@@ -1,6 +1,7 @@
 import { Component, inject, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameStateService } from '../../services/game-state.service';
+import { AudioService } from '../../services/audio.service';
 import { GameResources } from '../../services/game-state.types';
 import * as MathUtils from '../../services/game-math.utils';
 import { CompactNumberPipe } from '../../pipes/compact-number.pipe';
@@ -15,6 +16,7 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class DiplomacyDialogComponent implements OnInit {
   gameState = inject(GameStateService);
+  private audioService = inject(AudioService);
 
   @Output() closed = new EventEmitter<void>();
 
@@ -53,6 +55,7 @@ export class DiplomacyDialogComponent implements OnInit {
   async acceptTribute(): Promise<void> {
     if (!this.canAfford) return;
     try {
+      this.audioService.playConfirmSound();
       await this.gameState.payDiplomacyDemands(this.demands);
       this.peaceAccepted = true;
       setTimeout(() => {

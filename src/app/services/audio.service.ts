@@ -370,6 +370,8 @@ export class AudioService implements OnDestroy {
       'sounds/glados-voice/mining-ships-have-returned-from-the-mission.mp3',
       'sounds/glados-voice/the-attack-has-been-launched-commander.mp3',
       'sounds/glados-voice/we-are-under-attack-commander.mp3',
+      'sounds/ui-click-menu-modern-interface-select.mp3',
+      'sounds/ui-alert-menu-modern-interface-confirm.mp3',
     ];
     for (const src of commonSfx) {
       this.getAudioBuffer(src).catch(() => {});
@@ -1032,6 +1034,23 @@ export class AudioService implements OnDestroy {
    */
   playWeAreUnderAttack(): void {
     this.playSound('sounds/glados-voice/we-are-under-attack-commander.mp3');
+  }
+
+  /**
+   * Plays the modern UI selection sound when hovering over a drawer side menu item:
+   * 'sounds/ui-click-menu-modern-interface-select.mp3'
+   */
+  playMenuHover(): void {
+    this.playSound('sounds/ui-click-menu-modern-interface-select.mp3');
+  }
+
+  /**
+   * Plays the modern UI confirmation sound for actions like collecting offline earnings,
+   * paying diplomacy tribute, or buying/selling resources at the trading post:
+   * 'sounds/ui-alert-menu-modern-interface-confirm.mp3'
+   */
+  playConfirmSound(): void {
+    this.playSound('sounds/ui-alert-menu-modern-interface-confirm.mp3');
   }
 
   /**
