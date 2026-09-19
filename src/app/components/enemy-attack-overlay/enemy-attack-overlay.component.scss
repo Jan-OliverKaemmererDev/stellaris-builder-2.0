@@ -84,15 +84,7 @@
 .modal-header {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
   margin-bottom: var(--space-lg);
-}
-
-.alert-icon-wrap {
-  font-size: 2.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .header-text {
@@ -192,10 +184,6 @@
   padding: 6px 12px;
   border-radius: var(--radius-md);
   margin-bottom: var(--space-md);
-
-  .shield-icon {
-    font-size: 1rem;
-  }
 
   strong {
     color: #38bdf8;

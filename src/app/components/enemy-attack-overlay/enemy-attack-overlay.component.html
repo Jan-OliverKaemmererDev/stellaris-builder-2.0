@@ -4,15 +4,8 @@
       <!-- Glow aura edge border -->
       <div class="modal-glow-border"></div>
 
-      <!-- Header with Alert Icon & Title -->
+      <!-- Header with Title -->
       <header class="modal-header">
-        <div class="alert-icon-wrap" aria-hidden="true">
-          @if (att.victory) {
-            <span class="status-icon victory-icon">🛡️</span>
-          } @else {
-            <span class="status-icon defeat-icon">🚨</span>
-          }
-        </div>
         <div class="header-text">
           <span class="alert-badge">{{ att.victory ? 'SIEG IM ORBIT' : 'WARNUNG: FEINDANGRIFF' }}</span>
           <h2 id="attack-dialog-title" class="modal-title">
@@ -44,7 +37,6 @@
       <!-- Mitigation / Defense Status -->
       @if (att.damageReductionPercent > 0) {
         <div class="defense-shield-info" aria-label="Planetarer Schutz">
-          <span class="shield-icon" aria-hidden="true">🔰</span>
           <span>Planetare Verteidigung dämpft Rohstoffverluste um <strong>{{ att.damageReductionPercent }}%</strong></span>
         </div>
       }
@@ -101,7 +93,7 @@
           }
 
           <p class="tactical-advice">
-            💡 <strong>Tipp:</strong> Baue mehr Schlachtschiffe auf der Flotte-Seite oder erforsche <em>Planetare Verteidigung</em> in der Infrastruktur, um dich vor zukünftigen Angriffen zu schützen.
+            <strong>Tipp:</strong> Baue mehr Schlachtschiffe auf der Flotte-Seite oder erforsche <em>Planetare Verteidigung</em> in der Infrastruktur, um dich vor zukünftigen Angriffen zu schützen.
           </p>
         }
       </div>
@@ -110,7 +102,7 @@
       <footer class="modal-footer">
         @if (!att.victory) {
           <button class="action-btn counter-attack-btn" (click)="navigateToFleet()" aria-label="Zum Gegenangriff auf Flotte-Seite">
-            🚀 Zum Gegenangriff
+            Zum Gegenangriff
           </button>
         }
         <button class="action-btn close-btn" (click)="close()" aria-label="Bericht schließen">
