@@ -29,22 +29,16 @@ export interface SoundPlayOptions {
 
 export const DEFAULT_MUSIC_TRACKS: MusicTrack[] = [
   {
-    id: 'paradigm',
-    title: 'Paradigm',
-    artist: 'Stellaris Soundscape',
-    src: 'sounds/music/Paradigm.mp3',
+    id: 'the-mountain-deep-space',
+    title: 'Deep Space',
+    artist: 'The Mountain',
+    src: 'sounds/music/the-mountain-deep-space.mp3',
   },
   {
-    id: 'chronometry',
-    title: 'Chronometry',
-    artist: 'Stellaris Soundscape',
-    src: 'sounds/music/Chronometry.mp3',
-  },
-  {
-    id: 'galactic',
-    title: 'Galactic',
-    artist: 'Stellaris Soundscape',
-    src: 'sounds/music/Galactic.mp3',
+    id: 'universfield-deep-space-ambient',
+    title: 'Deep Space Ambient',
+    artist: 'Universfield',
+    src: 'sounds/music/universfield-deep-space-ambient.mp3',
   },
 ];
 

@@ -53,7 +53,7 @@ Das Projekt wurde mit modernstem **Angular 21** (Standalone Components, Signals 
 * **⚠️ Blackout-Mechanik:** Fällt die verfügbare Energie auf oder unter 0, **stoppt die Minenproduktion vollständig**, bis wieder ein positiver Energiehaushalt hergestellt ist.
 
 ### 🎵 Integriertes Audio- & Sound-System
-* **Atmosphärischer Soundtrack:** Sci-Fi Ambient-Musikstücke (*Paradigm*, *Chronometry*, *Galactic*) mit integriertem Player (Play/Pause, Track-Wechsel, Fortschrittsanzeige).
+* **Atmosphärischer Soundtrack:** Sci-Fi Ambient-Musikstücke (*Deep Space*, *Deep Space Ambient*) mit integriertem Player (Play/Pause, Track-Wechsel, Fortschrittsanzeige).
 * **Dynamische Soundeffekte (SFX):** Akustisches Feedback bei Schiffsbau, Missionsstarts, Klicks und Upgrades.
 * **🎙️ GLaDOS-Sprachausgabe:** Galaktische KI-Stimme für Ereignisansagen (*"Welcome back, Commander"*, *"Ship construction completed"*, *"Building construction completed"*).
 * **🎛️ Sci-Fi Sound-Overlay:** Zentrales Einstellungs-Panel zur separaten Lautstärkeregelung (Master, Musik, SFX) und Stummschaltung – zugänglich über Startseite und Ingame-HUD.
@@ -187,7 +187,7 @@ stellaris-builder-2.0/
 │   ├── sounds/                 # Audiomaterial & Sound-Assets
 │   │   ├── fleet/              # Flotten- und Missions-Sounds
 │   │   ├── glados-voice/       # KI-Sprachansagen (GLaDOS-Voice)
-│   │   └── music/              # Ambient-Soundtrack (Paradigm, Chronometry)
+│   │   └── music/              # Ambient-Soundtrack (Deep Space, Deep Space Ambient)
 │   └── sw.js                   # Service Worker für Asset-Caching
 ├── src/
 │   ├── app/

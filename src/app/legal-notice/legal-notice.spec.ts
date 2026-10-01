@@ -31,11 +31,17 @@ describe('LegalNotice', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the YouTube link for Galactic', () => {
-    const galacticLink: HTMLAnchorElement | null = fixture.nativeElement.querySelector(
-      'a[href="https://www.youtube.com/watch?v=rzgR40IceRM"]'
+  it('should render the Pixabay links for background music', () => {
+    const deepSpaceLink: HTMLAnchorElement | null = fixture.nativeElement.querySelector(
+      'a[href="https://pixabay.com/music/ambient-deep-space-587580/"]'
     );
-    expect(galacticLink).toBeTruthy();
-    expect(galacticLink?.textContent).toContain('YouTube-Video (Galactic)');
+    expect(deepSpaceLink).toBeTruthy();
+    expect(deepSpaceLink?.textContent).toContain('Pixabay (The Mountain – Deep Space)');
+
+    const universfieldLink: HTMLAnchorElement | null = fixture.nativeElement.querySelector(
+      'a[href="https://pixabay.com/music/ambient-deep-space-ambient-153309/"]'
+    );
+    expect(universfieldLink).toBeTruthy();
+    expect(universfieldLink?.textContent).toContain('Pixabay (Universfield – Deep Space Ambient)');
   });
 });

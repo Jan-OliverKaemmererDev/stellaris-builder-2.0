@@ -20,7 +20,7 @@ describe('AudioService', () => {
   it('should be created with default tracks and volume', () => {
     expect(service).toBeTruthy();
     expect(service.tracks().length).toBe(DEFAULT_MUSIC_TRACKS.length);
-    expect(service.currentTrack().title).toBe('Paradigm');
+    expect(service.currentTrack().title).toBe('Deep Space');
     expect(service.musicVolume()).toBe(0.5);
     expect(service.sfxVolume()).toBe(0.7);
     expect(service.isMusicMuted()).toBe(false);
@@ -59,11 +59,11 @@ describe('AudioService', () => {
     expect(service.currentTrackIndex()).toBe(0);
     service.nextTrack();
     expect(service.currentTrackIndex()).toBe(1);
-    expect(service.currentTrack().title).toBe('Chronometry');
+    expect(service.currentTrack().title).toBe('Deep Space Ambient');
 
     service.prevTrack();
     expect(service.currentTrackIndex()).toBe(0);
-    expect(service.currentTrack().title).toBe('Paradigm');
+    expect(service.currentTrack().title).toBe('Deep Space');
   });
 
   it('should allow adding new tracks dynamically', () => {
@@ -361,7 +361,7 @@ describe('AudioService', () => {
     const mockPlay = vi.fn().mockReturnValue(playPromise);
     const mockAudio = {
       paused: true,
-      src: 'sounds/music/Paradigm.mp3',
+      src: 'sounds/music/the-mountain-deep-space.mp3',
       volume: 0.5,
       play: mockPlay,
       pause: vi.fn(),

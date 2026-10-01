@@ -51,11 +51,11 @@ describe('SoundOverlayComponent', () => {
   it('should change track when selectTrack is called', () => {
     component.selectTrack(1);
     expect(audioService.currentTrackIndex()).toBe(1);
-    expect(audioService.currentTrack().title).toBe('Chronometry');
+    expect(audioService.currentTrack().title).toBe('Deep Space Ambient');
 
-    component.selectTrack(2);
-    expect(audioService.currentTrackIndex()).toBe(2);
-    expect(audioService.currentTrack().title).toBe('Galactic');
+    component.selectTrack(0);
+    expect(audioService.currentTrackIndex()).toBe(0);
+    expect(audioService.currentTrack().title).toBe('Deep Space');
   });
 
   it('should render clean header badge without sync badge', () => {
